@@ -1,0 +1,320 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email          String    @unique @db.VarChar(255)
+  password_hash  String    @db.VarChar(255)
+  name           String    @db.VarChar(100)
+  avatar_url     String?   @db.VarChar(500)
+  role           String    @default("user") // CHECK (role IN ('user', 'admin', 'super_admin'))
+  is_active      Boolean   @default(true)
+  email_verified Boolean   @default(false)
+
+  // Auditoría
+  created_at     DateTime  @default(now()) @db.Timestamptz
+  updated_at     DateTime  @updatedAt @db.Timestamptz
+  deleted_at     DateTime? @db.Timestamptz
+  deleted_by     String?   @db.Uuid
+
+  // Relaciones
+  accounts       Account[]
+  categories     Category[]
+  transactions   Transaction[]
+  budgets        Budget[]
+  goals          Goal[]
+  tags           Tag[]
+  sessions       Session[]
+  audit_logs     AuditLog[]
+  user_actions   UserAction[]
+  settings       UserSetting?
+
+  deleter        User?     @relation("UserDeleter", fields: [deleted_by], references: [id], onDelete: SetNull)
+  deleted_users  User[]    @relation("UserDeleter")
+
+  @@map("users")
+}
+
+model Account {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id         String    @db.Uuid
+  name            String    @db.VarChar(100)
+  type            String    // CHECK (type IN ('CHECKING','SAVINGS','CASH','CREDIT','INVESTMENT'))
+  currency        String    @db.Char(3)
+  initial_balance Decimal   @default(0) @db.Decimal(15, 4)
+  current_balance Decimal   @default(0) @db.Decimal(15, 4)
+  color           String?   @db.Char(7)
+  icon            String?   @db.VarChar(50)
+  is_active       Boolean   @default(true)
+
+  created_at      DateTime  @default(now()) @db.Timestamptz
+  created_by      String?   @db.Uuid
+  updated_at      DateTime  @updatedAt @db.Timestamptz
+  updated_by      String?   @db.Uuid
+  deleted_at      DateTime? @db.Timestamptz
+  deleted_by      String?   @db.Uuid
+
+  user            User      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  transactions    Transaction[]
+  projections     BalanceProjection[]
+
+  @@index([user_id])
+  @@map("accounts")
+}
+
+model Category {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String?    @db.Uuid
+  parent_id   String?    @db.Uuid
+  name        String     @db.VarChar(100)
+  type        String     // CHECK (type IN ('INCOME','EXPENSE','BOTH'))
+  icon        String?    @db.VarChar(50)
+  color       String?    @db.Char(7)
+  is_system   Boolean    @default(false)
+
+  created_at  DateTime   @default(now()) @db.Timestamptz
+  created_by  String?    @db.Uuid
+  updated_at  DateTime   @updatedAt @db.Timestamptz
+  updated_by  String?    @db.Uuid
+  deleted_at  DateTime?  @db.Timestamptz
+  deleted_by  String?    @db.Uuid
+
+  user        User?      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  parent      Category?  @relation("CategoryToCategory", fields: [parent_id], references: [id], onDelete: Restrict)
+  children    Category[] @relation("CategoryToCategory")
+  transactions Transaction[]
+  budgets     Budget[]
+
+  @@index([user_id])
+  @@index([parent_id])
+  @@map("categories")
+}
+
+model Transaction {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id          String    @db.Uuid
+  account_id       String    @db.Uuid
+  category_id      String?   @db.Uuid
+  type             String    // CHECK (type IN ('INCOME','EXPENSE','TRANSFER'))
+  amount           Decimal   @db.Decimal(15, 4)
+  currency         String    @db.Char(3)
+  description      String?   @db.VarChar(500)
+  notes            String?
+  date             DateTime  @db.Date
+  transfer_pair_id String?   @db.Uuid
+  is_recurring     Boolean   @default(false)
+  recurring_rule   Json?
+  metadata         Json      @default("{}")
+
+  created_at       DateTime  @default(now()) @db.Timestamptz
+  created_by       String?   @db.Uuid
+  updated_at       DateTime  @updatedAt @db.Timestamptz
+  updated_by       String?   @db.Uuid
+  deleted_at       DateTime? @db.Timestamptz
+  deleted_by       String?   @db.Uuid
+
+  user             User      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  account          Account   @relation(fields: [account_id], references: [id], onDelete: Restrict)
+  category         Category? @relation(fields: [category_id], references: [id], onDelete: Restrict)
+  tags             TransactionTag[]
+  attachments      Attachment[]
+
+  @@index([user_id, date(sort: Desc)])
+  @@index([account_id, date(sort: Desc)])
+  @@index([category_id, date(sort: Desc)])
+  @@index([transfer_pair_id])
+  @@map("transactions")
+}
+
+model Budget {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id         String   @db.Uuid
+  category_id     String   @db.Uuid
+  period          String   // 'MONTHLY' | 'WEEKLY' | 'YEARLY' — validado en dominio
+  amount          Decimal  @db.Decimal(15, 4)
+  currency        String   @db.Char(3)
+  alert_threshold Int      @default(80)
+  executed_amount Decimal  @default(0) @db.Decimal(15, 4)
+  // executed_amount SOLO se modifica via Event Handlers. Nunca desde repositorio directamente.
+  status          String   @default("ACTIVE") // 'ACTIVE' | 'EXPIRED' | 'INACTIVE'
+  start_date      DateTime @db.Date
+  end_date        DateTime @db.Date
+  // end_date es NOT NULL. Calculado por Budget.create() en dominio, nunca por el repositorio.
+
+  // Auditoría estándar — sin deleted_at ni deleted_by (Budget no usa soft-delete)
+  created_at      DateTime @default(now()) @db.Timestamptz
+  created_by      String?  @db.Uuid
+  updated_at      DateTime @updatedAt @db.Timestamptz
+  updated_by      String?  @db.Uuid
+
+  user            User     @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  category        Category @relation(fields: [category_id], references: [id], onDelete: Restrict)
+
+  // Índices operacionales
+  @@index([user_id, status], name: "idx_budgets_user")
+  @@index([user_id], map: "idx_budgets_user_active")
+  @@index([category_id, start_date, end_date], map: "idx_budgets_category_period")
+  // Nota: el unique parcial uq_budgets_active (WHERE status = 'ACTIVE') no puede
+  // expresarse en Prisma schema — se crea mediante SQL raw en la migración.
+  @@map("budgets")
+}
+
+model Goal {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id         String    @db.Uuid
+  name            String    @db.VarChar(200)
+  target_amount   Decimal   @db.Decimal(15, 4)
+  current_amount  Decimal   @default(0) @db.Decimal(15, 4)
+  currency        String    @db.Char(3)
+  target_date     DateTime? @db.Date
+  status          String    @default("ACTIVE") // CHECK (status IN ('ACTIVE','PAUSED','COMPLETED'))
+
+  created_at      DateTime  @default(now()) @db.Timestamptz
+  created_by      String?   @db.Uuid
+  updated_at      DateTime  @updatedAt @db.Timestamptz
+  updated_by      String?   @db.Uuid
+  deleted_at      DateTime? @db.Timestamptz
+  deleted_by      String?   @db.Uuid
+
+  user            User      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  @@map("goals")
+}
+
+model Tag {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String    @db.Uuid
+  name        String    @db.VarChar(50)
+  color       String?   @db.Char(7)
+  created_at  DateTime  @default(now()) @db.Timestamptz
+  deleted_at  DateTime? @db.Timestamptz
+
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  transactions TransactionTag[]
+
+  @@map("tags")
+}
+
+model TransactionTag {
+  transaction_id String @db.Uuid
+  tag_id         String @db.Uuid
+
+  transaction Transaction @relation(fields: [transaction_id], references: [id], onDelete: Restrict)
+  tag         Tag         @relation(fields: [tag_id], references: [id], onDelete: Restrict)
+
+  @@id([transaction_id, tag_id])
+  @@map("transaction_tags")
+}
+
+model Attachment {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  transaction_id String    @db.Uuid
+  user_id        String    @db.Uuid
+  file_name      String    @db.VarChar(255)
+  file_url       String    @db.VarChar(1000)
+  file_size      Int
+  mime_type      String    @db.VarChar(100)
+  created_at     DateTime  @default(now()) @db.Timestamptz
+  deleted_at     DateTime? @db.Timestamptz
+
+  transaction    Transaction @relation(fields: [transaction_id], references: [id], onDelete: Restrict)
+
+  @@map("attachments")
+}
+
+model Session {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id      String    @db.Uuid
+  token_hash   String    @db.VarChar(255)
+  user_agent   String?
+  ip_address   String?   @db.Inet
+  expires_at   DateTime  @db.Timestamptz
+  last_used_at DateTime  @default(now()) @db.Timestamptz
+  created_at   DateTime  @default(now()) @db.Timestamptz
+  revoked_at   DateTime? @db.Timestamptz
+
+  user         User      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  @@index([token_hash])
+  @@index([user_id])
+  @@map("sessions")
+}
+
+model AuditLog {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id        String    @db.Uuid
+  entity_type    String    @db.VarChar(50)
+  entity_id      String    @db.Uuid
+  action         String    // CHECK (action IN ('CREATE','UPDATE','DELETE'))
+  previous_data  Json?
+  new_data       Json?
+  request_id     String?   @db.VarChar(100)
+  correlation_id String?   @db.VarChar(100)
+  created_at     DateTime  @default(now()) @db.Timestamptz
+
+  user           User      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  @@index([entity_type, entity_id])
+  @@index([user_id, created_at(sort: Desc)])
+  @@index([correlation_id])
+  @@map("audit_logs")
+}
+
+model FeatureFlag {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key         String   @unique @db.VarChar(100)
+  enabled     Boolean  @default(false)
+  description String?
+  updated_at  DateTime @updatedAt @db.Timestamptz
+  updated_by  String?  @db.Uuid
+
+  @@map("feature_flags")
+}
+
+model UserSetting {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id          String   @unique @db.Uuid
+  default_currency String   @default("USD") @db.Char(3)
+  locale           String   @default("en-US") @db.VarChar(10)
+  timezone         String   @default("UTC") @db.VarChar(50)
+  theme            String   @default("system")
+  date_format      String   @default("MM/DD/YYYY") @db.VarChar(20)
+  updated_at       DateTime @updatedAt @db.Timestamptz
+
+  user             User     @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  @@map("user_settings")
+}
+
+model BalanceProjection {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  account_id        String   @db.Uuid
+  calculated_at     DateTime @default(now()) @db.Timestamptz
+  balance           Decimal  @db.Decimal(15, 4)
+  transaction_count Int
+  checksum          String   @db.VarChar(64)
+
+  account           Account  @relation(fields: [account_id], references: [id], onDelete: Restrict)
+
+  @@map("balance_projections")
+}
+
+model UserAction {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
+  action      String   @db.VarChar(100)
+  entity_type String?  @db.VarChar(50)
+  entity_id   String?  @db.Uuid
+  metadata    Json     @default("{}")
+  created_at  DateTime @default(now()) @db.Timestamptz
+
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  @@map("user_actions")
+}

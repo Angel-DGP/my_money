@@ -1,0 +1,15 @@
+{
+  "extends": "@mymoney/typescript-config/nest.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "baseUrl": "./"
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

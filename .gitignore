@@ -1,0 +1,23 @@
+node_modules
+.pnp
+.pnp.js
+coverage
+.next/
+out/
+build
+dist
+.turbo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+*storybook.log
+storybook-static

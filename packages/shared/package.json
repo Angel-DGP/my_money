@@ -1,0 +1,20 @@
+{
+  "name": "@mymoney/shared",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "big.js": "^6.2.1"
+  },
+  "devDependencies": {
+    "@types/big.js": "^6.2.2",
+    "@types/node": "^20.0.0",
+    "@mymoney/typescript-config": "workspace:*",
+    "typescript": "^5.4.0"
+  }
+}

@@ -1,0 +1,9 @@
+@theme {
+  --animate-duration-fast: 100ms;
+  --animate-duration-normal: 150ms;
+  --animate-duration-medium: 200ms;
+  --animate-duration-slow: 300ms;
+
+  --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  --default-transition-duration: 150ms;
+}

@@ -1,0 +1,8 @@
+@import "@mymoney/ui/src/styles.css";
+
+/* Base font setup */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}
