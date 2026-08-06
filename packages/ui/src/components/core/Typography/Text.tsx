@@ -6,10 +6,11 @@ type TextAlign = 'left' | 'center' | 'right';
 type TextWeight = 'normal' | 'medium' | 'semibold' | 'bold';
 
 export interface TextProps extends React.HTMLAttributes<HTMLParagraphElement> {
-  variant?: TextVariant;
-  align?: TextAlign;
-  weight?: TextWeight;
-  as?: React.ElementType;
+  variant?: TextVariant | undefined;
+  size?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | string | undefined;
+  align?: TextAlign | undefined;
+  weight?: TextWeight | undefined;
+  as?: React.ElementType | undefined;
 }
 
 const variantClasses: Record<TextVariant, string> = {

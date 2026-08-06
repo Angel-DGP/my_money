@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
-  htmlFor: string;
+  htmlFor?: string | undefined;
 }
 
 export const Label = ({ htmlFor, className, children, ...props }: LabelProps) => {

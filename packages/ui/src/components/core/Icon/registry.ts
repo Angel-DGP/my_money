@@ -54,6 +54,7 @@ import {
   Lock,
   Sun,
   Moon,
+  Palette,
 } from 'lucide-react';
 
 export const iconRegistry = {
@@ -112,6 +113,7 @@ export const iconRegistry = {
   lock: Lock,
   sun: Sun,
   moon: Moon,
+  palette: Palette,
 } as const;
 
 export type IconName = keyof typeof iconRegistry;

@@ -57,8 +57,13 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
 );
 TableRow.displayName = 'Table.Row';
 
-const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<HTMLTableCellElement>>(
-  ({ className, align, ...props }, ref) => (
+export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
+  asChild?: boolean;
+  align?: 'left' | 'center' | 'right';
+}
+
+const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
+  ({ className, align, asChild, ...props }, ref) => (
     <th
       ref={ref}
       className={cn(
@@ -73,8 +78,13 @@ const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<
 );
 TableHead.displayName = 'Table.Head';
 
-const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<HTMLTableCellElement>>(
-  ({ className, align, ...props }, ref) => (
+export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  asChild?: boolean;
+  align?: 'left' | 'center' | 'right';
+}
+
+const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+  ({ className, align, asChild, ...props }, ref) => (
     <td
       ref={ref}
       className={cn(

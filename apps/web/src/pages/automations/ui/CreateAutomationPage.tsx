@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Card, toast, Button, Icon, PageContainer } from '@mymoney/ui';
+import { toast, PageContainer } from '@mymoney/ui';
 import { useCreateAutoRule } from '@entities/automation';
 import type { CreateAutoRuleDto } from '@entities/automation';
 import { AutoRuleForm } from '@features/automations/ui/AutoRuleForm';

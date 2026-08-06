@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   Table, 
   TableHeader, 
@@ -8,8 +7,6 @@ import {
   Badge, 
   Icon, 
   Amount,
-  Dropdown,
-  Button
 } from '@mymoney/ui';
 import type { Transaction } from '@entities/transaction';
 import { useTableState } from '../../../shared/hooks/useTableState';

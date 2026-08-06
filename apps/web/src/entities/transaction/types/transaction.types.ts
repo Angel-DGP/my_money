@@ -20,6 +20,16 @@ export interface Transaction {
   card_id: string | null;
   subscription_id: string | null;
   product_id: string | null;
+  account?: {
+    id?: string;
+    name?: string;
+    icon?: string;
+  } | null;
+  category?: {
+    id?: string;
+    name?: string;
+    icon?: string;
+  } | null;
 }
 
 export interface CreateTransactionDto {

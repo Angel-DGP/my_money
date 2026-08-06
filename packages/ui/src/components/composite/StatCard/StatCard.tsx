@@ -3,26 +3,35 @@ import { Card } from '../../layout/Card';
 
 export interface StatCardProps {
   title: string;
-  value: string;
+  value: string | number;
+  currency?: string;
   icon?: IconName;
   trend?: {
     value: number;
     label?: string;
     direction?: 'up' | 'down' | 'neutral';
+    isPositive?: boolean;
   };
   className?: string;
 }
 
-export function StatCard({ title, value, icon, trend, className = '' }: StatCardProps) {
+export function StatCard({ title, value, currency, icon, trend, className = '' }: StatCardProps) {
+  const isUp = trend?.direction === 'up' || trend?.isPositive === true;
+  const isDown = trend?.direction === 'down' || trend?.isPositive === false;
+
   const trendColor = 
-    trend?.direction === 'up' ? 'text-success-500' : 
-    trend?.direction === 'down' ? 'text-error-500' : 
+    isUp ? 'text-success-500' : 
+    isDown ? 'text-error-500' : 
     'text-text-muted';
 
   const trendIcon = 
-    trend?.direction === 'up' ? 'trending-up' : 
-    trend?.direction === 'down' ? 'trending-down' : 
+    isUp ? 'trending-up' : 
+    isDown ? 'trending-down' : 
     undefined;
+
+  const formattedValue = typeof value === 'number' && currency
+    ? new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(value)
+    : value;
 
   return (
     <Card className={`p-5 flex flex-col gap-3 ${className}`}>
@@ -36,7 +45,7 @@ export function StatCard({ title, value, icon, trend, className = '' }: StatCard
       </div>
       
       <div className="mt-1">
-        <h3 className="text-2xl font-bold text-text-primary">{value}</h3>
+        <h3 className="text-2xl font-bold text-text-primary">{formattedValue}</h3>
         
         {trend && (
           <div className="flex items-center gap-1.5 mt-2">

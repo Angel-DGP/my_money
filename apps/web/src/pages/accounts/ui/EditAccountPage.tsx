@@ -1,8 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast, PageContainer, QueryState } from '@mymoney/ui';
+import { toast, PageContainer } from '@mymoney/ui';
+import { QueryState } from '@shared/ui/QueryState';
 import { AccountForm } from '@features/accounts';
-import { useUpdateAccount, useAccountQuery } from '@entities/account';
-import type { UpdateAccountDto } from '@entities/account';
+import { useUpdateAccount, useAccountDetailQuery as useAccountQuery } from '@entities/account';
+import type { UpdateAccountDto, Account } from '@entities/account';
 
 export function EditAccountPage() {
   const { id } = useParams<{ id: string }>();
@@ -46,7 +47,7 @@ export function EditAccountPage() {
           isError={accountQuery.isError}
           error={accountQuery.error}
         >
-          {(account) => (
+          {(account: Account) => (
             <AccountForm
               initialData={account}
               onSubmit={handleSubmit as any}

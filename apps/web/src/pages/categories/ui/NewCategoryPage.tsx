@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Button, Icon, toast, PageContainer } from '@mymoney/ui';
+import { toast, PageContainer } from '@mymoney/ui';
 import { CategoryForm } from '@features/categories';
 import { useCreateCategory } from '@entities/category';
 import type { CreateCategoryDto } from '@entities/category';

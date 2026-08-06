@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Button, Icon, toast, PageContainer } from '@mymoney/ui';
+import { toast, PageContainer } from '@mymoney/ui';
 import { BudgetForm } from '@features/budgets';
 import { useCreateBudget } from '@entities/budget';
 import { useCategoriesQuery } from '@entities/category';

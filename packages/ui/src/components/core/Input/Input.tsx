@@ -4,8 +4,8 @@ import { Icon, type IconName } from '../Icon';
 
 export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'prefix'> {
   label?: string;
-  helperText?: string;
-  error?: string;
+  helperText?: string | undefined;
+  error?: string | undefined;
   leftIcon?: IconName;
   rightIcon?: IconName;
   prefix?: React.ReactNode;

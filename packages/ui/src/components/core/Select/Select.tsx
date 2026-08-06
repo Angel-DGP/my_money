@@ -3,14 +3,19 @@ import type { ReactNode, ReactElement } from 'react';
 import { cn } from '../Button';
 import { Icon } from '../Icon';
 
-export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  id: string;
-  name: string;
-  label?: string;
-  helperText?: string;
-  error?: string;
-  required?: boolean;
-  searchable?: boolean;
+export interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'onChange'> {
+  id?: string | undefined;
+  name?: string | undefined;
+  label?: string | undefined;
+  helperText?: string | undefined;
+  error?: string | undefined;
+  placeholder?: string | undefined;
+  required?: boolean | undefined;
+  searchable?: boolean | undefined;
+  disabled?: boolean | undefined;
+  onValueChange?: ((value: any) => void) | undefined;
+  onChange?: ((e: React.ChangeEvent<HTMLSelectElement>) => void) | undefined;
+  options?: Array<{ label: string; value: string; disabled?: boolean }> | undefined;
 }
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
@@ -21,6 +26,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       label,
       helperText,
       error,
+      placeholder,
       required = false,
       searchable = false,
       className,
@@ -28,7 +34,9 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       value: propValue,
       defaultValue,
       disabled,
+      onValueChange,
       onChange,
+      options: propOptions,
       ...props
     },
     ref
@@ -61,8 +69,11 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       }
     };
 
-    // Parse children to extract options
+    // Parse children & propOptions to extract options
     const options: { value: string; label: ReactNode; disabled?: boolean }[] = [];
+    if (propOptions) {
+      propOptions.forEach(opt => options.push(opt));
+    }
     React.Children.forEach(children, (child) => {
       if (React.isValidElement(child) && child.type === 'option') {
         const optionChild = child as ReactElement<any>;
@@ -75,12 +86,13 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     });
 
     const selectedOption = options.find((opt) => opt.value === String(internalValue));
-    const displayLabel = selectedOption ? selectedOption.label : 'Seleccionar...';
+    const displayLabel = selectedOption ? selectedOption.label : (placeholder || 'Seleccionar...');
 
     const handleSelectOption = (optValue: string, optDisabled?: boolean) => {
       if (optDisabled || disabled) return;
       
       setInternalValue(optValue);
+      onValueChange?.(optValue);
       setIsOpen(false);
 
       if (selectRef.current) {

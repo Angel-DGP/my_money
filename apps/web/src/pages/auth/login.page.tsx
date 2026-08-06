@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Button, Input, Label, toast, Icon, ThemeToggle, FormLayout } from '@mymoney/ui';
 import { useAuth } from '@features/auth/hooks/useAuth';

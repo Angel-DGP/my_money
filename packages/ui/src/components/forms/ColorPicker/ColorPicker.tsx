@@ -1,15 +1,14 @@
-import React from 'react';
 import { cn } from '../../../utils/cn';
 import { Label } from '../../core/Label';
 
 export interface ColorPickerProps {
-  id?: string;
-  name?: string;
+  id?: string | undefined;
+  name?: string | undefined;
   value: string;
   onChange: (value: string) => void;
-  disabled?: boolean;
-  className?: string;
-  label?: string;
+  disabled?: boolean | undefined;
+  className?: string | undefined;
+  label?: string | undefined;
 }
 
 const PREDEFINED_COLORS = [

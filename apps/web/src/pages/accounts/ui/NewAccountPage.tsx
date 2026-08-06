@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Button, Icon, toast, PageContainer } from '@mymoney/ui';
+import { toast, PageContainer } from '@mymoney/ui';
 import { AccountForm } from '@features/accounts';
 import { useCreateAccount } from '@entities/account';
 import type { CreateAccountDto } from '@entities/account';

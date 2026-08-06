@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useCardBrands, useCreateCardBrand } from '../api/useCatalogs';
 import { Button, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Card, Icon } from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
@@ -54,38 +54,40 @@ export function CardBrandsList() {
         </Card>
       )}
 
-      <QueryState isLoading={isLoading} isError={isError} error={error} onRetry={refetch}>
-        <Card padding="none" className="overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nombre de Marca</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {brands?.length === 0 ? (
+      <QueryState data={brands} isLoading={isLoading} isError={isError} error={error} onRetry={refetch}>
+        {() => (
+          <Card padding="none" className="overflow-hidden">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={2} className="h-32 text-center text-text-secondary">
-                    <div className="flex flex-col items-center gap-2">
-                      <Tag className="w-8 h-8 text-text-tertiary" />
-                      <p>No hay marcas configuradas.</p>
-                    </div>
-                  </TableCell>
+                  <TableHead>Nombre de Marca</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
-              ) : (
-                brands?.map((b) => (
-                  <TableRow key={b.id}>
-                    <TableCell className="font-medium">{b.name}</TableCell>
-                    <TableCell className="text-right flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="sm" className="text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20" size="icon" aria-label="Eliminar"><Icon name="trash-2" size="sm" /></Button>
+              </TableHeader>
+              <TableBody>
+                {brands?.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={2} className="h-32 text-center text-text-secondary">
+                      <div className="flex flex-col items-center gap-2">
+                        <Tag className="w-8 h-8 text-text-tertiary" />
+                        <p>No hay marcas configuradas.</p>
+                      </div>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </Card>
+                ) : (
+                  brands?.map((b) => (
+                    <TableRow key={b.id}>
+                      <TableCell className="font-medium">{b.name}</TableCell>
+                      <TableCell className="text-right flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="icon" className="text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20" aria-label="Eliminar"><Icon name="trash" size="sm" /></Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </Card>
+        )}
       </QueryState>
     </div>
   );

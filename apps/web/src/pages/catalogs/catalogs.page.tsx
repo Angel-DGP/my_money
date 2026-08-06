@@ -1,4 +1,3 @@
-import React from 'react';
 import { PageContainer } from '@mymoney/ui';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@mymoney/ui';
 import { InstitutionsTab } from '../../features/catalogs/ui/InstitutionsTab';

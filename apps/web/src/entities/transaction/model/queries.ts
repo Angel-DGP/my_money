@@ -52,6 +52,10 @@ export function useCreateTransaction() {
             is_third_party: newTransaction.is_third_party || false,
             third_party_owner: newTransaction.third_party_owner || null,
             third_party_note: newTransaction.third_party_note || null,
+            payment_method: newTransaction.payment_method || null,
+            card_id: newTransaction.card_id || null,
+            subscription_id: newTransaction.subscription_id || null,
+            product_id: newTransaction.product_id || null,
           };
 
           return [optimisticTransaction, ...oldData];

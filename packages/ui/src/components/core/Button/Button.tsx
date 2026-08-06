@@ -8,14 +8,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link';
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'icon';
-  type?: 'button' | 'submit' | 'reset';
-  disabled?: boolean;
-  loading?: boolean;
-  fullWidth?: boolean;
-  leftIcon?: IconName;
-  rightIcon?: IconName;
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link' | undefined;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'icon' | undefined;
+  type?: 'button' | 'submit' | 'reset' | undefined;
+  disabled?: boolean | undefined;
+  loading?: boolean | undefined;
+  fullWidth?: boolean | undefined;
+  leftIcon?: IconName | undefined;
+  rightIcon?: IconName | undefined;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(

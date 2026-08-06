@@ -6,6 +6,7 @@ import { Icon } from '../../core/Icon';
 export interface PageContainerProps {
   children: React.ReactNode;
   className?: string;
+  fullWidth?: boolean;
 }
 
 /**
@@ -15,7 +16,7 @@ export interface PageContainerProps {
  * Requiere que el contenedor scroll ancestro tenga:
  *   overflow-y-auto + min-h-0  (esencial en flex-col para que sticky funcione)
  */
-export const PageContainer = ({ children, className }: PageContainerProps) => {
+export const PageContainerComponent = ({ children, className }: PageContainerProps) => {
   return (
     <div className={cn('flex flex-col min-h-full w-full', className)}>
       {children}
@@ -33,13 +34,13 @@ export interface PageContainerHeaderProps {
   className?: string;
 }
 
-PageContainer.Header = function PageContainerHeader({
+const PageContainerHeader = ({
   title,
   description,
   backTo,
   actions,
   className,
-}: PageContainerHeaderProps) {
+}: PageContainerHeaderProps) => {
   return (
     <div className={cn('flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8', className)}>
       <div className="flex items-center gap-4">
@@ -68,11 +69,11 @@ export interface PageContainerBodyProps {
   variant?: 'card' | 'transparent';
 }
 
-PageContainer.Body = function PageContainerBody({
+const PageContainerBody = ({
   children,
   className,
   variant = 'card',
-}: PageContainerBodyProps) {
+}: PageContainerBodyProps) => {
   return (
     <div
       className={cn(
@@ -95,17 +96,10 @@ export interface PageContainerFooterProps {
   className?: string;
 }
 
-/**
- * Footer sticky al bottom del scroll container.
- *
- * No tiene padding horizontal propio: hereda el del PageContainer (p-4/6/8).
- * No necesita negative margins porque no intenta salirse del PageContainer.
- * El scroll container con min-h-0 garantiza que sticky funcione correctamente.
- */
-PageContainer.Footer = function PageContainerFooter({
+const PageContainerFooter = ({
   children,
   className,
-}: PageContainerFooterProps) {
+}: PageContainerFooterProps) => {
   return (
     <div
       className={cn(
@@ -122,4 +116,8 @@ PageContainer.Footer = function PageContainerFooter({
   );
 };
 
-PageContainer.Footer.displayName = 'PageContainerFooter';
+export const PageContainer = Object.assign(PageContainerComponent, {
+  Header: PageContainerHeader,
+  Body: PageContainerBody,
+  Footer: PageContainerFooter,
+});

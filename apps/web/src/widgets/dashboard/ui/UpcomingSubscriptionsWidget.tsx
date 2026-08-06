@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, Icon } from '@mymoney/ui';
 import { useSubscriptions } from '../../../features/catalogs/api/useCatalogs';
 
@@ -11,11 +10,11 @@ export function UpcomingSubscriptionsWidget() {
   next5Days.setDate(today.getDate() + 5);
 
   const upcoming = subscriptions.filter(sub => {
-    if (!sub.billing_cycle || !sub.start_date) return false;
+    const targetDateStr = sub.next_billing_date || sub.start_date;
+    if (!sub.billing_cycle || !targetDateStr) return false;
     
     // Simplistic calculation for Monthly subscriptions for demonstration
-    // Assumes billing day is the same as start_date day
-    const startDate = new Date(sub.start_date);
+    const startDate = new Date(targetDateStr);
     const billingDay = startDate.getDate();
     
     const currentMonthDue = new Date(today.getFullYear(), today.getMonth(), billingDay);
@@ -28,9 +27,6 @@ export function UpcomingSubscriptionsWidget() {
     
     // Include if due today or in next 5 days
     return daysDiff >= 0 && daysDiff <= 5;
-  }).sort((a, b) => {
-    // Sort logic here if needed
-    return 0;
   });
 
   if (isLoading) {

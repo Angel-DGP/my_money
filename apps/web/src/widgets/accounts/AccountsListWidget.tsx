@@ -1,16 +1,13 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAccountsQuery, useUpdateAccount, useDeleteAccount } from '@entities/account';
-import type { Account, UpdateAccountDto } from '@entities/account';
+import { useAccountsQuery, useDeleteAccount } from '@entities/account';
+import type { Account } from '@entities/account';
 import { AccountsTable } from '@features/accounts';
-import { AccountForm } from '@features/accounts';
 import { Button, Icon, toast, PageContainer } from '@mymoney/ui';
 import { QueryState } from '@shared/ui/QueryState';
 
 export function AccountsListWidget() {
   const navigate = useNavigate();
   const accountsQuery = useAccountsQuery();
-  const updateAccount = useUpdateAccount();
   const deleteAccount = useDeleteAccount();
 
   const handleEdit = (account: Account) => {

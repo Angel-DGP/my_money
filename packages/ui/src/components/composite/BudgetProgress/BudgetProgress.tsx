@@ -6,11 +6,13 @@ export interface BudgetProgressProps extends React.HTMLAttributes<HTMLDivElement
   /** The amount already spent */
   spent: number;
   /** The total budget limit */
-  limit: number;
+  limit?: number;
+  /** Alias for limit */
+  total?: number;
   /** The remaining amount (limit - spent, can be negative) */
-  remaining: number;
+  remaining?: number;
   /** The percentage spent (0-100 or more) */
-  percentage: number;
+  percentage?: number;
   /** ISO 4217 currency code. Defaults to UIConfigProvider */
   currency?: string;
   /** Whether to show the percentage text */
@@ -25,8 +27,9 @@ export const BudgetProgress = React.forwardRef<HTMLDivElement, BudgetProgressPro
       className,
       spent,
       limit,
-      remaining,
-      percentage,
+      total,
+      remaining: propRemaining,
+      percentage: propPercentage,
       currency,
       showPercentage = true,
       showRemaining = true,
@@ -34,7 +37,10 @@ export const BudgetProgress = React.forwardRef<HTMLDivElement, BudgetProgressPro
     },
     ref
   ) => {
-    const isOverBudget = spent > limit;
+    const effectiveLimit = total ?? limit ?? 0;
+    const remaining = propRemaining ?? (effectiveLimit - spent);
+    const percentage = propPercentage ?? (effectiveLimit > 0 ? (spent / effectiveLimit) * 100 : 0);
+    const isOverBudget = spent > effectiveLimit;
     // Cap visual percentage at 100% for the bar
     const visualPercentage = Math.min(100, Math.max(0, percentage));
 
@@ -52,7 +58,7 @@ export const BudgetProgress = React.forwardRef<HTMLDivElement, BudgetProgressPro
             />
             <span className="text-sm text-text-secondary">de</span>
             <Amount 
-              value={limit} 
+              value={effectiveLimit} 
               currency={currency || 'USD'} 
               size="sm" 
               weight="normal" 

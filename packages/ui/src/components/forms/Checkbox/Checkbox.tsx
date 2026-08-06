@@ -5,6 +5,7 @@ import { cn } from '../../../utils/cn';
 export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
   label?: string;
   description?: string;
 }

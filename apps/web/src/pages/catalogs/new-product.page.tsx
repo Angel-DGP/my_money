@@ -1,6 +1,5 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, PageContainer } from '@mymoney/ui';
+import { PageContainer } from '@mymoney/ui';
 import { useCreateProductService } from '../../features/catalogs/api/useCatalogs';
 import { ProductServiceForm } from '../../features/catalogs/ui/ProductServiceForm';
 

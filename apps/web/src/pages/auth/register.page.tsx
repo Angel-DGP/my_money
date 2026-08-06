@@ -1,6 +1,5 @@
-import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Button, Input, Label, toast, Icon, ThemeToggle, FormLayout } from '@mymoney/ui';
+import { Button, Input, Label, Icon, ThemeToggle, FormLayout } from '@mymoney/ui';
 import { useAuth } from '@features/auth/hooks/useAuth';
 import { useTheme } from '@app/providers/ThemeProvider';
 import { useForm } from 'react-hook-form';

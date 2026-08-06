@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSubscriptions } from '../api/useCatalogs';
 import { Button, Table, TableBody, TableCell, TableRow, Card, Icon, TableHeader } from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
@@ -6,7 +5,7 @@ import { Plus, Repeat } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTableState } from '../../../shared/hooks/useTableState';
 import { DataTableToolbar, SortableHeader, TablePagination } from '../../../shared/ui/DataTableToolbar';
-import type { SubscriptionDto } from '@entities/catalog';
+import type { SubscriptionDto } from '../../../shared/api/dto/catalogs.dto';
 
 const formatCurrency = (value: number, currency: string) => {
   return new Intl.NumberFormat('en-US', {
@@ -70,94 +69,97 @@ export function SubscriptionsTab() {
       </div>
 
       <QueryState
+        data={subscriptions}
         isLoading={isLoading}
         isError={isError}
         error={error}
         onRetry={refetch}
       >
-        <div className="space-y-4">
-          <DataTableToolbar
-            search={search}
-            onSearchChange={setSearch}
-            placeholder="Buscar suscripción..."
-          />
+        {() => (
+          <div className="space-y-4">
+            <DataTableToolbar
+              search={search}
+              onSearchChange={setSearch}
+              placeholder="Buscar suscripción..."
+            />
 
-          <Card padding="none" className="overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableCell asChild>
-                    <th>
-                      <SortableHeader column="name" sort={sort} onToggle={toggleSort}>
-                        Servicio
-                      </SortableHeader>
-                    </th>
-                  </TableCell>
-                  <TableCell asChild>
-                    <th>
-                      <SortableHeader column="amount" sort={sort} onToggle={toggleSort}>
-                        Monto
-                      </SortableHeader>
-                    </th>
-                  </TableCell>
-                  <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                    <th>Ciclo</th>
-                  </TableCell>
-                  <TableCell asChild>
-                    <th>
-                      <SortableHeader column="next_billing_date" sort={sort} onToggle={toggleSort}>
-                        Próximo Cobro
-                      </SortableHeader>
-                    </th>
-                  </TableCell>
-                  <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                    <th>Tarjeta Asoc.</th>
-                  </TableCell>
-                  <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                    <th>Acciones</th>
-                  </TableCell>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginated.length === 0 ? (
+            <Card padding="none" className="overflow-hidden">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={6} className="h-32 text-center text-text-secondary">
-                      <div className="flex flex-col items-center justify-center gap-2">
-                        <Repeat className="w-8 h-8 text-text-tertiary" />
-                        <p>{search ? 'No se encontraron resultados.' : 'No tienes suscripciones registradas.'}</p>
-                      </div>
+                    <TableCell asChild>
+                      <th>
+                        <SortableHeader column="name" sort={sort} onToggle={toggleSort}>
+                          Servicio
+                        </SortableHeader>
+                      </th>
+                    </TableCell>
+                    <TableCell asChild>
+                      <th>
+                        <SortableHeader column="amount" sort={sort} onToggle={toggleSort}>
+                          Monto
+                        </SortableHeader>
+                      </th>
+                    </TableCell>
+                    <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                      <th>Ciclo</th>
+                    </TableCell>
+                    <TableCell asChild>
+                      <th>
+                        <SortableHeader column="next_billing_date" sort={sort} onToggle={toggleSort}>
+                          Próximo Cobro
+                        </SortableHeader>
+                      </th>
+                    </TableCell>
+                    <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                      <th>Tarjeta Asoc.</th>
+                    </TableCell>
+                    <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                      <th>Acciones</th>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  paginated.map((sub) => (
-                    <TableRow key={sub.id} className="hover:bg-surface-hover transition-colors">
-                      <TableCell className="font-medium">{sub.name}</TableCell>
-                      <TableCell>{formatCurrency(Number(sub.amount), sub.currency)}</TableCell>
-                      <TableCell>{sub.billing_cycle}</TableCell>
-                      <TableCell>{new Date(sub.next_billing_date).toLocaleDateString()}</TableCell>
-                      <TableCell>{sub.card ? `${sub.card.brand} **${sub.card.last_four}` : '-'}</TableCell>
-                      <TableCell className="text-right flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="icon" aria-label="Editar">
-                          <Icon name="pencil" size="sm" />
-                        </Button>
+                </TableHeader>
+                <TableBody>
+                  {paginated.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="h-32 text-center text-text-secondary">
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <Repeat className="w-8 h-8 text-text-tertiary" />
+                          <p>{search ? 'No se encontraron resultados.' : 'No tienes suscripciones registradas.'}</p>
+                        </div>
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </Card>
+                  ) : (
+                    paginated.map((sub) => (
+                      <TableRow key={sub.id} className="hover:bg-surface-hover transition-colors">
+                        <TableCell className="font-medium">{sub.name}</TableCell>
+                        <TableCell>{formatCurrency(Number(sub.amount), sub.currency)}</TableCell>
+                        <TableCell>{sub.billing_cycle}</TableCell>
+                        <TableCell>{new Date(sub.next_billing_date).toLocaleDateString()}</TableCell>
+                        <TableCell>{sub.card ? `${sub.card.brand?.name || ''} **${sub.card.last_four}` : '-'}</TableCell>
+                        <TableCell className="text-right flex items-center justify-end gap-1">
+                          <Button variant="ghost" size="icon" aria-label="Editar">
+                            <Icon name="pencil" size="sm" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </Card>
 
-          {totalPages > 1 && (
-            <TablePagination
-              page={page}
-              totalPages={totalPages}
-              totalFiltered={totalFiltered}
-              pageSize={10}
-              onPageChange={setPage}
-            />
-          )}
-        </div>
+            {totalPages > 1 && (
+              <TablePagination
+                page={page}
+                totalPages={totalPages}
+                totalFiltered={totalFiltered}
+                pageSize={10}
+                onPageChange={setPage}
+              />
+            )}
+          </div>
+        )}
       </QueryState>
     </div>
   );

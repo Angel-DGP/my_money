@@ -1,5 +1,5 @@
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
-import { Button, Icon, PageContainer } from '@mymoney/ui';
+import { PageContainer } from '@mymoney/ui';
 import { TransactionForm } from '../../../features/transactions/ui/TransactionForm';
 
 export function EditTransactionPage() {

@@ -23,10 +23,10 @@ export interface CreateAccountDto {
   type: AccountType;
   currency: Currency;
   initial_balance: string;
-  color?: string;
-  icon?: string;
-  institution_id?: string;
-  specific_type?: string;
+  color?: string | undefined;
+  icon?: string | undefined;
+  institution_id?: string | undefined;
+  specific_type?: string | undefined;
 }
 
-export interface UpdateAccountDto extends Partial<CreateAccountDto> {}
+export type UpdateAccountDto = Partial<CreateAccountDto>;

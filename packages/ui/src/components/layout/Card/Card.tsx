@@ -46,7 +46,6 @@ export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : 'div';
-    const { padding } = React.useContext(CardContext);
     
     return (
       <Comp
@@ -69,7 +68,6 @@ export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
 const CardBody = React.forwardRef<HTMLDivElement, CardBodyProps>(
   ({ className, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : 'div';
-    const { padding } = React.useContext(CardContext);
     
     return (
       <Comp
@@ -89,7 +87,6 @@ export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
 const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
   ({ className, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : 'div';
-    const { padding } = React.useContext(CardContext);
     
     return (
       <Comp

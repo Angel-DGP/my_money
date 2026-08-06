@@ -39,6 +39,7 @@ export interface SubscriptionDto {
   currency: string;
   billing_cycle: string;
   next_billing_date: string;
+  start_date?: string;
   url?: string | null;
   status: string;
   card?: CardDto | null;

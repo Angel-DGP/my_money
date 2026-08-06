@@ -8,9 +8,9 @@ export interface GoalProgressProps extends React.HTMLAttributes<HTMLDivElement> 
   /** The target goal amount */
   target: number;
   /** The remaining amount (target - current, can be negative) */
-  remaining: number;
+  remaining?: number;
   /** The percentage achieved (0-100 or more) */
-  percentage: number;
+  percentage?: number;
   /** ISO 4217 currency code. Defaults to UIConfigProvider */
   currency?: string;
   /** Whether to show the percentage text */
@@ -25,8 +25,8 @@ export const GoalProgress = React.forwardRef<HTMLDivElement, GoalProgressProps>(
       className,
       current,
       target,
-      remaining,
-      percentage,
+      remaining: propRemaining,
+      percentage: propPercentage,
       currency,
       showPercentage = true,
       showRemaining = true,
@@ -34,6 +34,8 @@ export const GoalProgress = React.forwardRef<HTMLDivElement, GoalProgressProps>(
     },
     ref
   ) => {
+    const remaining = propRemaining ?? (target - current);
+    const percentage = propPercentage ?? (target > 0 ? (current / target) * 100 : 0);
     const isGoalReached = current >= target;
     // Cap visual percentage at 100% for the bar
     const visualPercentage = Math.min(100, Math.max(0, percentage));

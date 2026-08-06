@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   PageContainer,
   Card,
@@ -9,7 +8,6 @@ import {
   Heading,
   Text,
   Badge,
-  Divider,
   Icon,
   Table,
   TableBody,
@@ -48,10 +46,10 @@ export function UIKitPage() {
             <Heading level="h2">Heading 2: Hola Mundo</Heading>
             <Heading level="h3">Heading 3: Hola Mundo</Heading>
             <Heading level="h4">Heading 4: Hola Mundo</Heading>
-            <Text variant="primary" size="lg">Text Large Primary</Text>
-            <Text variant="secondary" size="base">Text Base Secondary</Text>
-            <Text variant="tertiary" size="sm">Text Small Tertiary</Text>
-            <Text variant="primary" weight="bold">Text Bold</Text>
+            <Text variant="body" size="lg">Text Large Primary</Text>
+            <Text variant="muted" size="base">Text Base Secondary</Text>
+            <Text variant="small" size="sm">Text Small Tertiary</Text>
+            <Text variant="body" weight="bold">Text Bold</Text>
           </Card>
         </section>
 
@@ -63,7 +61,7 @@ export function UIKitPage() {
               <Button variant="primary">Primary</Button>
               <Button variant="secondary">Secondary</Button>
               <Button variant="ghost">Ghost</Button>
-              <Button variant="danger">Danger</Button>
+              <Button variant="destructive">Danger</Button>
             </div>
             <div className="flex flex-wrap gap-4 items-center">
               <Button size="sm">Small</Button>

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Button, Icon, toast, PageContainer } from '@mymoney/ui';
+import { toast, PageContainer } from '@mymoney/ui';
 import { GoalForm } from '@features/goals';
 import { useCreateGoal } from '@entities/goal';
 import type { CreateGoalDto } from '@entities/goal';

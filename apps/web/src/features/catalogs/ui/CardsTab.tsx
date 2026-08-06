@@ -1,4 +1,3 @@
-import React from 'react';
 import { useCards } from '../api/useCatalogs';
 import { Button, Table, TableBody, TableCell, TableRow, Card, Tabs, TabsList, TabsTrigger, TabsContent, Icon, TableHeader } from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
@@ -8,11 +7,11 @@ import { CardBrandsList } from './CardBrandsList';
 import { CardTypesList } from './CardTypesList';
 import { useTableState } from '../../../shared/hooks/useTableState';
 import { DataTableToolbar, SortableHeader, TablePagination } from '../../../shared/ui/DataTableToolbar';
-import type { CardDto } from '@entities/catalog';
+import type { CardDto } from '../../../shared/api/dto/catalogs.dto';
 
 const FILTERS = [
   { label: 'Todas', value: 'all' },
-  { label: 'Crédito', value: 'CREDIT' }, // Assuming the type object name or code will map to this, wait, card type is dynamic. Let's just filter by name of type if possible. Or we remove the filter if types are dynamic. The user requested: "en Tarjetas (Crédito/Débito)". We will assume 'Crédito' and 'Débito' are the type names.
+  { label: 'Crédito', value: 'CREDIT' },
   { label: 'Débito', value: 'DEBIT' },
 ];
 
@@ -37,7 +36,6 @@ export function CardsTab() {
     pageSize: 10,
     searchFields: ['name', (c) => c.institution?.name || '', (c) => c.brand?.name || ''],
     filterField: (c, f) => {
-      // Very naive mapping, assuming type names contain Credit/Debit or similar
       const typeName = c.type?.name?.toLowerCase() || '';
       if (f === 'CREDIT') return typeName.includes('crédito') || typeName.includes('credito') || typeName.includes('credit');
       if (f === 'DEBIT') return typeName.includes('débito') || typeName.includes('debito') || typeName.includes('debit');
@@ -80,78 +78,81 @@ export function CardsTab() {
           </div>
 
           <QueryState
+            data={cards}
             isLoading={isLoading}
             isError={isError}
             error={error}
             onRetry={refetch}
           >
-            <div className="space-y-4">
-              <Card padding="none" className="overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableCell asChild>
-                        <th>
-                          <SortableHeader column="name" sort={sort} onToggle={toggleSort}>
-                            Alias
-                          </SortableHeader>
-                        </th>
-                      </TableCell>
-                      <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                        <th>Banco</th>
-                      </TableCell>
-                      <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                        <th>Red</th>
-                      </TableCell>
-                      <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                        <th>Terminación</th>
-                      </TableCell>
-                      <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                        <th>Tipo</th>
-                      </TableCell>
-                      <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                        <th>Acciones</th>
-                      </TableCell>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginated.length === 0 ? (
+            {() => (
+              <div className="space-y-4">
+                <Card padding="none" className="overflow-hidden">
+                  <Table>
+                    <TableHeader>
                       <TableRow>
-                        <TableCell colSpan={6} className="h-32 text-center text-text-secondary">
-                          <div className="flex flex-col items-center justify-center gap-2">
-                            <CreditCard className="w-8 h-8 text-text-tertiary" />
-                            <p>{search || activeFilter !== 'all' ? 'No se encontraron resultados.' : 'No tienes tarjetas guardadas.'}</p>
-                          </div>
+                        <TableCell asChild>
+                          <th>
+                            <SortableHeader column="name" sort={sort} onToggle={toggleSort}>
+                              Alias
+                            </SortableHeader>
+                          </th>
+                        </TableCell>
+                        <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                          <th>Banco</th>
+                        </TableCell>
+                        <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                          <th>Red</th>
+                        </TableCell>
+                        <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                          <th>Terminación</th>
+                        </TableCell>
+                        <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                          <th>Tipo</th>
+                        </TableCell>
+                        <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                          <th>Acciones</th>
                         </TableCell>
                       </TableRow>
-                    ) : (
-                      paginated.map((c) => (
-                        <TableRow key={c.id} className="hover:bg-surface-hover transition-colors">
-                          <TableCell className="font-medium">{c.name}</TableCell>
-                          <TableCell>{c.institution?.name}</TableCell>
-                          <TableCell>{c.brand?.name}</TableCell>
-                          <TableCell>**** {c.last_four}</TableCell>
-                          <TableCell>{c.type?.name}</TableCell>
-                          <TableCell className="text-right flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon" aria-label="Editar"><Icon name="pencil" size="sm" /></Button>
+                    </TableHeader>
+                    <TableBody>
+                      {paginated.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="h-32 text-center text-text-secondary">
+                            <div className="flex flex-col items-center justify-center gap-2">
+                              <CreditCard className="w-8 h-8 text-text-tertiary" />
+                              <p>{search || activeFilter !== 'all' ? 'No se encontraron resultados.' : 'No tienes tarjetas guardadas.'}</p>
+                            </div>
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </Card>
+                      ) : (
+                        paginated.map((c) => (
+                          <TableRow key={c.id} className="hover:bg-surface-hover transition-colors">
+                            <TableCell className="font-medium">{c.name}</TableCell>
+                            <TableCell>{c.institution?.name}</TableCell>
+                            <TableCell>{c.brand?.name}</TableCell>
+                            <TableCell>**** {c.last_four}</TableCell>
+                            <TableCell>{c.type?.name}</TableCell>
+                            <TableCell className="text-right flex items-center justify-end gap-1">
+                              <Button variant="ghost" size="icon" aria-label="Editar"><Icon name="pencil" size="sm" /></Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </Card>
 
-              {totalPages > 1 && (
-                <TablePagination
-                  page={page}
-                  totalPages={totalPages}
-                  totalFiltered={totalFiltered}
-                  pageSize={10}
-                  onPageChange={setPage}
-                />
-              )}
-            </div>
+                {totalPages > 1 && (
+                  <TablePagination
+                    page={page}
+                    totalPages={totalPages}
+                    totalFiltered={totalFiltered}
+                    pageSize={10}
+                    onPageChange={setPage}
+                  />
+                )}
+              </div>
+            )}
           </QueryState>
         </TabsContent>
 
