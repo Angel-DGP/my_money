@@ -22,7 +22,7 @@ export const Default: Story = {
           <Dropdown.Item>Edit Profile</Dropdown.Item>
           <Dropdown.Item>Settings</Dropdown.Item>
           <Dropdown.Separator />
-          <Dropdown.Item className="text-error-600 data-[disabled]:text-text-muted" disabled>
+          <Dropdown.Item className="text-error-600 data-[disabled]:text-text-secondary" disabled>
             Delete Account
           </Dropdown.Item>
         </Dropdown.Content>

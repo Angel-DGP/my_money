@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsEnum, IsNumber, Min, Max, IsDateString, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum, IsNumber, Min, Max, IsDateString, IsOptional, IsBoolean } from 'class-validator';
 import { BudgetPeriod } from '../../domain/budget.entity';
 
 export class CreateBudgetDto {
@@ -27,4 +27,32 @@ export class CreateBudgetDto {
   @Max(100)
   @IsOptional()
   alert_threshold?: number;
+
+  @IsString()
+  @IsOptional()
+  soft_limit?: string;
+
+  @IsString()
+  @IsOptional()
+  hard_limit?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  carry_over?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  ignore_refunds?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  ignore_transfers?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  is_frozen?: boolean;
+
+  @IsString()
+  @IsOptional()
+  notes?: string;
 }

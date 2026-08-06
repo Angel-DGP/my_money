@@ -29,6 +29,11 @@ export class CreateCategoryUseCase {
         isSystem: false,
       }, parent);
     } else {
+      const existing = await this.categoryRepository.findByNameAndType(userId, dto.name, dto.type);
+      if (existing) {
+        throw new ValidationException('CAT_006', 'Category with this name and type already exists.', 'name');
+      }
+
       category = Category.create({
         userId,
         name: dto.name,

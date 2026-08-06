@@ -4,6 +4,7 @@ import { CategoriesController } from './presentation/categories.controller';
 import { CreateCategoryUseCase } from './application/use-cases/create-category.use-case';
 import { DeleteCategoryUseCase } from './application/use-cases/delete-category.use-case';
 import { ListCategoriesUseCase } from './application/use-cases/list-categories.use-case';
+import { UpdateCategoryUseCase } from './application/use-cases/update-category.use-case';
 import { PrismaCategoryRepository } from './infrastructure/prisma/prisma-category.repository';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { SessionsModule } from '../../sessions/sessions.module';
@@ -15,6 +16,7 @@ import { SessionsModule } from '../../sessions/sessions.module';
     CreateCategoryUseCase,
     DeleteCategoryUseCase,
     ListCategoriesUseCase,
+    UpdateCategoryUseCase,
     {
       provide: CATEGORY_REPOSITORY,
       useClass: PrismaCategoryRepository,

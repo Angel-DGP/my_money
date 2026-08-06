@@ -26,7 +26,7 @@ export const Default: Story = {
     return (
       <div className="max-w-xs flex flex-col gap-2">
         <MoneyInput {...args} value={value} onValueChange={setValue} />
-        <p className="text-xs text-text-muted mt-2">Parsed Number: {value}</p>
+        <p className="text-xs text-text-secondary mt-2">Parsed Number: {value}</p>
       </div>
     );
   },

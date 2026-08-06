@@ -1,8 +1,18 @@
-@import "@mymoney/ui/src/styles.css";
+@import "@mymoney/ui/styles.css";
+@source "../../../../packages/ui/src";
 
 /* Base font setup */
 body {
   font-family: var(--font-sans);
   background-color: var(--color-background);
   color: var(--color-text-primary);
+}
+
+/* Fix autofill overriding input transparent background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+    -webkit-text-fill-color: var(--theme-text-primary) !important;
 }

@@ -86,6 +86,14 @@ export class UpdateTransactionUseCase {
       transaction.updateDescription(dto.description, userId);
     }
 
+    if (dto.is_third_party !== undefined || dto.third_party_owner !== undefined || dto.third_party_note !== undefined) {
+      const isThirdParty = dto.is_third_party ?? transaction.isThirdParty;
+      const owner = dto.third_party_owner !== undefined ? dto.third_party_owner : transaction.thirdPartyOwner;
+      const note = dto.third_party_note !== undefined ? dto.third_party_note : transaction.thirdPartyNote;
+      
+      transaction.updateThirdPartyStatus(isThirdParty, owner, note, userId);
+    }
+
     await this.unitOfWork.execute(async () => {
       await this.transactionRepository.save(transaction);
       if (account) {

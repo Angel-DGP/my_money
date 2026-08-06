@@ -90,7 +90,7 @@ export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
         role="tablist"
         aria-orientation={orientation}
         className={cn(
-          'inline-flex items-center justify-center rounded-lg bg-bg-muted p-1 text-text-muted',
+          'inline-flex items-center justify-center rounded-lg bg-surface p-1 text-text-secondary',
           orientation === 'horizontal' ? 'h-10' : 'flex-col h-auto w-max',
           className
         )}
@@ -140,10 +140,10 @@ export const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>
         if (nextIndex >= triggerCollection.length) nextIndex = 0;
 
         const nextTab = triggerCollection[nextIndex];
-        nextTab.focus();
+        if(nextTab) nextTab.focus();
 
         if (activationMode === 'automatic') {
-          nextTab.click();
+          if(nextTab) nextTab.click();
         }
       }
     };
@@ -165,7 +165,7 @@ export const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>
         onKeyDown={handleKeyDown}
         className={cn(
           'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50',
-          'data-[state=active]:bg-bg-base data-[state=active]:text-text-base data-[state=active]:shadow-sm',
+          'data-[state=active]:bg-background data-[state=active]:text-text-primary data-[state=active]:shadow-sm',
           orientation === 'vertical' && 'w-full text-left justify-start',
           className
         )}

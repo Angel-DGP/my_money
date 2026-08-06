@@ -74,26 +74,53 @@
 
 @layer base {
   :root {
-    --color-background: var(--color-white);
-    --color-surface: var(--color-neutral-50);
-    --color-text-primary: var(--color-neutral-900);
-    --color-text-secondary: var(--color-neutral-500);
-    --color-border-subtle: var(--color-neutral-200);
+    --theme-bg: var(--color-neutral-50);
+    --theme-surface: #ffffff;
+    --theme-surface-2: var(--color-neutral-100);
+    --theme-text-primary: var(--color-neutral-900);
+    --theme-text-secondary: var(--color-neutral-600);
+    --theme-text-muted: var(--color-neutral-400);
+    --theme-border-subtle: var(--color-neutral-200);
+    --theme-border: var(--color-neutral-300);
+    
+    --theme-input-bg: #ffffff;
+    --theme-input-border: var(--color-neutral-300);
+    --theme-input-text: var(--color-neutral-900);
+    --theme-input-placeholder: var(--color-neutral-400);
+    --theme-input-focus: var(--color-primary-500);
   }
 
   .dark {
-    --color-background: var(--color-neutral-950);
-    --color-surface: var(--color-neutral-900);
-    --color-text-primary: var(--color-neutral-50);
-    --color-text-secondary: var(--color-neutral-400);
-    --color-border-subtle: var(--color-neutral-800);
+    --theme-bg: var(--color-neutral-950);
+    --theme-surface: var(--color-neutral-900);
+    --theme-surface-2: var(--color-neutral-800);
+    --theme-text-primary: var(--color-neutral-50);
+    --theme-text-secondary: var(--color-neutral-400);
+    --theme-text-muted: var(--color-neutral-500);
+    --theme-border-subtle: var(--color-neutral-800);
+    --theme-border: var(--color-neutral-700);
+    
+    --theme-input-bg: var(--color-neutral-800);
+    --theme-input-border: var(--color-neutral-700);
+    --theme-input-text: var(--color-neutral-50);
+    --theme-input-placeholder: var(--color-neutral-500);
+    --theme-input-focus: var(--color-primary-400);
   }
 }
 
 @theme {
-  --color-background: var(--color-background);
-  --color-surface: var(--color-surface);
-  --color-text-primary: var(--color-text-primary);
-  --color-text-secondary: var(--color-text-secondary);
-  --color-border-subtle: var(--color-border-subtle);
+  --color-background: var(--theme-bg);
+  --color-surface: var(--theme-surface);
+  --color-surface-2: var(--theme-surface-2);
+  --color-text-primary: var(--theme-text-primary);
+  --color-text-secondary: var(--theme-text-secondary);
+  --color-text-muted: var(--theme-text-muted);
+  --color-border-subtle: var(--theme-border-subtle);
+  --color-border: var(--theme-border);
+  
+  --color-input-bg: var(--theme-input-bg);
+  --color-input-border: var(--theme-input-border);
+  --color-input-text: var(--theme-input-text);
+  --color-input-placeholder: var(--theme-input-placeholder);
+  --color-input-focus: var(--theme-input-focus);
 }

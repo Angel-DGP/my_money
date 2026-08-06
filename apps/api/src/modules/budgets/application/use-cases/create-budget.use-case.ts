@@ -53,6 +53,13 @@ export class CreateBudgetUseCase {
       amount,
       startDate,
       alertThreshold: dto.alert_threshold,
+      softLimit: dto.soft_limit ? Money.of(dto.soft_limit, dto.currency as Currency) : undefined,
+      hardLimit: dto.hard_limit ? Money.of(dto.hard_limit, dto.currency as Currency) : undefined,
+      carryOver: dto.carry_over,
+      ignoreRefunds: dto.ignore_refunds,
+      ignoreTransfers: dto.ignore_transfers,
+      isFrozen: dto.is_frozen,
+      notes: dto.notes,
     });
 
     await this.unitOfWork.execute(async () => {

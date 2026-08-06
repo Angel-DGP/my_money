@@ -158,4 +158,20 @@ export class PrismaCategoryRepository implements ICategoryRepository {
       }
     });
   }
+
+  async findByNameAndType(userId: string, name: string, type: CategoryType): Promise<Category | null> {
+    const raw = await this.prisma.category.findFirst({
+      where: {
+        user_id: userId,
+        deleted_at: null,
+        type,
+        name: {
+          equals: name,
+          mode: 'insensitive',
+        },
+      },
+    });
+    if (!raw) return null;
+    return this.toDomain(raw);
+  }
 }

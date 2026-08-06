@@ -21,6 +21,8 @@ export class PrismaAccountRepository implements IAccountRepository {
       currentBalance: Money.of(raw.current_balance.toString(), raw.currency as Currency),
       color: raw.color,
       icon: raw.icon,
+      institutionId: raw.institution_id,
+      specificType: raw.specific_type,
       isActive: raw.is_active,
       createdAt: raw.created_at,
       createdBy: raw.created_by,
@@ -83,6 +85,8 @@ export class PrismaAccountRepository implements IAccountRepository {
       current_balance: account.currentBalance.value.toFixed(4),
       color: account.color,
       icon: account.icon,
+      institution_id: account.institutionId,
+      specific_type: account.specificType,
       is_active: account.isActive(),
       created_by: account.createdBy,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

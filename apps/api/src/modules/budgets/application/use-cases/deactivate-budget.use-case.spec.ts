@@ -5,10 +5,10 @@ import { BudgetStatus } from '../../domain/budget.entity';
 
 describe('DeactivateBudgetUseCase', () => {
   let useCase: DeactivateBudgetUseCase;
-  let mockBudgetRepo: unknown;
-  let mockUoW: unknown;
-  let mockEventEmitter: unknown;
-  let mockBudget: unknown;
+  let mockBudgetRepo: any;
+  let mockUoW: any;
+  let mockEventEmitter: any;
+  let mockBudget: any;
 
   beforeEach(() => {
     mockBudget = {

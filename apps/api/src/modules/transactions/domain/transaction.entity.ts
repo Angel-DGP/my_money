@@ -18,6 +18,13 @@ export interface TransactionProps {
   date: Date;
   transferPairId: string | null;
   isRecurring: boolean;
+  isThirdParty: boolean;
+  thirdPartyOwner: string | null;
+  thirdPartyNote: string | null;
+  paymentMethod: string | null;
+  cardId: string | null;
+  subscriptionId: string | null;
+  productId: string | null;
   createdAt: Date;
   createdBy: string | null;
   updatedAt: Date;
@@ -45,6 +52,13 @@ export class Transaction {
   get date(): Date { return this.props.date; }
   get transferPairId(): string | null { return this.props.transferPairId; }
   get isRecurring(): boolean { return this.props.isRecurring; }
+  get isThirdParty(): boolean { return this.props.isThirdParty; }
+  get thirdPartyOwner(): string | null { return this.props.thirdPartyOwner; }
+  get thirdPartyNote(): string | null { return this.props.thirdPartyNote; }
+  get paymentMethod(): string | null { return this.props.paymentMethod; }
+  get cardId(): string | null { return this.props.cardId; }
+  get subscriptionId(): string | null { return this.props.subscriptionId; }
+  get productId(): string | null { return this.props.productId; }
   get createdAt(): Date { return this.props.createdAt; }
   get createdBy(): string | null { return this.props.createdBy; }
   get updatedAt(): Date { return this.props.updatedAt; }
@@ -107,12 +121,13 @@ export class Transaction {
 
     Transaction.validateDate(props.date);
 
+    const now = new Date();
     const transaction = new Transaction({
       ...props,
       id: randomUUID(),
-      createdAt: new Date(),
+      createdAt: now,
       createdBy: props.userId,
-      updatedAt: new Date(),
+      updatedAt: now,
       updatedBy: props.userId,
       deletedAt: null,
       deletedBy: null,
@@ -237,6 +252,14 @@ export class Transaction {
       newCategoryId,
       occurredAt: new Date(),
     }));
+  }
+
+  public updateThirdPartyStatus(isThirdParty: boolean, owner: string | null, note: string | null, updatedBy: string): void {
+    this.props.isThirdParty = isThirdParty;
+    this.props.thirdPartyOwner = owner;
+    this.props.thirdPartyNote = note;
+    this.props.updatedAt = new Date();
+    this.props.updatedBy = updatedBy;
   }
 
   /**

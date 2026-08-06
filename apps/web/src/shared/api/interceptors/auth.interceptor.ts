@@ -1,5 +1,5 @@
-import { InternalAxiosRequestConfig } from 'axios';
-import { useSessionStore } from '../../../entities/session/model/store';
+import type { InternalAxiosRequestConfig } from 'axios';
+import { useSessionStore } from '@entities/session';
 
 export const authInterceptor = (config: InternalAxiosRequestConfig) => {
   const token = useSessionStore.getState().token;

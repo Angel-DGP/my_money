@@ -8,7 +8,7 @@ import { cn } from '../../../utils/cn';
 
 export interface TransactionBadge {
   text: string;
-  variant?: 'default' | 'success' | 'warning' | 'error';
+  variant?: 'neutral' | 'success' | 'warning' | 'error';
 }
 
 export interface TransactionCardProps extends Omit<React.ComponentPropsWithoutRef<typeof Card>, 'title'> {
@@ -69,25 +69,25 @@ export const TransactionCard = React.forwardRef<HTMLDivElement, TransactionCardP
     const amountToUse = variant === 'expense' ? -Math.abs(amount) : Math.abs(amount);
 
     return (
-      <Card ref={ref} padding="sm" className={cn('flex flex-row items-center gap-4', className)} {...props}>
+      <Card ref={ref} padding="md" className={cn('flex flex-row items-center gap-4', className)} {...props}>
         {/* Icon */}
         <div className={cn('flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center', iconBgClass)}>
-          <Icon name={icon} size="md" />
+          <Icon name={icon as any} size="md" />
         </div>
 
         {/* Content */}
         <div className="flex-grow min-w-0">
           <div className="flex justify-between items-start gap-4">
             <div className="truncate">
-              <h4 className="font-semibold text-text-base truncate">{title}</h4>
-              <p className="text-sm text-text-muted truncate">
+              <h4 className="font-semibold text-text-primary truncate">{title}</h4>
+              <p className="text-sm text-text-secondary truncate">
                 {category ? `${category} • ` : ''}{formattedDate}
               </p>
             </div>
             <div className="flex-shrink-0 text-right">
               <Amount 
                 value={amountToUse} 
-                variant={amountVariant} 
+                variant={amountVariant as any} 
                 signDisplay={signDisplay}
                 weight="bold"
                 size="md"
@@ -99,7 +99,7 @@ export const TransactionCard = React.forwardRef<HTMLDivElement, TransactionCardP
           {badges.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {badges.map((badge, idx) => (
-                <Badge key={idx} variant={badge.variant || 'default'}>
+                <Badge key={idx} variant={badge.variant || 'neutral' as any}>
                   {badge.text}
                 </Badge>
               ))}

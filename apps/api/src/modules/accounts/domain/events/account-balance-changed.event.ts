@@ -1,6 +1,6 @@
 import { DomainEvent, DomainEventProps } from '@mymoney/shared';
 
-export type BalanceChangeReason = 'TRANSACTION_CREATED' | 'TRANSACTION_DELETED' | 'TRANSACTION_UPDATED' | 'INITIAL_BALANCE_ADJUSTED';
+export type BalanceChangeReason = 'TRANSACTION_CREATED' | 'TRANSACTION_DELETED' | 'TRANSACTION_UPDATED' | 'INITIAL_BALANCE_ADJUSTED' | 'TRANSFER_IN' | 'TRANSFER_OUT';
 
 export interface AccountBalanceChangedEventProps extends Omit<DomainEventProps, 'aggregateId'> {
   accountId: string;

@@ -10,9 +10,9 @@ import { NotFoundException } from '@nestjs/common';
 import { GoalException } from '../../domain/exceptions/goal.exceptions';
 
 describe('Goals Use Cases', () => {
-  let mockGoalRepository: unknown;
-  let mockUnitOfWork: unknown;
-  let mockEventEmitter: unknown;
+  let mockGoalRepository: any;
+  let mockUnitOfWork: any;
+  let mockEventEmitter: any;
   const userId = 'user-1';
 
   beforeEach(() => {

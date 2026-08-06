@@ -1,10 +1,13 @@
-import { useMutation } from '@tanstack/react-query';
-import { AuthService } from '../../../shared/api/services/auth';
-import { useSessionStore } from '../../../entities/session/model/store';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { AuthService } from '@shared/api/services/auth';
+import { useSessionStore } from '@entities/session';
 import { toast } from '@mymoney/ui';
 
 export function useAuth() {
   const { setSession, clearSession } = useSessionStore();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const loginMutation = useMutation({
     mutationFn: AuthService.login,
@@ -25,10 +28,35 @@ export function useAuth() {
     },
   });
 
+  const registerMutation = useMutation({
+    mutationFn: AuthService.register,
+    onSuccess: (data) => {
+      setSession(data.token, data.user);
+      toast({
+        title: 'Registro exitoso',
+        description: `Bienvenido a MyMoney, ${data.user.name}`,
+        variant: 'success',
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Error de registro',
+        description: error.response?.data?.message || 'No se pudo crear la cuenta',
+        variant: 'error',
+      });
+    },
+  });
+
   const logoutMutation = useMutation({
     mutationFn: AuthService.logout,
     onSettled: () => {
+      // Orden garantizado:
+      // 1. Limpiar toda la caché de React Query (no quedan datos de otro usuario)
+      // 2. Limpiar la sesión del store (token, user)
+      // 3. Navegar al login
+      queryClient.clear();
       clearSession();
+      navigate('/login', { replace: true });
     },
   });
 
@@ -36,6 +64,9 @@ export function useAuth() {
     login: loginMutation.mutate,
     isLoggingIn: loginMutation.isPending,
     loginError: loginMutation.error,
+    register: registerMutation.mutate,
+    isRegistering: registerMutation.isPending,
+    registerError: registerMutation.error,
     logout: logoutMutation.mutate,
     isLoggingOut: logoutMutation.isPending,
   };

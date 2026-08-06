@@ -34,6 +34,15 @@ model User {
   audit_logs     AuditLog[]
   user_actions   UserAction[]
   settings       UserSetting?
+  notifications  Notification[]
+  auto_rules     AutoRule[]
+  
+  institutions    Institution[]
+  cards           Card[]
+  card_brands     CardBrand[]
+  card_types      CardType[]
+  subscriptions   Subscription[]
+  product_services ProductService[]
 
   deleter        User?     @relation("UserDeleter", fields: [deleted_by], references: [id], onDelete: SetNull)
   deleted_users  User[]    @relation("UserDeleter")
@@ -60,9 +69,14 @@ model Account {
   deleted_at      DateTime? @db.Timestamptz
   deleted_by      String?   @db.Uuid
 
+  institution_id  String?   @db.Uuid
+  specific_type   String?   @db.VarChar(100)
+
   user            User      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  institution     Institution? @relation(fields: [institution_id], references: [id], onDelete: SetNull)
   transactions    Transaction[]
   projections     BalanceProjection[]
+  goals           Goal[]
 
   @@index([user_id])
   @@map("accounts")
@@ -90,6 +104,8 @@ model Category {
   children    Category[] @relation("CategoryToCategory")
   transactions Transaction[]
   budgets     Budget[]
+  subscriptions Subscription[]
+  product_services ProductService[]
 
   @@index([user_id])
   @@index([parent_id])
@@ -109,6 +125,15 @@ model Transaction {
   date             DateTime  @db.Date
   transfer_pair_id String?   @db.Uuid
   is_recurring     Boolean   @default(false)
+  payment_method   String?   // CASH, CARD, TRANSFER, APP
+  card_id          String?   @db.Uuid
+  subscription_id  String?   @db.Uuid
+  product_id       String?   @db.Uuid
+
+  is_third_party   Boolean   @default(false)
+  third_party_owner String?  @db.VarChar(100)
+  third_party_note String?   @db.VarChar(500)
+
   recurring_rule   Json?
   metadata         Json      @default("{}")
 
@@ -122,6 +147,9 @@ model Transaction {
   user             User      @relation(fields: [user_id], references: [id], onDelete: Restrict)
   account          Account   @relation(fields: [account_id], references: [id], onDelete: Restrict)
   category         Category? @relation(fields: [category_id], references: [id], onDelete: Restrict)
+  card             Card?     @relation(fields: [card_id], references: [id], onDelete: SetNull)
+  subscription     Subscription? @relation(fields: [subscription_id], references: [id], onDelete: SetNull)
+  product          ProductService? @relation(fields: [product_id], references: [id], onDelete: SetNull)
   tags             TransactionTag[]
   attachments      Attachment[]
 
@@ -146,6 +174,14 @@ model Budget {
   start_date      DateTime @db.Date
   end_date        DateTime @db.Date
   // end_date es NOT NULL. Calculado por Budget.create() en dominio, nunca por el repositorio.
+
+  soft_limit        Decimal?  @db.Decimal(15, 4)
+  hard_limit        Decimal?  @db.Decimal(15, 4)
+  carry_over        Boolean   @default(false)
+  ignore_refunds    Boolean   @default(false)
+  ignore_transfers  Boolean   @default(true)
+  is_frozen         Boolean   @default(false)
+  notes             String?   @db.VarChar(1000)
 
   // Auditoría estándar — sin deleted_at ni deleted_by (Budget no usa soft-delete)
   created_at      DateTime @default(now()) @db.Timestamptz
@@ -175,6 +211,12 @@ model Goal {
   target_date     DateTime? @db.Date
   status          String    @default("ACTIVE") // CHECK (status IN ('ACTIVE','PAUSED','COMPLETED'))
 
+  description     String?   @db.VarChar(1000)
+  priority        Int       @default(3)      // 1=Alta 2=Media 3=Baja
+  color           String?   @db.Char(7)
+  icon            String?   @db.VarChar(50)
+  account_id      String?   @db.Uuid
+
   created_at      DateTime  @default(now()) @db.Timestamptz
   created_by      String?   @db.Uuid
   updated_at      DateTime  @updatedAt @db.Timestamptz
@@ -183,6 +225,7 @@ model Goal {
   deleted_by      String?   @db.Uuid
 
   user            User      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  account         Account?  @relation(fields: [account_id], references: [id], onDelete: SetNull)
 
   @@map("goals")
 }
@@ -292,6 +335,110 @@ model UserSetting {
   @@map("user_settings")
 }
 
+// ==========================================
+// CATÁLOGOS Y CONFIGURACIÓN FINANCIERA
+// ==========================================
+
+model Institution {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
+  name        String   @db.VarChar(100) // ej. Banco Pichincha, Guayaquil, Deuna
+  type        String   // BANK, WALLET, CRYPTO, OTHER
+  created_at  DateTime @default(now()) @db.Timestamptz
+  updated_at  DateTime @updatedAt @db.Timestamptz
+
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  accounts    Account[]
+  cards       Card[]
+
+  @@map("institutions")
+}
+
+model CardBrand {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
+  name        String   @db.VarChar(50) // ej. Visa, Mastercard
+  created_at  DateTime @default(now()) @db.Timestamptz
+  updated_at  DateTime @updatedAt @db.Timestamptz
+
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  cards       Card[]
+
+  @@map("card_brands")
+}
+
+model CardType {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
+  name        String   @db.VarChar(50) // ej. Crédito, Débito
+  created_at  DateTime @default(now()) @db.Timestamptz
+  updated_at  DateTime @updatedAt @db.Timestamptz
+
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  cards       Card[]
+
+  @@map("card_types")
+}
+
+model Card {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id        String   @db.Uuid
+  institution_id String   @db.Uuid
+  name           String   @db.VarChar(100) // ej. Visa Pacificard
+  brand_id       String   @db.Uuid
+  type_id        String   @db.Uuid
+  last_four      String   @db.Char(4)      // Últimos 4 dígitos
+  created_at     DateTime @default(now()) @db.Timestamptz
+  updated_at     DateTime @updatedAt @db.Timestamptz
+
+  user          User          @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  institution   Institution   @relation(fields: [institution_id], references: [id], onDelete: Restrict)
+  brand         CardBrand     @relation(fields: [brand_id], references: [id], onDelete: Restrict)
+  type          CardType      @relation(fields: [type_id], references: [id], onDelete: Restrict)
+  subscriptions Subscription[]
+  transactions  Transaction[]
+
+  @@map("cards")
+}
+
+model Subscription {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id           String    @db.Uuid
+  category_id       String    @db.Uuid
+  card_id           String?   @db.Uuid
+  name              String    @db.VarChar(100) // ej. Netflix, Gym
+  amount            Decimal   @db.Decimal(15, 4)
+  currency          String    @db.Char(3)
+  billing_cycle     String    // MONTHLY, YEARLY, QUARTERLY
+  next_billing_date DateTime  @db.Date
+  url               String?   @db.VarChar(500)
+  status            String    @default("ACTIVE") // ACTIVE, CANCELLED
+  created_at        DateTime  @default(now()) @db.Timestamptz
+  updated_at        DateTime  @updatedAt @db.Timestamptz
+
+  user         User          @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  category     Category      @relation(fields: [category_id], references: [id], onDelete: Restrict)
+  card         Card?         @relation(fields: [card_id], references: [id], onDelete: SetNull)
+  transactions Transaction[]
+
+  @@map("subscriptions")
+}
+
+model ProductService {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
+  category_id String   @db.Uuid
+  name        String   @db.VarChar(100) // ej. Supermaxi, Uber
+  created_at  DateTime @default(now()) @db.Timestamptz
+  updated_at  DateTime @updatedAt @db.Timestamptz
+
+  user         User          @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  category     Category      @relation(fields: [category_id], references: [id], onDelete: Restrict)
+  transactions Transaction[]
+
+  @@map("product_services")
+}
+
 model BalanceProjection {
   id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   account_id        String   @db.Uuid
@@ -317,4 +464,41 @@ model UserAction {
   user        User     @relation(fields: [user_id], references: [id], onDelete: Restrict)
 
   @@map("user_actions")
+}
+
+model Notification {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String    @db.Uuid
+  type        String    // CHECK (type IN ('ERROR','WARNING','SUCCESS','INFO','SYSTEM'))
+  title       String    @db.VarChar(200)
+  body        String?   @db.VarChar(1000)
+  entity_type String?   @db.VarChar(50)
+  entity_id   String?   @db.Uuid
+  action_url  String?   @db.VarChar(500)
+  read_at     DateTime? @db.Timestamptz
+  created_at  DateTime  @default(now()) @db.Timestamptz
+
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  @@index([user_id, created_at(sort: Desc)])
+  @@map("notifications")
+}
+
+model AutoRule {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id       String    @db.Uuid
+  name          String    @db.VarChar(100)
+  description   String?   @db.VarChar(500)
+  trigger_type  String    // e.g., 'INCOME_RECEIVED', 'BUDGET_THRESHOLD', 'MONTH_END'
+  conditions    Json?     // Evaluated conditions
+  action_type   String    // e.g., 'MOVE_TO_GOAL', 'RESERVE_AMOUNT', 'ALERT_USER'
+  action_params Json      // Action parameters
+  is_active     Boolean   @default(true)
+  created_at    DateTime  @default(now()) @db.Timestamptz
+  updated_at    DateTime  @updatedAt @db.Timestamptz
+
+  user          User      @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  @@index([user_id, is_active])
+  @@map("auto_rules")
 }

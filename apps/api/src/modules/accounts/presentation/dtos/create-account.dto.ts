@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsOptional, IsNotEmpty, Matches, IsNumberString } from 'class-validator';
+import { IsString, IsEnum, IsOptional, IsNotEmpty, Matches, IsNumberString, IsUUID } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { AccountType } from '../../domain/account-type.enum';
 import { Currency } from '@mymoney/shared';
@@ -30,4 +30,14 @@ export class CreateAccountDto {
   @IsOptional()
   @IsString()
   icon?: string;
+
+  @ApiPropertyOptional({ description: 'ID of the financial institution' })
+  @IsOptional()
+  @IsUUID()
+  institution_id?: string;
+
+  @ApiPropertyOptional({ description: 'Specific type, e.g. Ahorro Flexible' })
+  @IsOptional()
+  @IsString()
+  specific_type?: string;
 }

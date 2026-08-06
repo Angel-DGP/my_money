@@ -1,15 +1,13 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { randomUUID } from 'crypto';
 import { Money, IUnitOfWork, UNIT_OF_WORK, BalanceDelta } from '@mymoney/shared';
 import { ITransactionRepository, TRANSACTION_REPOSITORY } from '../../domain/transaction.repository.interface';
 import { Transaction } from '../../domain/transaction.entity';
-import { TransactionType } from '../../domain/transaction-type.enum';
-import { CreateTransferDto } from '../../presentation/dtos/create-transaction.dto';
-import { TransferPairDto, TransactionDto } from '../../presentation/dtos/transaction.dto';
+import { CreateTransferDto } from '../../presentation/dtos/create-transfer.dto';
+import { TransactionDto } from '../../presentation/dtos/transaction.dto';
 import { IAccountRepository, ACCOUNT_REPOSITORY } from '../../../accounts/domain/interfaces/account.repository.interface';
-import { TransferRequiresDifferentAccountsException } from '../../domain/exceptions/transaction.exceptions';
-
+import { TransactionType } from '../../domain/transaction-type.enum';
 
 @Injectable()
 export class CreateTransferUseCase {
@@ -23,80 +21,86 @@ export class CreateTransferUseCase {
     private readonly eventEmitter: EventEmitter2
   ) {}
 
-  async execute(userId: string, dto: CreateTransferDto): Promise<TransferPairDto> {
-    if (dto.source_account_id === dto.destination_account_id) {
-      throw new TransferRequiresDifferentAccountsException();
+  async execute(userId: string, dto: CreateTransferDto): Promise<{ data: TransactionDto[] }> {
+    if (dto.from_account_id === dto.to_account_id) {
+      throw new BadRequestException('Source and destination accounts must be different');
     }
 
-    const sourceAccount = await this.accountRepository.findById(dto.source_account_id, userId);
-    if (!sourceAccount) {
-      throw new NotFoundException('Source account not found');
+    const fromAccount = await this.accountRepository.findById(dto.from_account_id, userId);
+    if (!fromAccount) throw new NotFoundException('Source account not found');
+
+    const toAccount = await this.accountRepository.findById(dto.to_account_id, userId);
+    if (!toAccount) throw new NotFoundException('Destination account not found');
+
+    if (fromAccount.currency !== toAccount.currency) {
+      throw new BadRequestException('Accounts must have the same currency for transfer');
     }
 
-    const destinationAccount = await this.accountRepository.findById(dto.destination_account_id, userId);
-    if (!destinationAccount) {
-      throw new NotFoundException('Destination account not found');
-    }
-
-    const sourceAmount = Money.of(dto.amount, sourceAccount.currency);
-    const destinationAmount = Money.of(dto.destination_amount, destinationAccount.currency);
+    const amount = Money.of(dto.amount, fromAccount.currency);
     const date = new Date(dto.date);
     const transferPairId = randomUUID();
 
-    const sourceTransaction = Transaction.create({
+    const fromTransaction = Transaction.create({
       userId,
-      accountId: dto.source_account_id,
-      categoryId: null, // Transfers don't have categories by default
+      accountId: dto.from_account_id,
+      categoryId: null,
       type: TransactionType.EXPENSE,
-      amount: sourceAmount,
-      description: dto.description ?? 'Transferencia saliente',
+      amount,
+      description: dto.description ?? 'Transferencia enviada',
       date,
       transferPairId,
       isRecurring: false,
+      isThirdParty: false,
+      thirdPartyOwner: null,
+      thirdPartyNote: null,
+      paymentMethod: null,
+      cardId: null,
+      subscriptionId: null,
+      productId: null,
     });
 
-    const destinationTransaction = Transaction.create({
+    const toTransaction = Transaction.create({
       userId,
-      accountId: dto.destination_account_id,
+      accountId: dto.to_account_id,
       categoryId: null,
       type: TransactionType.INCOME,
-      amount: destinationAmount,
-      description: dto.description ?? 'Transferencia entrante',
+      amount,
+      description: dto.description ?? 'Transferencia recibida',
       date,
       transferPairId,
       isRecurring: false,
+      isThirdParty: false,
+      thirdPartyOwner: null,
+      thirdPartyNote: null,
+      paymentMethod: null,
+      cardId: null,
+      subscriptionId: null,
+      productId: null,
     });
 
-    // Update balances
-    const sourceDelta = BalanceDelta.decrease(sourceAmount);
-    const sourceBalanceEvent = sourceAccount.applyBalanceDelta(sourceDelta, 'TRANSACTION_CREATED');
+    const fromDelta = BalanceDelta.decrease(amount);
+    const toDelta = BalanceDelta.increase(amount);
 
-    const destinationDelta = BalanceDelta.increase(destinationAmount);
-    const destinationBalanceEvent = destinationAccount.applyBalanceDelta(destinationDelta, 'TRANSACTION_CREATED');
+    const fromBalanceChangeEvent = fromAccount.applyBalanceDelta(fromDelta, 'TRANSFER_OUT');
+    const toBalanceChangeEvent = toAccount.applyBalanceDelta(toDelta, 'TRANSFER_IN');
 
-    // Save everything atomically
     await this.unitOfWork.execute(async () => {
-      await this.transactionRepository.save(sourceTransaction);
-      await this.transactionRepository.save(destinationTransaction);
-      await this.accountRepository.save(sourceAccount);
-      await this.accountRepository.save(destinationAccount);
+      await this.transactionRepository.save(fromTransaction);
+      await this.transactionRepository.save(toTransaction);
+      await this.accountRepository.save(fromAccount);
+      await this.accountRepository.save(toAccount);
     });
 
-    // Emit all events
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    sourceTransaction.getDomainEvents().forEach((event: any) => this.eventEmitter.emit(event.type, event));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    destinationTransaction.getDomainEvents().forEach((event: any) => this.eventEmitter.emit(event.type, event));
-    this.eventEmitter.emit(sourceBalanceEvent.type, sourceBalanceEvent);
-    this.eventEmitter.emit(destinationBalanceEvent.type, destinationBalanceEvent);
-    
-    sourceTransaction.clearDomainEvents();
-    destinationTransaction.clearDomainEvents();
+    fromTransaction.getDomainEvents().forEach((event: any) => this.eventEmitter.emit(event.type, event));
+    toTransaction.getDomainEvents().forEach((event: any) => this.eventEmitter.emit(event.type, event));
+    this.eventEmitter.emit(fromBalanceChangeEvent.type, fromBalanceChangeEvent);
+    this.eventEmitter.emit(toBalanceChangeEvent.type, toBalanceChangeEvent);
+
+    fromTransaction.clearDomainEvents();
+    toTransaction.clearDomainEvents();
 
     return {
-      transfer_pair_id: transferPairId,
-      source_transaction: TransactionDto.fromDomain(sourceTransaction),
-      destination_transaction: TransactionDto.fromDomain(destinationTransaction),
+      data: [TransactionDto.fromDomain(fromTransaction), TransactionDto.fromDomain(toTransaction)]
     };
   }
 }

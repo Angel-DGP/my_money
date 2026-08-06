@@ -1,20 +1,24 @@
 import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, Request, ParseIntPipe, DefaultValuePipe, HttpCode, HttpStatus } from '@nestjs/common';
 import { CreateTransactionDto, UpdateTransactionDto } from '../presentation/dtos/create-transaction.dto';
+import { CreateTransferDto } from '../presentation/dtos/create-transfer.dto';
 import { TransactionDto, TransactionPaginatedResponseDto } from '../presentation/dtos/transaction.dto';
+import { ApiResponse } from '@mymoney/shared';
 import { CreateTransactionUseCase } from '../application/use-cases/create-transaction.use-case';
 import { UpdateTransactionUseCase } from '../application/use-cases/update-transaction.use-case';
 import { DeleteTransactionUseCase } from '../application/use-cases/delete-transaction.use-case';
 import { ListTransactionsUseCase } from '../application/use-cases/list-transactions.use-case';
-import { SessionGuard } from '../../../auth/session.guard';
+import { CreateTransferUseCase } from '../application/use-cases/create-transfer.use-case';
+import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 
-@UseGuards(SessionGuard)
+@UseGuards(JwtAuthGuard)
 @Controller({ path: 'transactions', version: '1' })
 export class TransactionsController {
   constructor(
     private readonly createTransactionUseCase: CreateTransactionUseCase,
     private readonly updateTransactionUseCase: UpdateTransactionUseCase,
     private readonly deleteTransactionUseCase: DeleteTransactionUseCase,
-    private readonly listTransactionsUseCase: ListTransactionsUseCase
+    private readonly listTransactionsUseCase: ListTransactionsUseCase,
+    private readonly createTransferUseCase: CreateTransferUseCase
   ) {}
 
   @Get()
@@ -45,10 +49,20 @@ export class TransactionsController {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @Request() req: any,
     @Body() dto: CreateTransactionDto
-  ): Promise<{ data: TransactionDto }> {
+  ): Promise<ApiResponse<TransactionDto>> {
     const userId = req.user.id;
     const data = await this.createTransactionUseCase.execute(userId, dto);
     return { data };
+  }
+
+  @Post('transfers')
+  async createTransfer(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    @Request() req: any,
+    @Body() dto: CreateTransferDto
+  ): Promise<ApiResponse<TransactionDto[]>> {
+    const userId = req.user.id;
+    return this.createTransferUseCase.execute(userId, dto);
   }
 
   @Patch(':id')
@@ -57,7 +71,7 @@ export class TransactionsController {
     @Request() req: any,
     @Param('id') id: string,
     @Body() dto: UpdateTransactionDto
-  ): Promise<{ data: TransactionDto }> {
+  ): Promise<ApiResponse<TransactionDto>> {
     const userId = req.user.id;
     const data = await this.updateTransactionUseCase.execute(id, userId, dto);
     return { data };

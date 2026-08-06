@@ -1,0 +1,63 @@
+name: Release Gate
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+jobs:
+  release-gate:
+    name: Release Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ── 1. Lint ───────────────────────────────────────────────
+      - name: Lint
+        run: pnpm -r lint
+        continue-on-error: false
+
+      # ── 2. TypeScript ─────────────────────────────────────────
+      - name: TypeScript (tsc --noEmit)
+        run: pnpm --filter web exec npx tsc --noEmit
+        continue-on-error: false
+
+      # ── 3. Circular dependencies ──────────────────────────────
+      - name: No circular dependencies (madge)
+        run: |
+          cd apps/web
+          npx madge --circular --extensions ts,tsx src/
+        continue-on-error: false
+
+      # ── 4. Tests ──────────────────────────────────────────────
+      - name: Tests
+        run: pnpm -r test
+        continue-on-error: false
+
+      # ── 5. Production build ───────────────────────────────────
+      - name: Production build
+        run: pnpm --filter web build
+        continue-on-error: false
+
+      # ── 6. Storybook build ────────────────────────────────────
+      - name: Storybook build
+        run: pnpm --filter @mymoney/ui build-storybook
+        continue-on-error: false

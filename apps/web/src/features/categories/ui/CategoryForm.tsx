@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Input, Label } from '@mymoney/ui';
-import type { Category, CreateCategoryDto, UpdateCategoryDto, CategoryType } from '../../../entities/category/types/category.types';
+import { Button, Input, Label, Select, FormLayout, PageContainer } from '@mymoney/ui';
+import type { Category, CreateCategoryDto, UpdateCategoryDto, CategoryType } from '@entities/category';
 
 interface CategoryFormProps {
-  initialData?: Category;
+  initialData?: Category | null;
   onSubmit: (data: CreateCategoryDto | UpdateCategoryDto) => void;
   onCancel: () => void;
   isLoading?: boolean;
@@ -33,41 +33,43 @@ export function CategoryForm({ initialData, onSubmit, onCancel, isLoading }: Cat
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-1">
+    <FormLayout onSubmit={handleSubmit}>
+      <div className="col-span-12 space-y-1">
         <Label htmlFor="name">Nombre de la categoría</Label>
         <Input 
           id="name" 
+          name="name"
           placeholder="Ej: Alimentación" 
           value={name} 
           onChange={(e) => setName(e.target.value)} 
+          minLength={2}
+          maxLength={50}
           required 
         />
       </div>
 
-      <div className="space-y-1">
-        <Label htmlFor="type">Tipo</Label>
-        <select 
+      <div className="col-span-12 space-y-1">
+        <Select 
           id="type"
-          className="w-full h-10 px-3 py-2 bg-bg-base border border-border-base rounded-md text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-text-base transition-colors"
+          name="type"
+          label="Tipo"
           value={type}
           onChange={(e) => setType(e.target.value as CategoryType)}
-          disabled={!!initialData} // Usually you don't change the type of an existing category
+          disabled={!!initialData}
         >
           <option value="EXPENSE">Gasto</option>
           <option value="INCOME">Ingreso</option>
-          <option value="TRANSFER">Transferencia</option>
-        </select>
+        </Select>
       </div>
 
-      <div className="pt-4 flex justify-end gap-2 border-t border-border-subtle mt-6">
-        <Button variant="ghost" type="button" onClick={onCancel} disabled={isLoading}>
+      <PageContainer.Footer className="col-span-12">
+        <Button type="button" variant="outline" onClick={onCancel} disabled={!!isLoading}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={!name.trim() || isLoading}>
-          {isLoading ? 'Guardando...' : initialData ? 'Guardar Cambios' : 'Crear Categoría'}
+        <Button type="submit" disabled={!!isLoading}>
+          {isLoading ? 'Guardando...' : initialData ? 'Actualizar Categoría' : 'Crear Categoría'}
         </Button>
-      </div>
-    </form>
+      </PageContainer.Footer>
+    </FormLayout>
   );
 }

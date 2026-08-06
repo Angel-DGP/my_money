@@ -20,7 +20,7 @@ export interface AmountProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantStyles = {
-  neutral: 'text-text-base',
+  neutral: 'text-text-primary',
   income: 'text-success-600',
   expense: 'text-error-600',
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import { Icon, Button } from '@mymoney/ui';
 
 interface QueryStateProps<T> {
-  data: T[] | T | null | undefined;
+  data: T | null | undefined;
   isLoading: boolean;
   isError: boolean;
   error?: Error | null;
@@ -27,7 +27,7 @@ export function QueryState<T>({
   if (isLoading) {
     return (
       <div className="flex justify-center p-12">
-        <Icon name="loader-2" className="animate-spin text-brand-500" size="lg" />
+        <Icon name="loader-2" className="animate-spin text-primary-500" size="lg" />
       </div>
     );
   }
@@ -52,10 +52,10 @@ export function QueryState<T>({
 
   if (isEmpty) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center bg-bg-base border border-border-subtle rounded-lg">
-        <Icon name={emptyIcon} size="lg" className="text-text-muted mb-4" />
-        <h3 className="text-lg font-medium text-text-base">{emptyTitle}</h3>
-        <p className="text-sm text-text-muted mt-1">{emptyDescription}</p>
+      <div className="flex flex-col items-center justify-center p-12 text-center bg-background border border-border-subtle rounded-lg">
+        <Icon name={emptyIcon} size="lg" className="text-text-secondary mb-4" />
+        <h3 className="text-lg font-medium text-text-primary">{emptyTitle}</h3>
+        <p className="text-sm text-text-secondary mt-1">{emptyDescription}</p>
       </div>
     );
   }

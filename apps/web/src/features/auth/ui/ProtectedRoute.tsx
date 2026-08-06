@@ -1,6 +1,5 @@
-import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useSessionStore } from '../../../entities/session/model/store';
+import { useSessionStore } from '@entities/session';
 
 export function ProtectedRoute() {
   const isAuthenticated = useSessionStore((state) => state.isAuthenticated);

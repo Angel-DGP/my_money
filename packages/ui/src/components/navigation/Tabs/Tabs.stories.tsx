@@ -61,15 +61,15 @@ export const Vertical: Story = {
       <div className="flex-1">
         <TabsContent value="general">
           <h3 className="text-lg font-medium">General Settings</h3>
-          <p className="text-sm text-text-muted mt-2">Update your primary preferences.</p>
+          <p className="text-sm text-text-secondary mt-2">Update your primary preferences.</p>
         </TabsContent>
         <TabsContent value="billing">
           <h3 className="text-lg font-medium">Billing Information</h3>
-          <p className="text-sm text-text-muted mt-2">Manage your payment methods.</p>
+          <p className="text-sm text-text-secondary mt-2">Manage your payment methods.</p>
         </TabsContent>
         <TabsContent value="notifications">
           <h3 className="text-lg font-medium">Notifications</h3>
-          <p className="text-sm text-text-muted mt-2">Configure email alerts.</p>
+          <p className="text-sm text-text-secondary mt-2">Configure email alerts.</p>
         </TabsContent>
       </div>
     </Tabs>

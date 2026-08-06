@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { TransactionCard } from './TransactionCard';
 import { Dropdown } from '../../overlay/Dropdown';
 import { Icon } from '../../core/Icon';
-import React from 'react';
 
 const meta = {
   title: 'Composite/TransactionCard',
@@ -79,7 +78,7 @@ export const WithBadgesAndActions: Story = {
     actions: (
       <Dropdown.Root>
         <Dropdown.Trigger>
-          <button className="p-2 text-text-muted hover:text-text-base hover:bg-surface-100 rounded-full transition-colors">
+          <button className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-100 rounded-full transition-colors">
             <Icon name="more-horizontal" size="sm" />
           </button>
         </Dropdown.Trigger>

@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TransactionsController } from './presentation/transactions.controller';
-import { TransfersController } from './presentation/transfers.controller';
 import { CreateTransactionUseCase } from './application/use-cases/create-transaction.use-case';
 import { UpdateTransactionUseCase } from './application/use-cases/update-transaction.use-case';
 import { DeleteTransactionUseCase } from './application/use-cases/delete-transaction.use-case';
 import { ListTransactionsUseCase } from './application/use-cases/list-transactions.use-case';
 import { CreateTransferUseCase } from './application/use-cases/create-transfer.use-case';
-import { DeleteTransferUseCase } from './application/use-cases/delete-transfer.use-case';
 import { PrismaTransactionRepository } from './infrastructure/prisma/prisma-transaction.repository';
 import { TRANSACTION_REPOSITORY } from './domain/transaction.repository.interface';
 import { AccountsModule } from '../accounts/accounts.module';
@@ -21,14 +19,13 @@ import { SessionsModule } from '../../sessions/sessions.module';
     AuthModule,
     SessionsModule,
   ],
-  controllers: [TransactionsController, TransfersController],
+  controllers: [TransactionsController],
   providers: [
     CreateTransactionUseCase,
     UpdateTransactionUseCase,
     DeleteTransactionUseCase,
     ListTransactionsUseCase,
     CreateTransferUseCase,
-    DeleteTransferUseCase,
     {
       provide: TRANSACTION_REPOSITORY,
       useClass: PrismaTransactionRepository,

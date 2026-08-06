@@ -12,7 +12,7 @@ import {
   HttpStatus
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse,  ApiCookieAuth } from '@nestjs/swagger';
-import { SessionGuard } from '../../../auth/session.guard';
+import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { 
   CreateAccountUseCase,
   UpdateAccountUseCase,
@@ -21,10 +21,11 @@ import {
   ListAccountsUseCase
 } from '../application/use-cases';
 import { CreateAccountDto, UpdateAccountDto, AccountDto } from '../presentation/dtos';
+import { ApiResponse as CustomApiResponse } from '@mymoney/shared';
 
 @ApiTags('Accounts')
 @ApiCookieAuth('session_id')
-@UseGuards(SessionGuard)
+@UseGuards(JwtAuthGuard)
 @Controller({ path: 'accounts', version: '1' })
 export class AccountsController {
   constructor(
@@ -39,27 +40,30 @@ export class AccountsController {
   @ApiOperation({ summary: 'List all active accounts for the authenticated user' })
   @ApiResponse({ status: 200, description: 'Return all accounts.', type: [AccountDto] })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async findAll(@Request() req: any) {
+  async findAll(@Request() req: any): Promise<CustomApiResponse<AccountDto[]>> {
     const userId = req.user.id;
-    return this.listAccountsUseCase.execute(userId);
+    const data = await this.listAccountsUseCase.execute(userId);
+    return { data };
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get account details' })
   @ApiResponse({ status: 200, description: 'Return account details.', type: AccountDto })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async findOne(@Param('id') id: string, @Request() req: any) {
+  async findOne(@Param('id') id: string, @Request() req: any): Promise<CustomApiResponse<AccountDto>> {
     const userId = req.user.id;
-    return this.getAccountUseCase.execute(id, userId);
+    const data = await this.getAccountUseCase.execute(id, userId);
+    return { data };
   }
 
   @Post()
   @ApiOperation({ summary: 'Create a new account' })
   @ApiResponse({ status: 201, description: 'The account has been successfully created.', type: AccountDto })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async create(@Body() createAccountDto: CreateAccountDto, @Request() req: any) {
+  async create(@Body() createAccountDto: CreateAccountDto, @Request() req: any): Promise<CustomApiResponse<AccountDto>> {
     const userId = req.user.id;
-    return this.createAccountUseCase.execute(userId, createAccountDto);
+    const data = await this.createAccountUseCase.execute(userId, createAccountDto);
+    return { data };
   }
 
   @Patch(':id')
@@ -68,11 +72,12 @@ export class AccountsController {
   async update(
     @Param('id') id: string, 
     @Body() updateAccountDto: UpdateAccountDto, 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @Request() req: any
-  ) {
+  ): Promise<CustomApiResponse<AccountDto>> {
     const userId = req.user.id;
-    return this.updateAccountUseCase.execute(id, userId, updateAccountDto);
+    const data = await this.updateAccountUseCase.execute(id, userId, updateAccountDto);
+    return { data };
   }
 
   @Delete(':id')

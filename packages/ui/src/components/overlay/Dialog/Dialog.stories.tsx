@@ -23,13 +23,13 @@ export const Default: Story = {
         <Modal>
           <ModalHeader>
             <Dialog.Title className="text-xl font-bold">Edit profile</Dialog.Title>
-            <Dialog.Description className="text-sm text-text-muted mt-2">
+            <Dialog.Description className="text-sm text-text-secondary mt-2">
               Make changes to your profile here. Click save when you're done.
             </Dialog.Description>
           </ModalHeader>
           
           <div className="py-4">
-            <div className="bg-bg-muted p-4 rounded-md text-sm">
+            <div className="bg-surface p-4 rounded-md text-sm">
               Form content goes here...
             </div>
           </div>

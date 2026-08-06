@@ -56,6 +56,13 @@ export class CreateTransactionUseCase {
       date,
       transferPairId: null,
       isRecurring: false, // Default for MVP
+      isThirdParty: dto.is_third_party ?? false,
+      thirdPartyOwner: dto.third_party_owner ?? null,
+      thirdPartyNote: dto.third_party_note ?? null,
+      paymentMethod: dto.payment_method ?? null,
+      cardId: dto.card_id ?? null,
+      subscriptionId: dto.subscription_id ?? null,
+      productId: dto.product_id ?? null,
     });
 
     // Update account balance synchronously within the use case to ensure it participates in UoW

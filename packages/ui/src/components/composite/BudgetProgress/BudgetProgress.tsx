@@ -50,19 +50,19 @@ export const BudgetProgress = React.forwardRef<HTMLDivElement, BudgetProgressPro
               weight="bold" 
               variant={isOverBudget ? 'expense' : 'neutral'} 
             />
-            <span className="text-sm text-text-muted">de</span>
+            <span className="text-sm text-text-secondary">de</span>
             <Amount 
               value={limit} 
               currency={currency || 'USD'} 
               size="sm" 
               weight="normal" 
-              className="text-text-muted" 
+              className="text-text-secondary" 
             />
           </div>
           {showPercentage && (
             <span className={cn(
               "text-sm font-medium",
-              isOverBudget ? "text-error-600" : "text-text-muted"
+              isOverBudget ? "text-error-600" : "text-text-secondary"
             )}>
               {Math.round(percentage)}%
             </span>
@@ -83,7 +83,7 @@ export const BudgetProgress = React.forwardRef<HTMLDivElement, BudgetProgressPro
         {/* Footer: Remaining amount */}
         {showRemaining && (
           <div className="flex justify-between items-center text-xs">
-            <span className="text-text-muted">
+            <span className="text-text-secondary">
               {isOverBudget ? 'Excedido por' : 'Disponible'}
             </span>
             <Amount 

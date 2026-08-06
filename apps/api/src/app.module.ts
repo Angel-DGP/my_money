@@ -12,6 +12,11 @@ import { CategoriesModule } from "./modules/categories/categories.module";
 import { TransactionsModule } from "./modules/transactions/transactions.module";
 import { BudgetsModule } from "./modules/budgets/budgets.module";
 import { GoalsModule } from "./modules/goals/goals.module";
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { InsightsModule } from './modules/insights/insights.module';
+import { AutomationsModule } from './modules/automations/automations.module';
+import { CatalogsModule } from './modules/catalogs/catalogs.module';
 
 @Module({
   imports: [
@@ -26,6 +31,11 @@ import { GoalsModule } from "./modules/goals/goals.module";
     TransactionsModule,
     BudgetsModule,
     GoalsModule,
+    NotificationsModule,
+    DashboardModule,
+    InsightsModule,
+    AutomationsModule,
+    CatalogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

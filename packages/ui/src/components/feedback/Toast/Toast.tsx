@@ -89,10 +89,10 @@ export function Toaster() {
 }
 
 const variantStyles: Record<NonNullable<ToastProps['variant']>, { bg: string; icon: IconName; iconClass: string }> = {
-  default: { bg: 'bg-bg-base border-border-subtle', icon: 'info', iconClass: 'text-text-base' },
-  success: { bg: 'bg-success-50 border-success-200', icon: 'check-circle', iconClass: 'text-success-600' },
-  error: { bg: 'bg-error-50 border-error-200', icon: 'alert-circle', iconClass: 'text-error-600' },
-  warning: { bg: 'bg-warning-50 border-warning-200', icon: 'alert-triangle', iconClass: 'text-warning-600' },
+  default: { bg: 'bg-surface/90 dark:bg-surface/80 backdrop-blur-xl border-border-subtle text-text-primary', icon: 'info', iconClass: 'text-text-primary' },
+  success: { bg: 'bg-success-50/90 border-success-200 dark:bg-success-950/80 dark:border-success-900 backdrop-blur-xl', icon: 'check-circle', iconClass: 'text-success-600 dark:text-success-500' },
+  error: { bg: 'bg-error-50/90 border-error-200 dark:bg-error-950/80 dark:border-error-900 backdrop-blur-xl', icon: 'alert-circle', iconClass: 'text-error-600 dark:text-error-500' },
+  warning: { bg: 'bg-warning-50/90 border-warning-200 dark:bg-warning-950/80 dark:border-warning-900 backdrop-blur-xl', icon: 'alert-triangle', iconClass: 'text-warning-600 dark:text-warning-500' },
 };
 
 const ToastItem: React.FC<{ toast: ToastProps; onDismiss: () => void }> = ({ toast, onDismiss }) => {
@@ -102,7 +102,7 @@ const ToastItem: React.FC<{ toast: ToastProps; onDismiss: () => void }> = ({ toa
     <div
       role="alert"
       className={cn(
-        'group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-4 shadow-lg transition-all animate-in slide-in-from-bottom-full mt-4',
+        'group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-2xl border p-4 shadow-lg transition-all animate-in slide-in-from-bottom-full mt-4',
         style.bg
       )}
     >
@@ -111,9 +111,9 @@ const ToastItem: React.FC<{ toast: ToastProps; onDismiss: () => void }> = ({ toa
           <Icon name={style.icon} className={cn('mt-0.5', style.iconClass)} />
         )}
         <div className="flex flex-col gap-1">
-          <div className="text-sm font-semibold text-text-base">{toast.title}</div>
+          <div className="text-sm font-semibold text-text-primary">{toast.title}</div>
           {toast.description && (
-            <div className="text-sm opacity-90 text-text-muted">{toast.description}</div>
+            <div className="text-sm opacity-90 text-text-secondary">{toast.description}</div>
           )}
         </div>
       </div>
@@ -133,7 +133,7 @@ const ToastItem: React.FC<{ toast: ToastProps; onDismiss: () => void }> = ({ toa
 
       <button
         onClick={onDismiss}
-        className="absolute right-2 top-2 rounded-md p-1 text-text-muted/50 opacity-0 transition-opacity hover:text-text-muted focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100"
+        className="absolute right-2 top-2 rounded-md p-1 text-text-secondary/50 opacity-0 transition-opacity hover:text-text-secondary focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100"
       >
         <Icon name="x" size="xs" />
         <span className="sr-only">Cerrar</span>

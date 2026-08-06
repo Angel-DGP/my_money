@@ -22,6 +22,8 @@ export interface CreateAccountProps {
   name: string;
   color?: string | null;
   icon?: string | null;
+  institutionId?: string | null;
+  specificType?: string | null;
 }
 
 export interface ReconstituteAccountProps extends CreateAccountProps {
@@ -46,6 +48,8 @@ export class Account {
   private _name: string;
   private _color: string | null;
   private _icon: string | null;
+  private _institutionId: string | null;
+  private _specificType: string | null;
   private _isActive: boolean;
 
   // Audit fields
@@ -66,6 +70,8 @@ export class Account {
     this._name = props.name;
     this._color = props.color ?? null;
     this._icon = props.icon ?? null;
+    this._institutionId = props.institutionId ?? null;
+    this._specificType = props.specificType ?? null;
     this._isActive = props.isActive;
 
     this.createdAt = props.createdAt;
@@ -213,5 +219,13 @@ export class Account {
 
   get icon(): string | null {
     return this._icon;
+  }
+
+  get institutionId(): string | null {
+    return this._institutionId;
+  }
+
+  get specificType(): string | null {
+    return this._specificType;
   }
 }

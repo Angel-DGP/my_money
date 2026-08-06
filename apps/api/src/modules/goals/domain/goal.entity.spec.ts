@@ -1,7 +1,7 @@
 import { Goal } from './goal.entity';
 import { GoalStatus } from './goal-status.enum';
 import { GoalException } from './exceptions/goal.exceptions';
-import { Money } from '@mymoney/shared';
+import { Money, Currency } from '@mymoney/shared';
 import { GoalCompletedEvent } from './events/goal-completed.event';
 import { GoalProgressUpdatedEvent } from './events/goal-progress-updated.event';
 

@@ -9,7 +9,17 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
 apiClient.interceptors.request.use(authInterceptor);
-apiClient.interceptors.response.use((res) => res, errorInterceptor);
+apiClient.interceptors.response.use((res) => {
+  if (res.data && typeof res.data === 'object' && 'data' in res.data) {
+    const { data, meta } = res.data;
+    res.data = data;
+    if (meta) {
+      (res as any).meta = meta;
+    }
+  }
+  return res;
+}, errorInterceptor);

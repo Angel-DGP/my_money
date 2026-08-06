@@ -12,6 +12,13 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new DomainExceptionFilter());
 
+  app.setGlobalPrefix('api/v1');
+  
+  app.enableCors({
+    origin: ['http://localhost:5173'], // Vite default port
+    credentials: true,
+  });
+
   const config = new DocumentBuilder()
     .setTitle('MyMoney API')
     .setDescription('The MyMoney MVP API')

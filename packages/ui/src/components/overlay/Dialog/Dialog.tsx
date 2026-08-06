@@ -2,7 +2,7 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { Slot } from '../../../utils/slot';
 import { KeyboardKeys } from '../../../utils/keyboard';
-import { createDataState } from '../../../utils/dataAttributes';
+
 
 export interface DialogContextValue {
   open: boolean;

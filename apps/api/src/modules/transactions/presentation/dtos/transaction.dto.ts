@@ -13,8 +13,13 @@ export class TransactionDto {
   amount!: MoneyDto;
   date!: string;
   description!: string | null;
-  is_transfer!: boolean;
-
+  is_third_party!: boolean;
+  third_party_owner!: string | null;
+  third_party_note!: string | null;
+  payment_method!: string | null;
+  card_id!: string | null;
+  subscription_id!: string | null;
+  product_id!: string | null;
   static fromDomain(entity: Transaction): TransactionDto {
     return {
       id: entity.id,
@@ -27,15 +32,15 @@ export class TransactionDto {
       },
       date: entity.date.toISOString().split('T')[0],
       description: entity.description,
-      is_transfer: entity.isTransfer,
+      is_third_party: entity.isThirdParty,
+      third_party_owner: entity.thirdPartyOwner,
+      third_party_note: entity.thirdPartyNote,
+      payment_method: entity.paymentMethod,
+      card_id: entity.cardId,
+      subscription_id: entity.subscriptionId,
+      product_id: entity.productId,
     };
   }
-}
-
-export class TransferPairDto {
-  transfer_pair_id!: string;
-  source_transaction!: TransactionDto;
-  destination_transaction!: TransactionDto;
 }
 
 export class TransactionPaginatedResponseDto {

@@ -28,6 +28,13 @@ export interface CreateBudgetProps {
   amount: Money;
   startDate: Date;
   alertThreshold?: number;
+  softLimit?: Money;
+  hardLimit?: Money;
+  carryOver?: boolean;
+  ignoreRefunds?: boolean;
+  ignoreTransfers?: boolean;
+  isFrozen?: boolean;
+  notes?: string;
 }
 
 export interface BudgetProps {
@@ -41,6 +48,13 @@ export interface BudgetProps {
   alertThreshold: number;
   executedAmount: Money;
   status: BudgetStatus;
+  softLimit?: Money;
+  hardLimit?: Money;
+  carryOver: boolean;
+  ignoreRefunds: boolean;
+  ignoreTransfers: boolean;
+  isFrozen: boolean;
+  notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -64,8 +78,59 @@ export class Budget {
   get alertThreshold(): number { return this.props.alertThreshold; }
   get executedAmount(): Money { return this.props.executedAmount; }
   get status(): BudgetStatus { return this.props.status; }
+  get softLimit(): Money | undefined { return this.props.softLimit; }
+  get hardLimit(): Money | undefined { return this.props.hardLimit; }
+  get carryOver(): boolean { return this.props.carryOver; }
+  get ignoreRefunds(): boolean { return this.props.ignoreRefunds; }
+  get ignoreTransfers(): boolean { return this.props.ignoreTransfers; }
+  get isFrozen(): boolean { return this.props.isFrozen; }
+  get notes(): string | undefined { return this.props.notes; }
   get createdAt(): Date { return this.props.createdAt; }
   get updatedAt(): Date { return this.props.updatedAt; }
+
+  // Virtual Computed Properties
+  public get durationInDays(): number {
+    const timeDiff = this.props.endDate.getTime() - this.props.startDate.getTime();
+    return Math.max(1, Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1); // +1 to include both start and end dates
+  }
+
+  public get daysElapsed(): number {
+    const today = new Date();
+    if (today < this.props.startDate) return 0;
+    if (today > this.props.endDate) return this.durationInDays;
+    const timeDiff = today.getTime() - this.props.startDate.getTime();
+    return Math.floor(timeDiff / (1000 * 3600 * 24)) + 1;
+  }
+
+  public get dailyExpectedVelocity(): Money {
+    if (this.durationInDays === 0) return Money.zero(this.props.amount.currency);
+    return Money.of(this.props.amount.value.div(this.durationInDays), this.props.amount.currency);
+  }
+
+  public get dailyActualVelocity(): Money {
+    const elapsed = this.daysElapsed;
+    if (elapsed === 0) return Money.zero(this.props.executedAmount.currency);
+    return Money.of(this.props.executedAmount.value.div(elapsed), this.props.executedAmount.currency);
+  }
+
+  public get projectedEndAmount(): Money {
+    if (this.daysElapsed === 0) return Money.zero(this.props.amount.currency);
+    const daily = this.dailyActualVelocity;
+    return Money.of(daily.value.mul(this.durationInDays), daily.currency);
+  }
+
+  public get statusIndicator(): 'ACCELERATED' | 'NORMAL' | 'SLOW' {
+    const projected = this.projectedEndAmount;
+    // Accelerated if projected exceeds budget amount
+    if (projected.value.gt(this.props.amount.value)) {
+      return 'ACCELERATED';
+    }
+    // Slow if projected is less than 80% of budget amount
+    if (projected.value.lt(this.props.amount.value.mul(0.8))) {
+      return 'SLOW';
+    }
+    return 'NORMAL';
+  }
 
   // Events
   public getDomainEvents(): unknown[] {
@@ -116,6 +181,13 @@ export class Budget {
       alertThreshold,
       executedAmount: Money.zero(props.amount.currency),
       status: BudgetStatus.ACTIVE,
+      softLimit: props.softLimit,
+      hardLimit: props.hardLimit,
+      carryOver: props.carryOver ?? false,
+      ignoreRefunds: props.ignoreRefunds ?? false,
+      ignoreTransfers: props.ignoreTransfers ?? true,
+      isFrozen: props.isFrozen ?? false,
+      notes: props.notes,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -144,6 +216,29 @@ export class Budget {
       throw new BudgetNotActiveException();
     }
     this.props.alertThreshold = threshold;
+    this.props.updatedAt = new Date();
+  }
+
+  public updateSettings(settings: {
+    softLimit?: Money;
+    hardLimit?: Money;
+    carryOver?: boolean;
+    ignoreRefunds?: boolean;
+    ignoreTransfers?: boolean;
+    isFrozen?: boolean;
+    notes?: string;
+  }): void {
+    if (this.props.status !== BudgetStatus.ACTIVE) {
+      throw new BudgetNotActiveException();
+    }
+    if (settings.softLimit !== undefined) this.props.softLimit = settings.softLimit;
+    if (settings.hardLimit !== undefined) this.props.hardLimit = settings.hardLimit;
+    if (settings.carryOver !== undefined) this.props.carryOver = settings.carryOver;
+    if (settings.ignoreRefunds !== undefined) this.props.ignoreRefunds = settings.ignoreRefunds;
+    if (settings.ignoreTransfers !== undefined) this.props.ignoreTransfers = settings.ignoreTransfers;
+    if (settings.isFrozen !== undefined) this.props.isFrozen = settings.isFrozen;
+    if (settings.notes !== undefined) this.props.notes = settings.notes;
+    
     this.props.updatedAt = new Date();
   }
 
@@ -228,7 +323,16 @@ export class Budget {
   }
 
   public executionPercentage(): number {
-    return this.props.executedAmount.value.div(this.props.amount.value).mul(100).toNumber();
+    return Number(
+      this.props.executedAmount.value
+        .div(this.props.amount.value)
+        .mul(100)
+        .toFixed(2)
+    );
+  }
+
+  public isFrozenState(): boolean {
+    return this.props.isFrozen;
   }
 
   public remainingAmount(): Money {

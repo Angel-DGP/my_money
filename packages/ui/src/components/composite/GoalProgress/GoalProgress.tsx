@@ -50,13 +50,13 @@ export const GoalProgress = React.forwardRef<HTMLDivElement, GoalProgressProps>(
               weight="bold" 
               variant={isGoalReached ? 'income' : 'neutral'} 
             />
-            <span className="text-sm text-text-muted">de</span>
+            <span className="text-sm text-text-secondary">de</span>
             <Amount 
               value={target} 
               currency={currency || 'USD'} 
               size="sm" 
               weight="normal" 
-              className="text-text-muted" 
+              className="text-text-secondary" 
             />
           </div>
           {showPercentage && (
@@ -83,7 +83,7 @@ export const GoalProgress = React.forwardRef<HTMLDivElement, GoalProgressProps>(
         {/* Footer: Remaining amount */}
         {showRemaining && (
           <div className="flex justify-between items-center text-xs">
-            <span className="text-text-muted">
+            <span className="text-text-secondary">
               {isGoalReached ? 'Meta completada' : 'Faltan'}
             </span>
             {!isGoalReached && (

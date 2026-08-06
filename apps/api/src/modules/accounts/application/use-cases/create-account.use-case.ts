@@ -30,6 +30,8 @@ export class CreateAccountUseCase {
       initialBalance,
       color: dto.color,
       icon: dto.icon,
+      institutionId: dto.institution_id,
+      specificType: dto.specific_type,
     });
 
     await this.accountRepository.save(account);

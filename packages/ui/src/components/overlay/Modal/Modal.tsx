@@ -28,7 +28,7 @@ export const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
           aria-labelledby={titleId}
           aria-describedby={descriptionId}
           className={cn(
-            'relative z-50 grid w-full max-w-lg gap-4 rounded-xl border border-border-subtle bg-bg-base p-6 shadow-lg shadow-black/5 sm:rounded-2xl',
+            'relative z-50 grid w-full max-w-lg gap-4 rounded-xl border border-border-subtle bg-background p-6 shadow-lg shadow-black/5 sm:rounded-2xl',
             className
           )}
           {...props}

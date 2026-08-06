@@ -7,7 +7,7 @@ type CardPadding = 'none' | 'sm' | 'md' | 'lg';
 const paddingClasses: Record<CardPadding, string> = {
   none: 'p-0',
   sm: 'p-4',
-  md: 'p-6',
+  md: 'p-5',
   lg: 'p-8',
 };
 
@@ -16,10 +16,10 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   padding?: CardPadding;
 }
 
-const CardContext = React.createContext<{ padding: CardPadding }>({ padding: 'md' });
+const CardContext = React.createContext<{ padding: CardPadding }>({ padding: 'sm' });
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, asChild = false, padding = 'md', ...props }, ref) => {
+  ({ className, asChild = false, padding = 'sm', ...props }, ref) => {
     const Comp = asChild ? Slot : 'div';
     
     return (
@@ -27,7 +27,8 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         <Comp
           ref={ref}
           className={cn(
-            'rounded-xl border border-border-subtle bg-bg-base text-text-base shadow-sm',
+            'rounded-xl border border-border-subtle bg-background text-text-primary shadow-sm',
+            paddingClasses[padding],
             className
           )}
           {...props}
@@ -52,8 +53,6 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
         ref={ref}
         className={cn(
           'flex flex-col space-y-1.5',
-          paddingClasses[padding],
-          'pb-0', // Reduce bottom padding since Body will have top padding or we handle spacing via standard padding
           className
         )}
         {...props}
@@ -75,7 +74,7 @@ const CardBody = React.forwardRef<HTMLDivElement, CardBodyProps>(
     return (
       <Comp
         ref={ref}
-        className={cn(paddingClasses[padding], className)}
+        className={cn(className)}
         {...props}
       />
     );
@@ -97,8 +96,6 @@ const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
         ref={ref}
         className={cn(
           'flex items-center',
-          paddingClasses[padding],
-          'pt-0', // Reduce top padding as it follows Body
           className
         )}
         {...props}

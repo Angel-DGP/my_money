@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsEnum, IsOptional} from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum, IsOptional, Length } from 'class-validator';
 import { CategoryType } from '../../domain/category.type';
 
 export class SubcategoryDto {
@@ -52,6 +52,7 @@ export class CreateCategoryDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @Length(2, 50)
   name!: string;
 
   @ApiProperty({ enum: CategoryType })
@@ -62,6 +63,24 @@ export class CreateCategoryDto {
   @IsOptional()
   @IsString()
   parent_id?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  icon?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  color?: string;
+}
+
+export class UpdateCategoryDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  @Length(2, 50)
+  name?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

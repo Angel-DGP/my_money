@@ -1,12 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { AccountsService } from '../../../shared/api/services/accounts';
-import { CreateAccountDto, UpdateAccountDto } from '../types/account.types';
+import { AccountsService } from '@shared/api/services/accounts';
+import type { UpdateAccountDto } from '../types/account.types';
 import { accountKeys } from './keys';
+import { useSessionStore } from '@entities/session';
 
 export function useAccountsQuery() {
+  const token = useSessionStore((s) => s.token);
   return useQuery({
     queryKey: accountKeys.lists(),
     queryFn: AccountsService.getAll,
+    enabled: !!token,
   });
 }
 

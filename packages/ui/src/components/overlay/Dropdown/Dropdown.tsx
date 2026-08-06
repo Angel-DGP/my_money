@@ -180,7 +180,7 @@ const DropdownContent = React.forwardRef<HTMLDivElement, DropdownContentProps>(
         }}
         style={{ top: coords.top, left: coords.left, position: 'absolute' }}
         className={cn(
-          'z-50 min-w-[8rem] overflow-hidden rounded-md border border-border-subtle bg-bg-base p-1 text-text-base shadow-md animate-in fade-in-80 zoom-in-95',
+          'z-50 min-w-[8rem] overflow-hidden rounded-xl border border-border-subtle bg-surface/80 dark:bg-surface/60 backdrop-blur-xl p-1 text-text-primary shadow-lg animate-in fade-in-80 zoom-in-95',
           className
         )}
         {...createDataState('open')}
@@ -212,7 +212,7 @@ const DropdownItem = React.forwardRef<HTMLDivElement, DropdownItemProps>(
           onOpenChange(false);
         }}
         className={cn(
-          'relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-bg-muted focus:bg-bg-muted data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+          'relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-surface focus:bg-surface data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
           className
         )}
         {...props}

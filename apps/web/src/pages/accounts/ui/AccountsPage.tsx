@@ -1,10 +1,7 @@
-import React from 'react';
-import { AccountsListWidget } from '../../../widgets/accounts/AccountsListWidget';
+import { AccountsListWidget } from '@widgets/accounts';
 
 export function AccountsPage() {
   return (
-    <div className="w-full max-w-5xl mx-auto">
-      <AccountsListWidget />
-    </div>
+    <AccountsListWidget />
   );
 }

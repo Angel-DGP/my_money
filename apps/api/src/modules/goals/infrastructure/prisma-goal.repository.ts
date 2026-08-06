@@ -54,6 +54,11 @@ export class PrismaGoalRepository implements IGoalRepository {
       currency: goal.targetAmount.currency,
       target_date: goal.targetDate,
       status: goal.status,
+      description: goal.description,
+      priority: goal.priority,
+      color: goal.color,
+      icon: goal.icon,
+      account_id: goal.accountId,
       updated_at: goal.updatedAt,
     };
 
@@ -78,6 +83,11 @@ export class PrismaGoalRepository implements IGoalRepository {
       currentAmount: Money.of(record.current_amount, record.currency),
       targetDate: record.target_date,
       status: record.status as GoalStatus,
+      description: record.description,
+      priority: record.priority,
+      color: record.color,
+      icon: record.icon,
+      accountId: record.account_id,
       createdAt: record.created_at,
       updatedAt: record.updated_at,
     });

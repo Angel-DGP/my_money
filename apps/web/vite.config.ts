@@ -15,10 +15,10 @@ export default defineConfig({
     alias: {
       '@app': path.resolve(__dirname, './src/app'),
       '@shared': path.resolve(__dirname, './src/shared'),
-      '@modules': path.resolve(__dirname, './src/modules'),
-      '@ui': path.resolve(__dirname, './src/ui'),
-      '@styles': path.resolve(__dirname, './src/styles'),
-      '@config': path.resolve(__dirname, './src/config'),
+      '@entities': path.resolve(__dirname, './src/entities'),
+      '@features': path.resolve(__dirname, './src/features'),
+      '@widgets': path.resolve(__dirname, './src/widgets'),
+      '@pages': path.resolve(__dirname, './src/pages'),
     },
   },
 });

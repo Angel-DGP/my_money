@@ -25,7 +25,7 @@ export const Default: Story = {
     <Card className="max-w-sm" {...args}>
       <CardHeader>
         <h3 className="text-lg font-semibold leading-none tracking-tight">Project Update</h3>
-        <p className="text-sm text-text-muted">Review the latest changes to the project.</p>
+        <p className="text-sm text-text-secondary">Review the latest changes to the project.</p>
       </CardHeader>
       <CardBody>
         <p className="text-sm">
@@ -47,7 +47,7 @@ export const PaddingVariants: Story = {
         <Card key={padding} padding={padding} className="max-w-sm">
           <CardHeader><h3 className="font-semibold">Padding: {padding}</h3></CardHeader>
           <CardBody>
-            <div className="bg-bg-muted p-2 rounded text-sm">Content area</div>
+            <div className="bg-surface p-2 rounded text-sm">Content area</div>
           </CardBody>
         </Card>
       ))}
@@ -57,7 +57,7 @@ export const PaddingVariants: Story = {
 
 export const AsChild: Story = {
   render: () => (
-    <Card asChild className="max-w-sm cursor-pointer hover:bg-bg-muted transition-colors block">
+    <Card asChild className="max-w-sm cursor-pointer hover:bg-surface transition-colors block">
       <a href="https://example.com" target="_blank" rel="noreferrer">
         <CardHeader>
           <h3 className="font-semibold">Clickable Card</h3>

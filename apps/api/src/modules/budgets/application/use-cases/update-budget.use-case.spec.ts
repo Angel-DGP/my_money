@@ -1,14 +1,14 @@
 import { UpdateBudgetUseCase } from './update-budget.use-case';
-import { Money } from '@mymoney/shared';
+import { Money, Currency } from '@mymoney/shared';
 import { NotFoundException } from '@nestjs/common';
 import { BudgetStatus, BudgetPeriod } from '../../domain/budget.entity';
 
 describe('UpdateBudgetUseCase', () => {
   let useCase: UpdateBudgetUseCase;
-  let mockBudgetRepo: unknown;
-  let mockUoW: unknown;
-  let mockEventEmitter: unknown;
-  let mockBudget: unknown;
+  let mockBudgetRepo: any;
+  let mockUoW: any;
+  let mockEventEmitter: any;
+  let mockBudget: any;
 
   beforeEach(() => {
     mockBudget = {
@@ -32,6 +32,19 @@ describe('UpdateBudgetUseCase', () => {
       period: BudgetPeriod.MONTHLY,
       startDate: new Date('2030-01-01'),
       alertThreshold: 80,
+      dailyExpectedVelocity: Money.of('10', 'USD'),
+      dailyActualVelocity: Money.of('5', 'USD'),
+      projectedEndAmount: Money.of('300', 'USD'),
+      statusIndicator: 'NORMAL',
+      carryOver: false,
+      ignoreRefunds: false,
+      ignoreTransfers: true,
+      isFrozen: false,
+      notes: undefined,
+      softLimit: undefined,
+      hardLimit: undefined,
+      updateSettings: jest.fn(),
+
     };
 
     mockBudgetRepo = {

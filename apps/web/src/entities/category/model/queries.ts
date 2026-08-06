@@ -1,12 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { CategoriesService } from '../../../shared/api/services/categories';
-import type { CreateCategoryDto, UpdateCategoryDto } from '../types/category.types';
+import { CategoriesService } from '@shared/api/services/categories';
+import type { UpdateCategoryDto } from '../types/category.types';
 import { categoryKeys } from './keys';
+import { useSessionStore } from '@entities/session';
 
 export function useCategoriesQuery() {
+  const token = useSessionStore((s) => s.token);
   return useQuery({
     queryKey: categoryKeys.lists(),
     queryFn: CategoriesService.getAll,
+    enabled: !!token,
   });
 }
 

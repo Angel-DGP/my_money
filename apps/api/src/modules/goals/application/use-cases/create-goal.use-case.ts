@@ -25,6 +25,11 @@ export class CreateGoalUseCase {
       name: dto.name,
       targetAmount,
       targetDate,
+      description: dto.description,
+      priority: dto.priority,
+      color: dto.color,
+      icon: dto.icon,
+      accountId: dto.account_id,
     });
 
     await this.unitOfWork.execute(async () => {

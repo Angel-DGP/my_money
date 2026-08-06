@@ -1,28 +1,24 @@
-import React, { useState } from 'react';
-import { useCategoriesQuery, useCreateCategory, useUpdateCategory, useDeleteCategory } from '../../entities/category/model';
-import { CategoriesTable } from '../../features/categories/ui/CategoriesTable';
-import { CategoryForm } from '../../features/categories/ui/CategoryForm';
-import type { Category, CreateCategoryDto, UpdateCategoryDto } from '../../entities/category/types/category.types';
-import { Dialog, Button, Icon, toast } from '@mymoney/ui';
-import { QueryState } from '../../shared/ui/QueryState';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useCategoriesQuery, useUpdateCategory, useDeleteCategory } from '@entities/category';
+import type { Category, UpdateCategoryDto } from '@entities/category';
+import { CategoriesTable } from '@features/categories';
+import { CategoryForm } from '@features/categories';
+import { Dialog, Button, Icon, toast, PageContainer } from '@mymoney/ui';
+import { QueryState } from '@shared/ui/QueryState';
 
 export function CategoriesListWidget() {
+  const navigate = useNavigate();
   const categoriesQuery = useCategoriesQuery();
-  const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
   const deleteCategory = useDeleteCategory();
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-
-  const handleCreate = () => {
-    setEditingCategory(null);
-    setIsDialogOpen(true);
-  };
 
   const handleEdit = (category: Category) => {
     setEditingCategory(category);
-    setIsDialogOpen(true);
+    setIsEditDialogOpen(true);
   };
 
   const handleDelete = (category: Category) => {
@@ -55,58 +51,40 @@ export function CategoriesListWidget() {
     }
   };
 
-  const handleSubmit = (data: CreateCategoryDto | UpdateCategoryDto) => {
-    if (editingCategory) {
-      updateCategory.mutate({ id: editingCategory.id, data: data as UpdateCategoryDto }, {
-        onSuccess: () => {
-          setIsDialogOpen(false);
-          toast({
-            title: 'Categoría actualizada',
-            description: 'Los cambios se han guardado exitosamente.',
-            variant: 'success',
-          });
-        },
-        onError: () => {
-          toast({
-            title: 'Error al actualizar',
-            description: 'No se pudieron guardar los cambios.',
-            variant: 'error',
-          });
-        }
-      });
-    } else {
-      createCategory.mutate(data as CreateCategoryDto, {
-        onSuccess: () => {
-          setIsDialogOpen(false);
-          toast({
-            title: 'Categoría creada',
-            description: 'La categoría se ha creado exitosamente.',
-            variant: 'success',
-          });
-        },
-        onError: () => {
-          toast({
-            title: 'Error al crear',
-            description: 'No se pudo crear la categoría.',
-            variant: 'error',
-          });
-        }
-      });
-    }
+  const handleEditSubmit = (data: UpdateCategoryDto) => {
+    if (!editingCategory) return;
+    updateCategory.mutate({ id: editingCategory.id, data }, {
+      onSuccess: () => {
+        setIsEditDialogOpen(false);
+        toast({
+          title: 'Categoría actualizada',
+          description: 'Los cambios se han guardado exitosamente.',
+          variant: 'success',
+        });
+      },
+      onError: () => {
+        toast({
+          title: 'Error al actualizar',
+          description: 'No se pudieron guardar los cambios.',
+          variant: 'error',
+        });
+      }
+    });
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-text-base">Categorías</h2>
-          <p className="text-sm text-text-muted mt-1">Administra las categorías para clasificar tus transacciones.</p>
-        </div>
-        <Button onClick={handleCreate}>
-          <Icon name="plus" size="sm" className="mr-2" />
-          Nueva Categoría
-        </Button>
-      </div>
+    <PageContainer className="max-w-7xl">
+      <PageContainer.Header
+        title="Categorías"
+        description="Administra las categorías para clasificar tus transacciones."
+        actions={
+          <Button onClick={() => navigate('/categories/new')}>
+            <Icon name="plus" size="sm" className="mr-2" />
+            Nueva Categoría
+          </Button>
+        }
+      />
+      <PageContainer.Body variant="transparent">
 
       <QueryState 
         data={categoriesQuery.data}
@@ -126,25 +104,26 @@ export function CategoriesListWidget() {
         )}
       </QueryState>
 
-      <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      {/* Dialog solo para EDICIÓN */}
+      <Dialog.Root open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <Dialog.Portal>
           <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" aria-hidden="true" onClick={() => setIsDialogOpen(false)} />
-            <div className="relative z-50 grid w-full max-w-lg gap-4 rounded-xl border border-border-subtle bg-bg-base p-6 shadow-lg sm:rounded-2xl">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" aria-hidden="true" onClick={() => setIsEditDialogOpen(false)} />
+            <div className="relative z-50 grid w-full max-w-lg gap-4 rounded-xl border border-border-subtle bg-background p-6 shadow-lg sm:rounded-2xl">
               <div className="flex flex-col space-y-1.5 text-center sm:text-left">
                 <Dialog.Title className="text-lg font-semibold leading-none tracking-tight">
-                  {editingCategory ? 'Editar Categoría' : 'Nueva Categoría'}
+                  Editar Categoría
                 </Dialog.Title>
-                <Dialog.Description className="text-sm text-text-muted">
-                  {editingCategory ? 'Modifica el nombre o tipo de la categoría.' : 'Agrega una nueva categoría para organizar tu dinero.'}
+                <Dialog.Description className="text-sm text-text-secondary">
+                  Modifica el nombre o tipo de la categoría.
                 </Dialog.Description>
               </div>
               <div className="mt-4">
                 <CategoryForm 
-                  initialData={editingCategory || undefined} 
-                  onSubmit={handleSubmit} 
-                  onCancel={() => setIsDialogOpen(false)}
-                  isLoading={createCategory.isPending || updateCategory.isPending}
+                  initialData={editingCategory} 
+                  onSubmit={handleEditSubmit as any} 
+                  onCancel={() => setIsEditDialogOpen(false)}
+                  isLoading={updateCategory.isPending}
                 />
               </div>
               <Dialog.Close className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none">
@@ -155,6 +134,7 @@ export function CategoriesListWidget() {
           </div>
         </Dialog.Portal>
       </Dialog.Root>
-    </div>
+      </PageContainer.Body>
+    </PageContainer>
   );
 }

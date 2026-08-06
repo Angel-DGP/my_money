@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch,  Param, Body, Query,  Request, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Patch,  Param, Body, Query,  Request, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { CreateBudgetUseCase } from '../application/use-cases/create-budget.use-case';
 import { GetBudgetsUseCase } from '../application/use-cases/get-budgets.use-case';
 import { UpdateBudgetUseCase } from '../application/use-cases/update-budget.use-case';
@@ -8,9 +8,11 @@ import { ReactivateBudgetUseCase } from '../application/use-cases/reactivate-bud
 import { CreateBudgetDto } from './dtos/create-budget.dto';
 import { UpdateBudgetDto } from './dtos/update-budget.dto';
 import { BudgetDto } from './dtos/budget.dto';
+import { ApiResponse } from '@mymoney/shared';
 
-// Usamos @UseGuards(...) si la app ya tiene guardias definidos, asumiendo JwtAuthGuard global o SessionGuard
-// @UseGuards(SessionGuard)
+import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
+
+@UseGuards(JwtAuthGuard)
 @Controller('budgets')
 export class BudgetsController {
   constructor(
@@ -28,21 +30,23 @@ export class BudgetsController {
     @Request() req: any,
     @Query('status') status?: string,
     @Query('category_id') categoryId?: string
-  ): Promise<{ data: BudgetDto[] }> {
+  ): Promise<ApiResponse<BudgetDto[]>> {
     const data = await this.getBudgetsUseCase.findAll(req.user.id, status, categoryId);
     return { data };
   }
 
   @Get(':id')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async findOne(@Request() req: any, @Param('id') id: string): Promise<BudgetDto> {
-    return this.getBudgetByIdUseCase.execute(req.user.id, id);
+  async findOne(@Request() req: any, @Param('id') id: string): Promise<ApiResponse<BudgetDto>> {
+    const data = await this.getBudgetByIdUseCase.execute(req.user.id, id);
+    return { data };
   }
 
   @Post()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async create(@Request() req: any, @Body() dto: CreateBudgetDto): Promise<BudgetDto> {
-    return this.createBudgetUseCase.execute(req.user.id, dto);
+  async create(@Request() req: any, @Body() dto: CreateBudgetDto): Promise<ApiResponse<BudgetDto>> {
+    const data = await this.createBudgetUseCase.execute(req.user.id, dto);
+    return { data };
   }
 
   @Patch(':id')
@@ -51,8 +55,9 @@ export class BudgetsController {
     @Request() req: any,
     @Param('id') id: string,
     @Body() dto: UpdateBudgetDto
-  ): Promise<BudgetDto> {
-    return this.updateBudgetUseCase.execute(req.user.id, id, dto);
+  ): Promise<ApiResponse<BudgetDto>> {
+    const data = await this.updateBudgetUseCase.execute(req.user.id, id, dto);
+    return { data };
   }
 
   @Post(':id/deactivate')
@@ -65,7 +70,8 @@ export class BudgetsController {
   @Post(':id/reactivate')
   @HttpCode(HttpStatus.OK)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async reactivate(@Request() req: any, @Param('id') id: string): Promise<BudgetDto> {
-    return this.reactivateBudgetUseCase.execute(req.user.id, id);
+  async reactivate(@Request() req: any, @Param('id') id: string): Promise<ApiResponse<BudgetDto>> {
+    const data = await this.reactivateBudgetUseCase.execute(req.user.id, id);
+    return { data };
   }
 }

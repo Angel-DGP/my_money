@@ -9,11 +9,9 @@ export class ListAccountsUseCase {
     private readonly accountRepository: IAccountRepository
   ) {}
 
-  async execute(userId: string): Promise<{ data: AccountDto[] }> {
+  async execute(userId: string): Promise<AccountDto[]> {
     const accounts = await this.accountRepository.findAllActiveByUser(userId);
     
-    return {
-      data: accounts.map(AccountDto.fromDomain)
-    };
+    return accounts.map(AccountDto.fromDomain);
   }
 }

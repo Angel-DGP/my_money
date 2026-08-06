@@ -29,6 +29,16 @@ export class UpdateBudgetUseCase {
       budget.updateAlertThreshold(dto.alert_threshold);
     }
 
+    budget.updateSettings({
+      softLimit: dto.soft_limit ? Money.of(dto.soft_limit, budget.amount.currency) : undefined,
+      hardLimit: dto.hard_limit ? Money.of(dto.hard_limit, budget.amount.currency) : undefined,
+      carryOver: dto.carry_over,
+      ignoreRefunds: dto.ignore_refunds,
+      ignoreTransfers: dto.ignore_transfers,
+      isFrozen: dto.is_frozen,
+      notes: dto.notes,
+    });
+
     await this.unitOfWork.execute(async () => {
       await this.budgetRepository.save(budget);
     });

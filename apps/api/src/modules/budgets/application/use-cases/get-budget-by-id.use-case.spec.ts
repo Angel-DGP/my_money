@@ -1,15 +1,15 @@
 import { GetBudgetByIdUseCase } from './get-budget-by-id.use-case';
 import { BudgetStatus } from '../../domain/budget.entity';
-import { Money } from '@mymoney/shared';
+import { Money, Currency } from '@mymoney/shared';
 import { NotFoundException } from '@nestjs/common';
 
 describe('GetBudgetByIdUseCase', () => {
   let useCase: GetBudgetByIdUseCase;
-  let mockBudgetRepo: unknown;
-  let mockUoW: unknown;
-  let mockEventEmitter: unknown;
-  let mockBudget: unknown;
-  let mockExpiredBudget: unknown;
+  let mockBudgetRepo: any;
+  let mockUoW: any;
+  let mockEventEmitter: any;
+  let mockBudget: any;
+  let mockExpiredBudget: any;
 
   beforeEach(() => {
     mockBudget = {
@@ -32,6 +32,19 @@ describe('GetBudgetByIdUseCase', () => {
       period: 'MONTHLY',
       startDate: new Date('2030-01-01'),
       alertThreshold: 80,
+      dailyExpectedVelocity: Money.of('10', 'USD'),
+      dailyActualVelocity: Money.of('5', 'USD'),
+      projectedEndAmount: Money.of('300', 'USD'),
+      statusIndicator: 'NORMAL',
+      carryOver: false,
+      ignoreRefunds: false,
+      ignoreTransfers: true,
+      isFrozen: false,
+      notes: undefined,
+      softLimit: undefined,
+      hardLimit: undefined,
+      updateSettings: jest.fn(),
+
     };
 
     mockExpiredBudget = {
@@ -54,6 +67,19 @@ describe('GetBudgetByIdUseCase', () => {
       period: 'MONTHLY',
       startDate: new Date('2000-01-01'),
       alertThreshold: 80,
+      dailyExpectedVelocity: Money.of('10', 'USD'),
+      dailyActualVelocity: Money.of('5', 'USD'),
+      projectedEndAmount: Money.of('300', 'USD'),
+      statusIndicator: 'NORMAL',
+      carryOver: false,
+      ignoreRefunds: false,
+      ignoreTransfers: true,
+      isFrozen: false,
+      notes: undefined,
+      softLimit: undefined,
+      hardLimit: undefined,
+      updateSettings: jest.fn(),
+
     };
 
     mockBudgetRepo = {

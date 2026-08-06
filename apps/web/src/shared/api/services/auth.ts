@@ -1,15 +1,28 @@
 import { apiClient } from '../client';
-import { LoginRequestDto, LoginResponseDto } from '../dto/auth.dto';
+import type { LoginRequestDto, LoginResponseDto, RegisterRequestDto } from '../dto/auth.dto';
 
 export const AuthService = {
   async login(data: LoginRequestDto): Promise<LoginResponseDto> {
-    throw new Error('Not implemented: AuthService.login');
-    // const response = await apiClient.post<LoginResponseDto>('/auth/login', data);
-    // return response.data;
+    const response = await apiClient.post<LoginResponseDto>('/auth/login', data);
+    return response.data;
+  },
+
+  async register(data: RegisterRequestDto): Promise<LoginResponseDto> {
+    const response = await apiClient.post<LoginResponseDto>('/auth/register', data);
+    return response.data;
   },
 
   async logout(): Promise<void> {
-    throw new Error('Not implemented: AuthService.logout');
-    // await apiClient.post('/auth/logout');
+    await apiClient.post('/auth/logout');
+  },
+
+  async refreshToken(): Promise<LoginResponseDto> {
+    const response = await apiClient.post<LoginResponseDto>('/auth/refresh');
+    return response.data;
+  },
+
+  async getMe(): Promise<LoginResponseDto['user']> {
+    const response = await apiClient.get<LoginResponseDto['user']>('/auth/me');
+    return response.data;
   },
 };

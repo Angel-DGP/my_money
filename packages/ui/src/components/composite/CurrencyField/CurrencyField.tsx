@@ -42,12 +42,12 @@ export const CurrencyField = React.forwardRef<HTMLInputElement, CurrencyFieldPro
 
     return (
       <div className={cn('flex flex-col gap-1.5', wrapperClassName)}>
-        <Label htmlFor={inputId} className="font-semibold text-text-base">
+        <Label htmlFor={inputId} className="font-semibold text-text-primary">
           {label}
         </Label>
         
         {description && (
-          <p id={descriptionId} className="text-sm text-text-muted">
+          <p id={descriptionId} className="text-sm text-text-secondary">
             {description}
           </p>
         )}
@@ -74,7 +74,7 @@ export const CurrencyField = React.forwardRef<HTMLInputElement, CurrencyFieldPro
             {error}
           </p>
         ) : helperText ? (
-          <p id={helperId} className="text-sm text-text-muted">
+          <p id={helperId} className="text-sm text-text-secondary">
             {helperText}
           </p>
         ) : null}

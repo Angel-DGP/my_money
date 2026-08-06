@@ -1,5 +1,5 @@
-// Exportar componentes de UI
 export * from './components/core/Icon';
+export { cn } from './utils/cn';
 export * from './components/core/Label';
 export * from './components/core/Button';
 export * from './components/core/Input';
@@ -10,7 +10,15 @@ export * from './components/feedback/Toast';
 export * from './components/layout/Divider';
 export * from './components/layout/Card';
 export * from './components/layout/Table';
+export * from './components/layout/PageContainer';
+export * from './components/layout/FormLayout';
+export * from './components/layout/Stack/Stack';
+
+// Typography
+export * from './components/core/Typography/Heading';
+export * from './components/core/Typography/Text';
 export * from './components/navigation/Tabs';
+export * from './components/navigation/Pagination';
 export * from './components/overlay/Dialog';
 export * from './components/overlay/Modal';
 export * from './components/overlay/Dropdown';
@@ -20,3 +28,14 @@ export * from './components/composite/CurrencyField';
 export * from './components/composite/BudgetProgress';
 export * from './components/composite/GoalProgress';
 export * from './components/composite/TransactionCard';
+export * from './components/core/Select/Select';
+export * from './components/core/Command/Command';
+export * from './components/composite/StatCard';
+export * from './components/composite/ProgressBar';
+export * from './components/composite/AlertBanner';
+export * from './components/composite/EmptyState';
+export * from './components/core/Skeleton';
+export * from './components/core/Tooltip';
+export * from './components/forms/Checkbox';
+export * from './components/forms/ColorPicker';
+export * from './components/core/ThemeToggle/ThemeToggle';

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; // HMR refresh
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './styles/global.css';

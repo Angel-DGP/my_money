@@ -59,15 +59,15 @@ export const CustomLocaleAndCurrency: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
       <div>
-        <p className="text-xs text-text-muted mb-1">Japan (JPY)</p>
+        <p className="text-xs text-text-secondary mb-1">Japan (JPY)</p>
         <Amount value={1250.75} locale="ja-JP" currency="JPY" />
       </div>
       <div>
-        <p className="text-xs text-text-muted mb-1">Germany (EUR)</p>
+        <p className="text-xs text-text-secondary mb-1">Germany (EUR)</p>
         <Amount value={1250.75} locale="de-DE" currency="EUR" />
       </div>
       <div>
-        <p className="text-xs text-text-muted mb-1">Ecuador (USD)</p>
+        <p className="text-xs text-text-secondary mb-1">Ecuador (USD)</p>
         <Amount value={1250.75} locale="es-EC" currency="USD" />
       </div>
     </div>

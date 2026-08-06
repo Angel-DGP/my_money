@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'dark' | 'light' | 'system';
+export type Theme = 'dark' | 'light' | 'system';
 
 interface ThemeProviderProps {
   children: React.ReactNode;
@@ -8,12 +8,24 @@ interface ThemeProviderProps {
   storageKey?: string;
 }
 
+interface ThemeProviderState {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+}
+
+const initialState: ThemeProviderState = {
+  theme: 'light',
+  setTheme: () => null,
+};
+
+const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
+
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
+  defaultTheme = 'light',
   storageKey = 'vite-ui-theme',
 }: ThemeProviderProps) {
-  const [theme] = useState<Theme>(
+  const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   );
 
@@ -35,12 +47,24 @@ export function ThemeProvider({
     root.classList.add(theme);
   }, [theme]);
 
-  // Context is omitted here because ThemeProvider shouldn't leak UI knowledge.
-  // It only sets the HTML class and stores preference.
-  // We can add a simple ThemeContext if needed later, but as requested: 
-  // "El ThemeProvider no debe conocer componentes UI. Solo administra tema, persistencia, clase del html"
-  // For other components to change the theme, they can use a small Zustand store or Context, 
-  // but for Phase 1.5, we just need the structural provider.
+  const value = {
+    theme,
+    setTheme: (theme: Theme) => {
+      localStorage.setItem(storageKey, theme);
+      setTheme(theme);
+    },
+  };
 
-  return <>{children}</>;
+  return (
+    <ThemeProviderContext.Provider value={value}>
+      {children}
+    </ThemeProviderContext.Provider>
+  );
 }
+
+export const useTheme = () => {
+  const context = useContext(ThemeProviderContext);
+  if (context === undefined)
+    throw new Error('useTheme must be used within a ThemeProvider');
+  return context;
+};
