@@ -37,7 +37,7 @@ export function SettingsPage() {
   const user = useSessionStore((s) => s.user);
 
   return (
-    <PageContainer className="max-w-3xl">
+    <PageContainer>
       <PageContainer.Header
         title="Configuración"
         description="Gestiona tu perfil y preferencias de la aplicación"
