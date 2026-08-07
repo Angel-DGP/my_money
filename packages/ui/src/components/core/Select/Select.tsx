@@ -62,7 +62,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             onChange={onChange}
             aria-invalid={hasError ? 'true' : 'false'}
             aria-describedby={hasError ? `${id}-error` : helperText ? `${id}-helper` : undefined}
-            className="hidden"
+            className="absolute opacity-0 w-0 h-0 -z-10 pointer-events-none"
             tabIndex={-1}
             aria-hidden="true"
           >
