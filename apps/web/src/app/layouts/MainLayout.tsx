@@ -55,7 +55,7 @@ export function MainLayout() {
         {/* Sidebar Header: Logo + NotificationBell */}
         <div className="h-16 flex items-center justify-between px-5 border-b border-border-subtle shrink-0">
           <Link to="/" onClick={closeMobileMenu} className="flex items-center gap-2.5 min-w-0">
-            <div className="flex items-center justify-center w-8 h-8 shrink-0 rounded-lg bg-brand-600 text-white">
+            <div className="flex items-center justify-center w-8 h-8 shrink-0 rounded-lg bg-primary-600 text-white">
               <Icon name="wallet" size="sm" />
             </div>
             <span className="text-xl font-bold text-text-primary tracking-tight truncate">MyMoney</span>
@@ -80,48 +80,46 @@ export function MainLayout() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors",
                 isActive(item.path)
-                  ? "bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-400"
+                  ? "bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400"
                   : "text-text-secondary hover:text-text-primary hover:bg-surface"
               )}
             >
               <Icon 
                 name={item.icon} 
                 size="sm" 
-                className={cn(isActive(item.path) ? "text-brand-600 dark:text-brand-400" : "text-text-secondary")} 
+                className={cn(isActive(item.path) ? "text-primary-600 dark:text-primary-400" : "text-text-secondary")} 
               />
               {item.label}
             </Link>
           ))}
         </div>
         
-        {/* Sidebar Footer: Settings + Logout */}
-        <div className="p-3 border-t border-border-subtle flex flex-col gap-1 shrink-0">
+        {/* Sidebar Footer: Settings + Logout (Icon buttons only) */}
+        <div className="p-3 border-t border-border-subtle flex items-center justify-between gap-2 shrink-0">
           <Link
             to="/settings"
             onClick={closeMobileMenu}
+            aria-label="Configuración"
             className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors",
+              "flex-1 flex justify-center items-center p-2 rounded-md transition-colors",
               isActive('/settings')
-                ? "bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-400"
+                ? "bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400"
                 : "text-text-secondary hover:text-text-primary hover:bg-surface"
             )}
           >
             <Icon
               name="settings"
               size="sm"
-              className={cn(isActive('/settings') ? "text-brand-600 dark:text-brand-400" : "text-text-secondary")}
+              className={cn(isActive('/settings') ? "text-primary-600 dark:text-primary-400" : "text-text-secondary")}
             />
-            Configuración
           </Link>
-          <Button
-            variant="ghost"
-            fullWidth
+          <button
             onClick={handleLogout}
-            className="justify-start text-text-secondary hover:text-text-primary hover:bg-surface"
+            aria-label="Cerrar Sesión"
+            className="flex-1 flex justify-center items-center p-2 rounded-md text-text-secondary hover:text-error-600 hover:bg-error-50 dark:hover:bg-error-900/20 transition-colors"
           >
-            <Icon name="log-out" size="sm" className="mr-3" />
-            Cerrar Sesión
-          </Button>
+            <Icon name="log-out" size="sm" />
+          </button>
         </div>
       </aside>
 
@@ -138,10 +136,10 @@ export function MainLayout() {
               <Icon name="menu" size="sm" />
             </button>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20">
+              <div className="w-8 h-8 bg-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20">
                 <Icon name="wallet" className="w-4 h-4 text-white" />
               </div>
-              <span className="font-semibold text-lg tracking-tight bg-gradient-to-r from-brand-600 to-brand-400 bg-clip-text text-transparent">
+              <span className="font-semibold text-lg tracking-tight bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
                 MyMoney
               </span>
             </div>

@@ -26,7 +26,7 @@ function UserAvatar({ name }: { name: string }) {
     .toUpperCase();
 
   return (
-    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/20 shrink-0">
+    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-lg shadow-primary-500/20 shrink-0">
       <span className="text-2xl font-bold text-white tracking-tight">{initials}</span>
     </div>
   );
@@ -54,7 +54,7 @@ export function SettingsPage() {
                 id="profile-heading"
                 className="text-base font-semibold text-text-primary flex items-center gap-2"
               >
-                <Icon name="user" size="sm" className="text-brand-500" />
+                <Icon name="user" size="sm" className="text-primary-500" />
                 Mi Perfil
               </h3>
               <p className="text-sm text-text-secondary mt-0.5">
@@ -107,7 +107,7 @@ export function SettingsPage() {
                 id="appearance-heading"
                 className="text-base font-semibold text-text-primary flex items-center gap-2"
               >
-                <Icon name="palette" size="sm" className="text-brand-500" />
+                <Icon name="palette" size="sm" className="text-primary-500" />
                 Apariencia
               </h3>
               <p className="text-sm text-text-secondary mt-0.5">
@@ -129,9 +129,9 @@ export function SettingsPage() {
                       onClick={() => setTheme(option.id)}
                       className={cn(
                         'relative flex items-start gap-4 p-4 rounded-xl border-2 text-left transition-all duration-150',
-                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
                         isSelected
-                          ? 'border-brand-500 bg-brand-50 dark:bg-brand-500/10 shadow-sm shadow-brand-500/10'
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-500/10 shadow-sm shadow-primary-500/10'
                           : 'border-border-subtle hover:border-border hover:bg-surface-2/50 cursor-pointer'
                       )}
                     >
@@ -139,7 +139,7 @@ export function SettingsPage() {
                       <div className={cn(
                         'mt-0.5 w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors',
                         isSelected
-                          ? 'bg-brand-500 text-white'
+                          ? 'bg-primary-500 text-white'
                           : 'bg-surface-2 text-text-secondary'
                       )}>
                         <Icon name={option.icon} size="sm" />
@@ -149,7 +149,7 @@ export function SettingsPage() {
                       <div className="flex-1 min-w-0">
                         <p className={cn(
                           'font-semibold text-sm',
-                          isSelected ? 'text-brand-700 dark:text-brand-400' : 'text-text-primary'
+                          isSelected ? 'text-primary-700 dark:text-primary-400' : 'text-text-primary'
                         )}>
                           {option.label}
                         </p>
@@ -160,7 +160,7 @@ export function SettingsPage() {
 
                       {/* Selected indicator */}
                       {isSelected && (
-                        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center shrink-0">
+                        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary-500 flex items-center justify-center shrink-0">
                           <Icon name="check" size="sm" className="text-white" />
                         </div>
                       )}
@@ -180,7 +180,7 @@ export function SettingsPage() {
                 id="account-heading"
                 className="text-base font-semibold text-text-primary flex items-center gap-2"
               >
-                <Icon name="shield" size="sm" className="text-brand-500" />
+                <Icon name="shield" size="sm" className="text-primary-500" />
                 Cuenta
               </h3>
               <p className="text-sm text-text-secondary mt-0.5">
