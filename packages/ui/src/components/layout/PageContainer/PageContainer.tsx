@@ -78,7 +78,7 @@ const PageContainerBody = ({
   return (
     <div
       className={cn(
-        'px-4 sm:px-6 lg:px-8 py-6 flex-1 flex flex-col',
+        'px-4 sm:px-6 lg:px-8 pt-6 pb-8 flex-1 flex flex-col',
         variant === 'card'
           ? 'bg-surface p-6 sm:p-8 rounded-2xl border border-border-subtle shadow-sm mx-4 sm:mx-6 lg:mx-8 mb-6'
           : 'bg-transparent',
@@ -106,8 +106,8 @@ const PageContainerFooter = ({
     <div
       className={cn(
         'mt-auto shrink-0 sticky bottom-0 z-40',
-        'pt-4 pb-0',
-        'border-t border-border-subtle',
+        'px-4 sm:px-6 lg:px-8 py-4',
+        'bg-background/95 backdrop-blur-md border-t border-border-subtle',
         'flex justify-end gap-3',
         className,
       )}

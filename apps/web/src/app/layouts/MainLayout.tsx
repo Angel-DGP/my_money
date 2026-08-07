@@ -141,7 +141,7 @@ export function MainLayout() {
           </div>
         </header>
         
-        <div className="flex-1 min-h-0 overflow-y-auto bg-surface">
+        <div className="flex-1 min-h-0 overflow-y-auto bg-background">
           <Outlet />
         </div>
       </div>
