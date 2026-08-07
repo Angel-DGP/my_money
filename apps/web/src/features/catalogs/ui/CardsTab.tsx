@@ -69,7 +69,7 @@ export function CardsTab() {
       </div>
 
       <Tabs defaultValue="cards">
-        <TabsList className="w-full sm:w-auto mb-4">
+        <TabsList className="w-max mx-auto sm:mx-0 mb-4">
           <TabsTrigger value="cards">Tarjetas</TabsTrigger>
           <TabsTrigger value="brands">Redes (Marcas)</TabsTrigger>
           <TabsTrigger value="types">Tipos</TabsTrigger>

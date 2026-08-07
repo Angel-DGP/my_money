@@ -17,6 +17,10 @@ import { UIKitPage } from '@pages/ui-kit';
 import { SettingsPage } from '@pages/settings';
 import { 
   CatalogsPage,
+  InstitutionsPage,
+  CardsPage,
+  SubscriptionsPage,
+  ProductServicesPage,
   NewInstitutionPage,
   NewCardPage,
   NewSubscriptionPage,
@@ -114,6 +118,13 @@ export const routes: RouteObject[] = [
               {
                 path: '/catalogs',
                 element: <CatalogsPage />,
+                children: [
+                  { index: true, element: <InstitutionsPage /> },
+                  { path: 'institutions', element: <InstitutionsPage /> },
+                  { path: 'cards', element: <CardsPage /> },
+                  { path: 'subscriptions', element: <SubscriptionsPage /> },
+                  { path: 'products', element: <ProductServicesPage /> },
+                ],
               },
               {
                 path: '/catalogs/institutions/new',
