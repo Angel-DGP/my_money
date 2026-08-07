@@ -78,7 +78,7 @@ const PageContainerBody = ({
   return (
     <div
       className={cn(
-        'px-4 sm:px-6 lg:px-8 pt-6 pb-2 flex-1 flex flex-col',
+        'px-4 sm:px-6 lg:px-8 pt-6 flex-1 flex flex-col',
         variant === 'card'
           ? 'bg-surface p-6 sm:p-8 rounded-2xl border border-border-subtle shadow-sm mx-4 sm:mx-6 lg:mx-8 mb-6'
           : 'bg-transparent',

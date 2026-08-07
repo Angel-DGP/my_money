@@ -66,7 +66,7 @@ export function MainLayout() {
           </Button>
         </div>
         
-        <div className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-1">
+        <div className="flex-1 overflow-y-auto custom-scrollbar py-4 px-3 flex flex-col gap-1">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.path}
@@ -141,7 +141,7 @@ export function MainLayout() {
           </div>
         </header>
         
-        <div className="flex-1 min-h-0 overflow-y-auto bg-background">
+        <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar bg-background">
           <Outlet />
         </div>
       </div>
