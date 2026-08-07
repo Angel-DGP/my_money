@@ -56,7 +56,7 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
               name="institution_id"
               label="Institución (Banco)"
               value={institution_id || ''}
-              onChange={(e) => setValue('institution_id', e.target.value)}
+              onValueChange={(val) => setValue('institution_id', val)}
               error={errors.institution_id?.message}
               searchable
               disabled={isLoading}
@@ -100,7 +100,7 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
               name="brand_id"
               label="Red (Marca)"
               value={brand_id || ''}
-              onChange={(e) => setValue('brand_id', e.target.value)}
+              onValueChange={(val) => setValue('brand_id', val)}
               error={errors.brand_id?.message}
               disabled={isLoading}
             >
@@ -117,7 +117,7 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
               name="type_id"
               label="Tipo de Tarjeta"
               value={type_id || ''}
-              onChange={(e) => setValue('type_id', e.target.value)}
+              onValueChange={(val) => setValue('type_id', val)}
               error={errors.type_id?.message}
               disabled={isLoading}
             >

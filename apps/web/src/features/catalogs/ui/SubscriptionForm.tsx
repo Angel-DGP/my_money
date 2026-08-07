@@ -73,7 +73,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
               name="category_id"
               label="Categoría de Gasto"
               value={category_id || ''}
-              onChange={(e) => setValue('category_id', e.target.value)}
+              onValueChange={(val) => setValue('category_id', val)}
               error={errors.category_id?.message}
               searchable
               disabled={isLoading}
@@ -145,7 +145,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
               name="card_id"
               label="Tarjeta Asociada (Opcional)"
               value={card_id || ''}
-              onChange={(e) => setValue('card_id', e.target.value)}
+              onValueChange={(val) => setValue('card_id', val)}
               error={errors.card_id?.message}
               disabled={isLoading}
             >

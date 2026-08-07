@@ -60,7 +60,7 @@ export function ProductServiceForm({ onSubmit, onCancel, isLoading }: ProductSer
               name="category_id"
               label="Categoría Principal"
               value={category_id || ''}
-              onChange={(e) => setValue('category_id', e.target.value)}
+              onValueChange={(val) => setValue('category_id', val)}
               error={errors.category_id?.message}
               searchable
               disabled={isLoading}
