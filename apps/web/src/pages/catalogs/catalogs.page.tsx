@@ -7,14 +7,14 @@ import { ProductServicesTab } from '../../features/catalogs/ui/ProductServicesTa
 
 export function CatalogsPage() {
   return (
-    <PageContainer className="max-w-5xl">
+    <PageContainer>
       <PageContainer.Header
         title="Catálogos y Configuración"
         description="Gestiona tus bancos, tarjetas, suscripciones y compras frecuentes."
       />
       <PageContainer.Body variant="transparent" className="p-0 border-none shadow-none bg-transparent">
         <Tabs defaultValue="institutions" className="w-full">
-          <TabsList className="mb-4">
+          <TabsList className="mb-6 w-max mx-auto sm:mx-0">
             <TabsTrigger value="institutions">Bancos e Instituciones</TabsTrigger>
             <TabsTrigger value="cards">Mis Tarjetas</TabsTrigger>
             <TabsTrigger value="subscriptions">Suscripciones</TabsTrigger>
