@@ -3,12 +3,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button, Input, Select, MoneyInput, PageContainer, Icon, Label } from '@mymoney/ui';
 import { useCards } from '../api/useCatalogs';
+import { useCategoriesQuery } from '@entities/category';
 
 const subscriptionSchema = z.object({
   name: z.string().min(2, 'El nombre es requerido'),
   amount: z.number().min(0, 'Debe ser positivo'),
+  category_id: z.string().min(1, 'La categoría es requerida'),
   billing_cycle: z.enum(['MONTHLY', 'YEARLY']),
-  next_billing_date: z.string().optional().nullable(),
+  next_billing_date: z.string().min(1, 'La fecha es requerida'),
   card_id: z.string().optional().nullable(),
   is_active: z.boolean(),
 });
@@ -23,6 +25,7 @@ interface SubscriptionFormProps {
 
 export function SubscriptionForm({ onSubmit, onCancel, isLoading }: SubscriptionFormProps) {
   const { data: cards } = useCards();
+  const { data: categories } = useCategoriesQuery();
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<SubscriptionFormData>({
     resolver: zodResolver(subscriptionSchema),
@@ -34,6 +37,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
 
   const billing_cycle = watch('billing_cycle');
   const card_id = watch('card_id');
+  const category_id = watch('category_id');
   const amount = watch('amount');
 
   return (
@@ -64,6 +68,24 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
           </div>
 
           <div className="col-span-12 md:col-span-6 space-y-2">
+            <Select
+              id="category_id"
+              name="category_id"
+              label="Categoría de Gasto"
+              value={category_id || ''}
+              onChange={(e) => setValue('category_id', e.target.value)}
+              error={errors.category_id?.message}
+              searchable
+              disabled={isLoading}
+            >
+              <option value="">Seleccionar categoría...</option>
+              {categories?.filter(c => c.type === 'EXPENSE').map(c => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </Select>
+          </div>
+
+          <div className="col-span-12 md:col-span-6 space-y-2">
             <Label htmlFor="amount">Costo de la Suscripción</Label>
             <MoneyInput
               id="amount"
@@ -91,7 +113,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
           </div>
 
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Label htmlFor="next_billing_date">Próxima fecha de cobro (Opcional)</Label>
+            <Label htmlFor="next_billing_date">Próxima fecha de cobro</Label>
             <Input
               id="next_billing_date"
               type="date"

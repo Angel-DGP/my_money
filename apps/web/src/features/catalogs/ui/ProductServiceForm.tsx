@@ -1,10 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Button, Input, PageContainer, Icon, Label } from '@mymoney/ui';
+import { Button, Input, Select, PageContainer, Icon, Label } from '@mymoney/ui';
+import { useCategoriesQuery } from '@entities/category';
 
 const productSchema = z.object({
   name: z.string().min(2, 'El nombre es requerido'),
+  category_id: z.string().min(1, 'La categoría es requerida'),
   description: z.string().optional().nullable(),
 });
 
@@ -17,9 +19,13 @@ interface ProductServiceFormProps {
 }
 
 export function ProductServiceForm({ onSubmit, onCancel, isLoading }: ProductServiceFormProps) {
-  const { register, handleSubmit, formState: { errors } } = useForm<ProductFormData>({
+  const { data: categories } = useCategoriesQuery();
+
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
   });
+
+  const category_id = watch('category_id');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
@@ -49,6 +55,24 @@ export function ProductServiceForm({ onSubmit, onCancel, isLoading }: ProductSer
           </div>
 
           <div className="col-span-12 md:col-span-6 space-y-2">
+            <Select
+              id="category_id"
+              name="category_id"
+              label="Categoría Principal"
+              value={category_id || ''}
+              onChange={(e) => setValue('category_id', e.target.value)}
+              error={errors.category_id?.message}
+              searchable
+              disabled={isLoading}
+            >
+              <option value="">Seleccionar categoría...</option>
+              {categories?.filter(c => c.type === 'EXPENSE').map(c => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </Select>
+          </div>
+
+          <div className="col-span-12 md:col-span-12 space-y-2">
             <Label htmlFor="description">Descripción (Opcional)</Label>
             <Input
               id="description"

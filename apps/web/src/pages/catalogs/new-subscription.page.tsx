@@ -7,9 +7,13 @@ export function NewSubscriptionPage() {
   const navigate = useNavigate();
   const createSubscription = useCreateSubscription();
 
-  const handleSubmit = (data: unknown) => {
+  const handleSubmit = (data: any) => {
     // Basic conversion for currency / amounts if needed, for now pass through
-    createSubscription.mutate(data, {
+    const payload = {
+      ...data,
+      currency: 'USD',
+    };
+    createSubscription.mutate(payload, {
       onSuccess: () => {
         navigate('/catalogs');
       }
