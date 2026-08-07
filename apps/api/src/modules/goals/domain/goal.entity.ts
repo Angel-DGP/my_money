@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { randomUUID } from 'crypto';
 import { Money } from '@mymoney/shared';
 import { GoalStatus } from './goal-status.enum';
@@ -36,7 +37,7 @@ export interface GoalProps {
 
 export class Goal {
   private props: GoalProps;
-  private domainEvents: unknown[] = [];
+  private domainEvents: DomainEvent[] = [];
 
   private constructor(props: GoalProps) {
     this.props = props;
@@ -102,7 +103,7 @@ export class Goal {
   }
 
   // Domain Events
-  getDomainEvents(): unknown[] {
+  getDomainEvents(): DomainEvent[] {
     return [...this.domainEvents];
   }
 
@@ -110,8 +111,7 @@ export class Goal {
     this.domainEvents = [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private addDomainEvent(event: any): void {
+  private addDomainEvent(event: DomainEvent): void {
     this.domainEvents.push(event);
   }
 

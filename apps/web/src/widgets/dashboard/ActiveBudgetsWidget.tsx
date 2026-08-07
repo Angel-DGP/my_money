@@ -1,4 +1,4 @@
-import { useBudgetsQuery } from '@entities/budget';
+import { useBudgetsQuery, type BudgetDto } from '@entities/budget';
 import { BudgetProgress } from '@mymoney/ui';
 import { QueryState } from '@shared/ui/QueryState';
 import { useCategoriesQuery } from '@entities/category';
@@ -30,7 +30,7 @@ export function ActiveBudgetsWidget() {
       >
         {(data) => (
           <div className="space-y-4">
-            {data.map((budget: any) => (
+            {data.map((budget: BudgetDto) => (
               <div key={budget.id} className="space-y-1">
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">{categoryMap[budget.category_id] || 'Categoría'}</span>

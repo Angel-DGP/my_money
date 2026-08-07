@@ -39,3 +39,5 @@ export * from './components/core/Tooltip';
 export * from './components/forms/Checkbox';
 export * from './components/forms/ColorPicker';
 export * from './components/core/ThemeToggle/ThemeToggle';
+export * from './components/composite/DataTable/DataTable';
+export * from './hooks/useTableState';

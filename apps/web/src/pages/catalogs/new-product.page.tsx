@@ -7,7 +7,7 @@ export function NewProductServicePage() {
   const navigate = useNavigate();
   const createProduct = useCreateProductService();
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: unknown) => {
     createProduct.mutate(data, {
       onSuccess: () => {
         navigate('/catalogs');

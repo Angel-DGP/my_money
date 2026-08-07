@@ -1,3 +1,4 @@
+import { AuthenticatedRequest } from '../../../common/interfaces/authenticated-request.interface';
 import { Controller, Get, Post, Patch, Delete, Body, Param, HttpCode, HttpStatus, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiCookieAuth } from '@nestjs/swagger';
 import { CreateCategoryUseCase } from '../application/use-cases/create-category.use-case';
@@ -24,7 +25,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Get all categories' })
   @ApiResponse({ status: 200, description: 'List of all categories including system ones.', type: [CategoryDto] })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async getCategories(@Request() req: any): Promise<CustomApiResponse<CategoryDto[]>> {
+  async getCategories(@Request() req: AuthenticatedRequest): Promise<CustomApiResponse<CategoryDto[]>> {
     const data = await this.listCategoriesUseCase.execute(req.user.id);
     return { data };
   }
@@ -33,8 +34,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Create a new category' })
   @ApiResponse({ status: 201, description: 'The created category.' })
   async createCategory(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Body() dto: CreateCategoryDto
   ): Promise<CustomApiResponse<CategoryDto>> {
     const data = await this.createCategoryUseCase.execute(req.user.id, dto);
@@ -45,8 +45,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Update an existing category' })
   @ApiResponse({ status: 200, description: 'The updated category.' })
   async updateCategory(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() dto: UpdateCategoryDto
   ): Promise<CustomApiResponse<CategoryDto>> {
@@ -59,8 +58,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Delete a category' })
   @ApiResponse({ status: 204, description: 'Category successfully deleted.' })
   async deleteCategory(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Param('id') id: string
   ) {
     await this.deleteCategoryUseCase.execute(req.user.id, id);

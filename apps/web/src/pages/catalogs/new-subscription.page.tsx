@@ -7,7 +7,7 @@ export function NewSubscriptionPage() {
   const navigate = useNavigate();
   const createSubscription = useCreateSubscription();
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: unknown) => {
     // Basic conversion for currency / amounts if needed, for now pass through
     createSubscription.mutate(data, {
       onSuccess: () => {

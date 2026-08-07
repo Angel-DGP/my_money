@@ -37,7 +37,7 @@ export class CreateAccountUseCase {
     await this.accountRepository.save(account);
 
     // Emit event asynchronously
-    this.eventEmitter.emit(event.type, event);
+    this.eventEmitter.emit(event.constructor.name, event);
 
     return AccountDto.fromDomain(account);
   }

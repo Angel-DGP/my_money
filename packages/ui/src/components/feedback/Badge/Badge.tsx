@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 import { cn } from '../../../utils/cn';
 
 export interface BadgeProps {
-  variant?: 'primary' | 'neutral' | 'secondary' | 'success' | 'warning' | 'error';
-  size?: 'sm' | 'md';
+  variant?: 'primary' | 'neutral' | 'secondary' | 'success' | 'warning' | 'error' | undefined;
+  size?: 'sm' | 'md' | undefined;
   children: ReactNode;
   className?: string;
 }

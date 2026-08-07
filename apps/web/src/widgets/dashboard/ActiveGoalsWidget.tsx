@@ -1,4 +1,4 @@
-import { useGoalsQuery } from '@entities/goal';
+import { useGoalsQuery, type GoalDto } from '@entities/goal';
 import { GoalProgress } from '@mymoney/ui';
 import { QueryState } from '@shared/ui/QueryState';
 
@@ -6,7 +6,7 @@ export function ActiveGoalsWidget() {
   const { data: response = [], isLoading, isError, refetch } = useGoalsQuery();
 
   // Filtrar solo las que no estén completadas
-  const activeGoals = response.filter((g: any) => g.status !== 'completed').slice(0, 3); // Top 3
+  const activeGoals = response.filter((g: GoalDto) => g.status !== 'completed').slice(0, 3); // Top 3
 
   return (
     <div className="bg-background rounded-xl border border-border-subtle p-6">
@@ -22,7 +22,7 @@ export function ActiveGoalsWidget() {
       >
         {(data) => (
           <div className="space-y-4">
-            {data.map((goal: any) => (
+            {data.map((goal: GoalDto) => (
               <div key={goal.id} className="space-y-1">
                 <div className="flex justify-between text-sm">
                   <span className="font-medium">{goal.name}</span>

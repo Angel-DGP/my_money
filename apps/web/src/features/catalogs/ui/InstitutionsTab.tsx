@@ -3,8 +3,7 @@ import { Button, Table, TableBody, TableCell, TableRow, Card, Icon, TableHeader 
 import { QueryState } from '../../../shared/ui/QueryState';
 import { Plus, Building2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useTableState } from '../../../shared/hooks/useTableState';
-import { DataTableToolbar, SortableHeader, TablePagination } from '../../../shared/ui/DataTableToolbar';
+import { useTableState, DataTableToolbar, SortableHeader, TablePagination } from '@mymoney/ui';
 import type { InstitutionDto } from '../../../shared/api/dto/catalogs.dto';
 
 export function InstitutionsTab() {
@@ -90,7 +89,7 @@ export function InstitutionsTab() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    paginated.map((inst) => (
+                    paginated.map((inst: InstitutionDto) => (
                       <TableRow key={inst.id} className="hover:bg-surface-hover transition-colors">
                         <TableCell className="font-medium">{inst.name}</TableCell>
                         <TableCell>{inst.type}</TableCell>

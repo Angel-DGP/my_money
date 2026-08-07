@@ -32,7 +32,7 @@ export class GetMonthlyFlowUseCase {
       })
     ]);
 
-    const aggregateFlow = (transactions: any[], monthLabel: string) => {
+    const aggregateFlow = (transactions: Array<any>, monthLabel: string) => {
       const flowByCurrency: Record<string, { income: number, expense: number }> = {};
       
       for (const tx of transactions) {
@@ -44,10 +44,11 @@ export class GetMonthlyFlowUseCase {
           flowByCurrency[tx.currency] = { income: 0, expense: 0 };
         }
         
+        const amount = Number(tx.amount);
         if (tx.type === 'INCOME') {
-          flowByCurrency[tx.currency].income += tx.amount;
+          flowByCurrency[tx.currency].income += amount;
         } else if (tx.type === 'EXPENSE') {
-          flowByCurrency[tx.currency].expense += tx.amount;
+          flowByCurrency[tx.currency].expense += amount;
         }
       }
 

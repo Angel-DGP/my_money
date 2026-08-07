@@ -1,3 +1,4 @@
+import { AuthenticatedRequest } from '../../../common/interfaces/authenticated-request.interface';
 import { Controller, Get, Patch, Param, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { ListNotificationsUseCase } from '../application/use-cases/list-notifications.use-case';
@@ -12,14 +13,14 @@ export class NotificationsController {
   ) {}
 
   @Get()
-  async list(@Request() req: any) {
+  async list(@Request() req: AuthenticatedRequest) {
     const data = await this.listNotificationsUseCase.execute(req.user.id);
     return { data };
   }
 
   @Patch(':id/read')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async markAsRead(@Request() req: any, @Param('id') id: string) {
+  async markAsRead(@Request() req: AuthenticatedRequest, @Param('id') id: string) {
     await this.markNotificationReadUseCase.execute(req.user.id, id);
   }
 }

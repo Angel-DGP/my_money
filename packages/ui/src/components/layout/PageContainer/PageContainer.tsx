@@ -60,6 +60,7 @@ const PageContainerHeader = ({
     </div>
   );
 };
+PageContainerHeader.displayName = 'PageContainerHeader';
 
 // ─── Body ──────────────────────────────────────────────────────────────────
 
@@ -88,6 +89,7 @@ const PageContainerBody = ({
     </div>
   );
 };
+PageContainerBody.displayName = 'PageContainerBody';
 
 // ─── Footer ────────────────────────────────────────────────────────────────
 
@@ -115,6 +117,7 @@ const PageContainerFooter = ({
     </div>
   );
 };
+PageContainerFooter.displayName = 'PageContainerFooter';
 
 export const PageContainer = Object.assign(PageContainerComponent, {
   Header: PageContainerHeader,

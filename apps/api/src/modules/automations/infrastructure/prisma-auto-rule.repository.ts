@@ -67,6 +67,7 @@ export class PrismaAutoRuleRepository implements IAutoRuleRepository {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private toDomain(data: any): AutoRule {
     return AutoRule.reconstitute({
       id: data.id,

@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { IUnitOfWork, UNIT_OF_WORK } from '@mymoney/shared';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -31,7 +32,7 @@ export class GetBudgetByIdUseCase {
       });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      budget.getDomainEvents().forEach((event: any) => this.eventEmitter.emit(event.type, event));
+      budget.getDomainEvents().forEach((event: DomainEvent) => this.eventEmitter.emit(event.constructor.name, event));
       budget.clearDomainEvents();
     }
 

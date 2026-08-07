@@ -72,7 +72,7 @@ export const TransactionCard = React.forwardRef<HTMLDivElement, TransactionCardP
       <Card ref={ref} padding="md" className={cn('flex flex-row items-center gap-4', className)} {...props}>
         {/* Icon */}
         <div className={cn('flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center', iconBgClass)}>
-          <Icon name={icon as any} size="md" />
+          <Icon name={icon!} size="md" />
         </div>
 
         {/* Content */}
@@ -87,7 +87,7 @@ export const TransactionCard = React.forwardRef<HTMLDivElement, TransactionCardP
             <div className="flex-shrink-0 text-right">
               <Amount 
                 value={amountToUse} 
-                variant={amountVariant as any} 
+                variant={amountVariant} 
                 signDisplay={signDisplay}
                 weight="bold"
                 size="md"
@@ -99,7 +99,7 @@ export const TransactionCard = React.forwardRef<HTMLDivElement, TransactionCardP
           {badges.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {badges.map((badge, idx) => (
-                <Badge key={idx} variant={badge.variant || 'neutral' as any}>
+                <Badge key={idx} variant={badge.variant || 'neutral'}>
                   {badge.text}
                 </Badge>
               ))}

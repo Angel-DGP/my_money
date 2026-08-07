@@ -74,7 +74,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
           <Select
             label="Moneda"
             value={currency}
-            onValueChange={(val) => setValue('currency', val as any)}
+            onValueChange={(val) => setValue('currency', val as 'USD' | 'EUR')}
             options={[
               { label: 'USD', value: 'USD' },
               { label: 'EUR', value: 'EUR' },
@@ -86,7 +86,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
           <Select
             label="Ciclo de Facturación"
             value={billing_cycle}
-            onValueChange={(val) => setValue('billing_cycle', val as any)}
+            onValueChange={(val) => setValue('billing_cycle', val as 'MONTHLY' | 'YEARLY' | 'WEEKLY')}
             options={[
               { label: 'Semanal', value: 'WEEKLY' },
               { label: 'Mensual', value: 'MONTHLY' },
@@ -108,7 +108,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
           <Select
           label="Tarjeta Asociada (Opcional)"
           value={card_id || ''}
-          onValueChange={(val) => setValue('card_id', val)}
+          onValueChange={(val) => setValue('card_id', val as string)}
           options={[
             { label: 'Ninguna', value: '' },
             ...(cards?.map(c => ({ label: `${c.name} (*${c.last_four})`, value: c.id })) || [])
@@ -129,7 +129,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
           <Select
           label="Estado"
           value={status}
-          onValueChange={(val) => setValue('status', val as any)}
+          onValueChange={(val) => setValue('status', val as 'ACTIVE' | 'CANCELLED' | 'PAUSED')}
           options={[
             { label: 'Activa', value: 'ACTIVE' },
             { label: 'Pausada', value: 'PAUSED' },

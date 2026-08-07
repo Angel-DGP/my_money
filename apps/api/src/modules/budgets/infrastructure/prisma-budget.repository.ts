@@ -132,7 +132,7 @@ export class PrismaBudgetRepository implements IBudgetRepository {
     return Budget.reconstitute({
       id: data.id,
       userId: data.user_id,
-      categoryId: data.category_id,
+      categoryId: data.category_id as string,
       period: data.period as BudgetPeriod,
       amount: Money.of(data.amount.toString(), data.currency),
       startDate: data.start_date,
@@ -146,7 +146,7 @@ export class PrismaBudgetRepository implements IBudgetRepository {
       ignoreRefunds: data.ignore_refunds,
       ignoreTransfers: data.ignore_transfers,
       isFrozen: data.is_frozen,
-      notes: data.notes,
+      notes: data.notes || undefined,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     });

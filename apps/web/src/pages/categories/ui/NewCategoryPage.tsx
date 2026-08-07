@@ -38,7 +38,7 @@ export function NewCategoryPage() {
 
       <PageContainer.Body variant="transparent" className="py-6">
         <CategoryForm
-          onSubmit={handleSubmit as any}
+          onSubmit={(data) => handleSubmit(data as CreateCategoryDto)}
           onCancel={() => navigate('/categories')}
           isLoading={createCategory.isPending}
         />

@@ -1,3 +1,4 @@
+import { AuthenticatedRequest } from '../../../common/interfaces/authenticated-request.interface';
 import { Controller, Post, Get, Param, Body, Query, Request, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { CreateGoalUseCase } from '../application/use-cases/create-goal.use-case';
 import { GetGoalsUseCase } from '../application/use-cases/get-goals.use-case';
@@ -22,8 +23,7 @@ export class GoalsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createGoal(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Body() dto: CreateGoalDto,
   ): Promise<ApiResponse<GoalDto>> {
     const data = await this.createGoalUseCase.execute(req.user.id, dto);
@@ -32,8 +32,7 @@ export class GoalsController {
 
   @Get()
   async getGoals(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Query('status') status?: string,
   ): Promise<ApiResponse<GoalDto[]>> {
     const data = await this.getGoalsUseCase.execute(req.user.id, status);
@@ -42,8 +41,7 @@ export class GoalsController {
 
   @Get(':id')
   async getGoalById(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Param('id') id: string,
   ): Promise<ApiResponse<GoalDto>> {
     const data = await this.getGoalByIdUseCase.execute(req.user.id, id);
@@ -53,8 +51,7 @@ export class GoalsController {
   @Post(':id/add-progress')
   @HttpCode(HttpStatus.OK)
   async addProgress(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() dto: AddGoalProgressDto,
   ): Promise<ApiResponse<GoalDto>> {

@@ -1,3 +1,4 @@
+import { AuthenticatedRequest } from '../../../common/interfaces/authenticated-request.interface';
 import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { GetInsightsUseCase } from '../application/use-cases/get-insights.use-case';
@@ -15,8 +16,7 @@ export class InsightsController {
 
   @Get()
   async getInsights(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
   ): Promise<ApiResponse<InsightDto[]>> {
     const data = await this.getInsightsUseCase.execute(req.user.id);
     return { data };
@@ -24,8 +24,7 @@ export class InsightsController {
 
   @Get('health-score')
   async getHealthScore(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
   ): Promise<ApiResponse<any>> {
     const data = await this.insightsService.getHealthScore(req.user.id);
     return { data };

@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
 import { SessionsService } from '../sessions/sessions.service';
+import type { AuthenticatedUser } from '../common/interfaces/authenticated-request.interface';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<any> {
+  async validateUser(email: string, pass: string): Promise<AuthenticatedUser | null> {
     let user = await this.usersService.findByEmail(email);
     if (!user) {
       // Auto-create user for demo/MVP purposes
@@ -34,7 +35,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any, userAgent?: string, ipAddress?: string) {
+  async login(user: AuthenticatedUser, userAgent?: string, ipAddress?: string) {
     // Generar Refresh Token (Session)
     const { plainToken: refreshToken } = await this.sessionsService.createSession(
       user.id,

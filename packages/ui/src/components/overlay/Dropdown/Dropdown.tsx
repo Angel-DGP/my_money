@@ -58,10 +58,10 @@ const DropdownTrigger = React.forwardRef<HTMLButtonElement, DropdownTriggerProps
 
     return (
       <Comp
-        ref={(node: any) => {
+        ref={(node: HTMLButtonElement | null) => {
           triggerRef.current = node;
           if (typeof ref === 'function') ref(node);
-          else if (ref) ref.current = node;
+          else if (ref) (ref as React.MutableRefObject<HTMLButtonElement | null>).current = node;
         }}
         type="button"
         aria-haspopup="menu"
@@ -176,7 +176,7 @@ const DropdownContent = React.forwardRef<HTMLDivElement, DropdownContentProps>(
         ref={(node) => {
           contentRef.current = node;
           if (typeof ref === 'function') ref(node);
-          else if (ref) (ref as any).current = node;
+          else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
         }}
         style={{ top: coords.top, left: coords.left, position: 'absolute' }}
         className={cn(

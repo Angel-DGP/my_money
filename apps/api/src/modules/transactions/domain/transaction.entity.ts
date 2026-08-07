@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { randomUUID } from 'crypto';
 import { Money, TransactionCreatedEvent, TransactionDeletedEvent, TransactionAmountChangedEvent, TransactionDateChangedEvent, TransactionCategoryChangedEvent } from '@mymoney/shared';
 import { TransactionType } from './transaction-type.enum';
@@ -35,7 +36,7 @@ export interface TransactionProps {
 
 export class Transaction {
   private props: TransactionProps;
-  private domainEvents: unknown[] = [];
+  private domainEvents: DomainEvent[] = [];
 
   private constructor(props: TransactionProps) {
     this.props = props;
@@ -75,7 +76,7 @@ export class Transaction {
   }
 
   // Events
-  public getDomainEvents(): unknown[] {
+  public getDomainEvents(): DomainEvent[] {
     return [...this.domainEvents];
   }
 
@@ -83,8 +84,7 @@ export class Transaction {
     this.domainEvents = [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private addDomainEvent(event: any): void {
+  private addDomainEvent(event: DomainEvent): void {
     this.domainEvents.push(event);
   }
 

@@ -50,7 +50,7 @@ export function EditAccountPage() {
           {(account: Account) => (
             <AccountForm
               initialData={account}
-              onSubmit={handleSubmit as any}
+              onSubmit={(data) => handleSubmit(data as UpdateAccountDto)}
               onCancel={() => navigate('/accounts')}
               isLoading={updateAccount.isPending}
             />

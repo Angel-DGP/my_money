@@ -1,3 +1,4 @@
+import { AuthenticatedRequest } from '../../../common/interfaces/authenticated-request.interface';
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { CreateAutoRuleUseCase } from '../application/use-cases/create-auto-rule.use-case';
@@ -22,7 +23,7 @@ export class AutomationsController {
   @Post()
   async create(
     @Body() dto: CreateAutoRuleDto,
-    @Request() req: any
+    @Request() req: AuthenticatedRequest
   ): Promise<CustomApiResponse<AutoRuleDto>> {
     const userId = req.user.id;
     const rule = await this.createAutoRuleUseCase.execute(userId, dto);
@@ -31,7 +32,7 @@ export class AutomationsController {
 
   @Get()
   async findAll(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Query('activeOnly') activeOnly?: string,
   ): Promise<CustomApiResponse<AutoRuleDto[]>> {
     const userId = req.user.id;
@@ -43,7 +44,7 @@ export class AutomationsController {
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateAutoRuleDto,
-    @Request() req: any
+    @Request() req: AuthenticatedRequest
   ): Promise<CustomApiResponse<AutoRuleDto>> {
     const userId = req.user.id;
     const rule = await this.updateAutoRuleUseCase.execute(userId, id, dto);
@@ -53,7 +54,7 @@ export class AutomationsController {
   @Delete(':id')
   async remove(
     @Param('id') id: string,
-    @Request() req: any
+    @Request() req: AuthenticatedRequest
   ): Promise<{ success: boolean }> {
     const userId = req.user.id;
     await this.deleteAutoRuleUseCase.execute(userId, id);

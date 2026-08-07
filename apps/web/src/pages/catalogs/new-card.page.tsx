@@ -7,7 +7,7 @@ export function NewCardPage() {
   const navigate = useNavigate();
   const createCard = useCreateCard();
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: unknown) => {
     createCard.mutate(data, {
       onSuccess: () => {
         navigate('/catalogs');

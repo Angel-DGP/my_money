@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { Goal } from './goal.entity';
 import { GoalStatus } from './goal-status.enum';
 import { GoalException } from './exceptions/goal.exceptions';
@@ -9,7 +10,7 @@ describe('Goal Entity', () => {
   const userId = 'user-123';
   const name = 'Viaje a Japón';
 
-  const createMoney = (amount: number, currency: string = 'USD') => {
+  const createMoney = (amount: number, currency: Currency = Currency.USD) => {
     return Money.of(amount, currency);
   };
 
@@ -148,6 +149,11 @@ describe('Goal Entity', () => {
         currentAmount: createMoney(500),
         status: GoalStatus.PAUSED,
         targetDate: null,
+        description: "",
+        priority: 3,
+        color: "#000",
+        icon: "target",
+        accountId: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       });

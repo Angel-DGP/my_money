@@ -19,7 +19,7 @@ export function InsightsWidget({ insights, className }: InsightsWidgetProps) {
         {Array.isArray(insights) && insights.map((insight) => (
           <AlertBanner
             key={insight.id}
-            variant={insight.type.toLowerCase() as any}
+            variant={insight.type.toLowerCase() as React.ComponentProps<typeof AlertBanner>['variant']}
             title={insight.title}
             description={insight.description}
           />

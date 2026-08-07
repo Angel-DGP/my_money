@@ -1,7 +1,6 @@
 import { Table, TableHeader, TableRow, TableBody, TableCell, Icon, Button, Badge } from '@mymoney/ui';
 import type { Category } from '@entities/category';
-import { useTableState } from '../../../shared/hooks/useTableState';
-import { DataTableToolbar, SortableHeader, TablePagination } from '../../../shared/ui/DataTableToolbar';
+import { useTableState, DataTableToolbar, SortableHeader, TablePagination } from '@mymoney/ui';
 
 interface CategoriesTableProps {
   categories: Category[];
@@ -91,7 +90,7 @@ export function CategoriesTable({ categories, onEdit, onDelete }: CategoriesTabl
                         className="w-8 h-8 rounded-full flex items-center justify-center"
                         style={{ backgroundColor: category.color || '#E5E7EB' }}
                       >
-                        <Icon name={(category.icon as any) || 'tag'} size="sm" className="text-white mix-blend-difference" />
+                        <Icon name={(category.icon as React.ComponentProps<typeof Icon>['name']) || 'tag'} size="sm" className="text-white mix-blend-difference" />
                       </div>
                       <span className="font-medium text-text-primary">{category.name}</span>
                     </div>

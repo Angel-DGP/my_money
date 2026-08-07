@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { Budget, BudgetPeriod, BudgetStatus } from './budget.entity';
 import { Money, BalanceDelta } from '@mymoney/shared';
 import { 

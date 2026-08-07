@@ -2,6 +2,7 @@ import { Controller, Post, Body, Req, Res, HttpCode, UnauthorizedException, Get,
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import type { AuthenticatedRequest } from '../common/interfaces/authenticated-request.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -123,7 +124,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  getMe(@Req() req: Request & { user: any }) {
+  getMe(@Req() req: AuthenticatedRequest) {
     return {
       id: req.user.id,
       email: req.user.email,

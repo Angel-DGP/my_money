@@ -7,7 +7,7 @@ import {
   useUpdateBudget, 
   useDeleteBudget 
 } from '@entities/budget';
-import type { BudgetDto } from '@entities/budget';
+import type { BudgetDto, CreateBudgetDto, UpdateBudgetDto } from '@entities/budget';
 import { useCategoriesQuery } from '@entities/category';
 import { BudgetsTable } from '@features/budgets';
 import { BudgetForm } from '@features/budgets';
@@ -29,7 +29,7 @@ export function BudgetsListWidget() {
 
   const categoriesList = categoriesResponse || [];
   
-  const categoryMap = categoriesList.reduce((acc, cat) => {
+  const categoryMap = categoriesList.reduce((acc: Record<string, string>, cat) => {
     acc[cat.id] = cat.name;
     return acc;
   }, {} as Record<string, string>);
@@ -50,28 +50,28 @@ export function BudgetsListWidget() {
     setSelectedBudget(null);
   };
 
-  const handleSubmit = (formData: any) => {
+  const handleSubmit = (formData: unknown) => {
     if (selectedBudget) {
       updateBudget.mutate(
-        { id: selectedBudget.id, data: formData },
+        { id: selectedBudget.id, data: formData as UpdateBudgetDto },
         {
           onSuccess: () => {
             toast({ title: 'Éxito', description: 'Presupuesto actualizado', variant: 'success' });
             handleCloseModal();
           },
-          onError: (error: any) => {
-            toast({ title: 'Error', description: error.message || 'No se pudo actualizar', variant: 'error' });
+          onError: (error: unknown) => {
+            toast({ title: 'Error', description: (error as Error).message || 'No se pudo actualizar', variant: 'error' });
           }
         }
       );
     } else {
-      createBudget.mutate(formData, {
+      createBudget.mutate(formData as CreateBudgetDto, {
         onSuccess: () => {
           toast({ title: 'Éxito', description: 'Presupuesto creado', variant: 'success' });
           handleCloseModal();
         },
-        onError: (error: any) => {
-          toast({ title: 'Error', description: error.message || 'No se pudo crear', variant: 'error' });
+        onError: (error: unknown) => {
+          toast({ title: 'Error', description: (error as Error).message || 'No se pudo crear', variant: 'error' });
         }
       });
     }
@@ -83,8 +83,8 @@ export function BudgetsListWidget() {
         onSuccess: () => {
           toast({ title: 'Éxito', description: 'Presupuesto eliminado', variant: 'success' });
         },
-        onError: (error: any) => {
-          toast({ title: 'Error', description: error.message || 'No se pudo eliminar', variant: 'error' });
+        onError: (error: unknown) => {
+          toast({ title: 'Error', description: (error as Error).message || 'No se pudo eliminar', variant: 'error' });
         }
       });
     }

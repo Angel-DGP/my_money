@@ -6,10 +6,10 @@ import { NotFoundException, UnprocessableEntityException } from '@nestjs/common'
 
 describe('CreateBudgetUseCase', () => {
   let useCase: CreateBudgetUseCase;
-  let mockBudgetRepo: any;
-  let mockCategoryRepo: any;
-  let mockUoW: any;
-  let mockEventEmitter: any;
+  let mockBudgetRepo: Record<string, jest.Mock>;
+  let mockCategoryRepo: Record<string, jest.Mock>;
+  let mockUoW: Record<string, jest.Mock>;
+  let mockEventEmitter: Record<string, jest.Mock>;
 
   beforeEach(() => {
     mockBudgetRepo = {

@@ -8,10 +8,10 @@ export interface StatCardProps {
   icon?: IconName;
   trend?: {
     value: number;
-    label?: string;
-    direction?: 'up' | 'down' | 'neutral';
-    isPositive?: boolean;
-  };
+    label?: string | undefined;
+    direction?: 'up' | 'down' | 'neutral' | undefined;
+    isPositive?: boolean | undefined;
+  } | undefined;
   className?: string;
 }
 

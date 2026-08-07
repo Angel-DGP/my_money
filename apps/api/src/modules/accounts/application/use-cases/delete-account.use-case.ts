@@ -21,6 +21,6 @@ export class DeleteAccountUseCase {
 
     await this.accountRepository.save(account);
 
-    this.eventEmitter.emit(event.type, event);
+    this.eventEmitter.emit(event.constructor.name, event);
   }
 }

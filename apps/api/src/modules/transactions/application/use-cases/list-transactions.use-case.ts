@@ -10,7 +10,7 @@ export class ListTransactionsUseCase {
   ) {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async execute(userId: string, filters: any, page: number, limit: number): Promise<TransactionPaginatedResponseDto> {
+  async execute(userId: string, filters: Record<string, unknown>, page: number, limit: number): Promise<TransactionPaginatedResponseDto> {
     const skip = (page - 1) * limit;
     const [transactions, total] = await this.transactionRepository.findMany(userId, filters, skip, limit);
 

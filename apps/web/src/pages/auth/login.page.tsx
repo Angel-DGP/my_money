@@ -19,7 +19,7 @@ export const LoginPage = () => {
   const location = useLocation();
   const { theme, setTheme } = useTheme();
 
-  const from = (location.state as any)?.from?.pathname || '/';
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
 
   const {
     register,

@@ -57,7 +57,7 @@ export const errorInterceptor = async (error: AxiosError): Promise<never> => {
   const originalRequest = error.config as RetryConfig | undefined;
 
   // Solo actuar en errores 401
-  if (error.response?.status !== 401) {
+  if ((error as { response?: { status?: number; data?: { message?: string } } }).response?.status !== 401) {
     return Promise.reject(error);
   }
 

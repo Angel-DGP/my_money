@@ -82,7 +82,7 @@ export function NotificationBell() {
                   onClick={() => handleNotificationClick(item)}
                 >
                   <div className={`mt-0.5 shrink-0 ${iconProps.color}`}>
-                    <Icon name={iconProps.name as any} size="sm" />
+                    <Icon name={iconProps.name as React.ComponentProps<typeof Icon>['name']} size="sm" />
                   </div>
                   <div className="flex flex-col gap-1 min-w-0 flex-1">
                     <p className={`text-sm leading-tight ${isUnread ? 'font-medium text-text-primary' : 'text-text-secondary'}`}>

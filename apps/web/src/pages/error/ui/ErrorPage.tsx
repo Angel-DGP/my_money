@@ -2,7 +2,7 @@ import { Button, Icon } from '@mymoney/ui';
 import { useRouteError, useNavigate } from 'react-router-dom';
 
 export function ErrorPage() {
-  const error = useRouteError() as any;
+  const error = useRouteError() as unknown;
   const navigate = useNavigate();
 
   return (
@@ -15,9 +15,13 @@ export function ErrorPage() {
         Ha ocurrido un error inesperado en la aplicación.
       </p>
       
-      {error && (
+      {!!error && (
         <div className="mb-8 w-full max-w-lg rounded-md bg-surface p-4 text-left font-mono text-sm text-text-primary overflow-auto">
-          {error.statusText || error.message || 'Error desconocido'}
+          {typeof error === 'object' && error !== null && 'statusText' in error
+            ? String((error as { statusText: unknown }).statusText)
+            : (error instanceof Error) 
+              ? error.message 
+              : 'Error desconocido'}
         </div>
       )}
 

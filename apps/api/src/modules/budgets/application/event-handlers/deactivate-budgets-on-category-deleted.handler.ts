@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { Injectable, Inject } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { IUnitOfWork, UNIT_OF_WORK } from '@mymoney/shared';
@@ -34,7 +35,7 @@ export class DeactivateBudgetsOnCategoryDeletedHandler {
     // Emits if there are any events (though deactivate currently doesn't emit domain events, just in case)
     for (const budget of activeBudgets) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      budget.getDomainEvents().forEach((evt: any) => this.eventEmitter.emit(evt.type, evt));
+      budget.getDomainEvents().forEach((evt: DomainEvent) => this.eventEmitter.emit(evt.constructor.name, evt));
       budget.clearDomainEvents();
     }
   }

@@ -39,7 +39,7 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading }: InstitutionFo
           <Select
           label="Tipo"
           value={type}
-          onValueChange={(val) => setValue('type', val as any)}
+          onValueChange={(val) => setValue('type', val as 'BANK' | 'WALLET' | 'COOP' | 'OTHER')}
           options={[
             { label: 'Banco', value: 'BANK' },
             { label: 'Billetera Digital', value: 'WALLET' },

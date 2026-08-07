@@ -19,10 +19,10 @@ export function useAuth() {
         variant: 'success',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast({
         title: 'Error de autenticación',
-        description: error.response?.data?.message || 'Credenciales inválidas',
+        description: (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Credenciales inválidas',
         variant: 'error',
       });
     },
@@ -38,10 +38,10 @@ export function useAuth() {
         variant: 'success',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast({
         title: 'Error de registro',
-        description: error.response?.data?.message || 'No se pudo crear la cuenta',
+        description: (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'No se pudo crear la cuenta',
         variant: 'error',
       });
     },

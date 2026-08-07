@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { UpdateBudgetUseCase } from './update-budget.use-case';
 import { Money, Currency } from '@mymoney/shared';
 import { NotFoundException } from '@nestjs/common';
@@ -5,10 +6,10 @@ import { BudgetStatus, BudgetPeriod } from '../../domain/budget.entity';
 
 describe('UpdateBudgetUseCase', () => {
   let useCase: UpdateBudgetUseCase;
-  let mockBudgetRepo: any;
-  let mockUoW: any;
-  let mockEventEmitter: any;
-  let mockBudget: any;
+  let mockBudgetRepo: Record<string, jest.Mock>;
+  let mockUoW: Record<string, jest.Mock>;
+  let mockEventEmitter: Record<string, jest.Mock>;
+  let mockBudget: Record<string, jest.Mock>;
 
   beforeEach(() => {
     mockBudget = {
@@ -77,10 +78,10 @@ describe('UpdateBudgetUseCase', () => {
     });
     
     expect(result).toBeDefined();
-    expect(mockBudget.updateAmount).toHaveBeenCalled();
-    expect(mockBudget.updateAlertThreshold).toHaveBeenCalledWith(90);
+    expect((mockBudget.updateAmount as jest.Mock)).toHaveBeenCalled();
+    expect((mockBudget.updateAlertThreshold as jest.Mock)).toHaveBeenCalledWith(90);
     expect(mockBudgetRepo.save).toHaveBeenCalledWith(mockBudget);
     expect(mockEventEmitter.emit).toHaveBeenCalledWith('BudgetUpdated', { type: 'BudgetUpdated' });
-    expect(mockBudget.clearDomainEvents).toHaveBeenCalled();
+    expect((mockBudget.clearDomainEvents as jest.Mock)).toHaveBeenCalled();
   });
 });

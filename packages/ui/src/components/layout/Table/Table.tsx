@@ -58,8 +58,8 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
 TableRow.displayName = 'Table.Row';
 
 export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
-  asChild?: boolean;
-  align?: 'left' | 'center' | 'right';
+  asChild?: boolean | undefined;
+  align?: 'left' | 'center' | 'right' | undefined;
 }
 
 const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
@@ -79,8 +79,8 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
 TableHead.displayName = 'Table.Head';
 
 export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
-  asChild?: boolean;
-  align?: 'left' | 'center' | 'right';
+  asChild?: boolean | undefined;
+  align?: 'left' | 'center' | 'right' | undefined;
 }
 
 const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(

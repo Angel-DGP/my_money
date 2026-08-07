@@ -53,7 +53,7 @@ export class DeleteCategoryUseCase {
 
     // Publish events
     for (const event of events) {
-      this.eventEmitter.emit(event.type, event);
+      this.eventEmitter.emit(event.constructor.name, event);
     }
   }
 }

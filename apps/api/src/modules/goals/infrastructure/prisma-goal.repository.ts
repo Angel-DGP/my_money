@@ -6,6 +6,24 @@ import { IGoalRepository } from '../domain/goal.repository.interface';
 import { Goal } from '../domain/goal.entity';
 import { GoalStatus } from '../domain/goal-status.enum';
 
+interface RawGoal {
+  id: string;
+  user_id: string;
+  name: string;
+  target_amount: any;
+  current_amount: any;
+  currency: string;
+  target_date: Date | null;
+  status: string;
+  description: string | null;
+  priority: number;
+  color: string | null;
+  icon: string | null;
+  account_id: string | null;
+  created_at: Date;
+  updated_at: Date;
+}
+
 @Injectable()
 export class PrismaGoalRepository implements IGoalRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -73,14 +91,13 @@ export class PrismaGoalRepository implements IGoalRepository {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private mapToDomain(record: any): Goal {
+  private mapToDomain(record: RawGoal): Goal {
     return Goal.reconstitute({
       id: record.id,
       userId: record.user_id,
       name: record.name,
-      targetAmount: Money.of(record.target_amount, record.currency),
-      currentAmount: Money.of(record.current_amount, record.currency),
+      targetAmount: Money.of(record.target_amount.toString(), record.currency as any),
+      currentAmount: Money.of(record.current_amount.toString(), record.currency as any),
       targetDate: record.target_date,
       status: record.status as GoalStatus,
       description: record.description,

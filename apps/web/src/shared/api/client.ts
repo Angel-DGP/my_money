@@ -18,7 +18,7 @@ apiClient.interceptors.response.use((res) => {
     const { data, meta } = res.data;
     res.data = data;
     if (meta) {
-      (res as any).meta = meta;
+      (res as { meta?: unknown }).meta = meta;
     }
   }
   return res;

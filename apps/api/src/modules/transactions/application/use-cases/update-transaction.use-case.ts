@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Money, IUnitOfWork, UNIT_OF_WORK, BalanceDelta } from '@mymoney/shared';
@@ -102,9 +103,9 @@ export class UpdateTransactionUseCase {
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transaction.getDomainEvents().forEach((event: any) => this.eventEmitter.emit(event.type, event));
+    transaction.getDomainEvents().forEach((event: DomainEvent) => this.eventEmitter.emit(event.constructor.name, event));
     if (balanceChangeEvent) {
-      this.eventEmitter.emit(balanceChangeEvent.type, balanceChangeEvent);
+      this.eventEmitter.emit(balanceChangeEvent.constructor.name, balanceChangeEvent);
     }
     transaction.clearDomainEvents();
 

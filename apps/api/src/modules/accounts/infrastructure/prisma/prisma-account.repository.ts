@@ -90,13 +90,13 @@ export class PrismaAccountRepository implements IAccountRepository {
       is_active: account.isActive(),
       created_by: account.createdBy,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      updated_at: (account as any)._updatedAt,
+      updated_at: (account as unknown as Record<string, any>)._updatedAt,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      updated_by: (account as any)._updatedBy,
+      updated_by: (account as unknown as Record<string, any>)._updatedBy,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      deleted_at: (account as any)._deletedAt,
+      deleted_at: (account as unknown as Record<string, any>)._deletedAt,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      deleted_by: (account as any)._deletedBy,
+      deleted_by: (account as unknown as Record<string, any>)._deletedBy,
     };
 
     await this.prisma.account.upsert({

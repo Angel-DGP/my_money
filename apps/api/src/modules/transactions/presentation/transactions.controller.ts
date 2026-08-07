@@ -1,3 +1,4 @@
+import { AuthenticatedRequest } from '../../../common/interfaces/authenticated-request.interface';
 import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, Request, ParseIntPipe, DefaultValuePipe, HttpCode, HttpStatus } from '@nestjs/common';
 import { CreateTransactionDto, UpdateTransactionDto } from '../presentation/dtos/create-transaction.dto';
 import { CreateTransferDto } from '../presentation/dtos/create-transfer.dto';
@@ -23,8 +24,7 @@ export class TransactionsController {
 
   @Get()
   async findAll(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('account_id') accountId?: string,
@@ -46,8 +46,7 @@ export class TransactionsController {
 
   @Post()
   async create(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Body() dto: CreateTransactionDto
   ): Promise<ApiResponse<TransactionDto>> {
     const userId = req.user.id;
@@ -57,8 +56,7 @@ export class TransactionsController {
 
   @Post('transfers')
   async createTransfer(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Body() dto: CreateTransferDto
   ): Promise<ApiResponse<TransactionDto[]>> {
     const userId = req.user.id;
@@ -67,8 +65,7 @@ export class TransactionsController {
 
   @Patch(':id')
   async update(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() dto: UpdateTransactionDto
   ): Promise<ApiResponse<TransactionDto>> {
@@ -80,8 +77,7 @@ export class TransactionsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Param('id') id: string
   ): Promise<void> {
     const userId = req.user.id;

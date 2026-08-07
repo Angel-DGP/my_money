@@ -1,3 +1,4 @@
+import { AuthenticatedRequest } from '../../../common/interfaces/authenticated-request.interface';
 import { Controller, Get, Post, Patch,  Param, Body, Query,  Request, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { CreateBudgetUseCase } from '../application/use-cases/create-budget.use-case';
 import { GetBudgetsUseCase } from '../application/use-cases/get-budgets.use-case';
@@ -26,8 +27,7 @@ export class BudgetsController {
 
   @Get()
   async findAll(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Query('status') status?: string,
     @Query('category_id') categoryId?: string
   ): Promise<ApiResponse<BudgetDto[]>> {
@@ -37,22 +37,21 @@ export class BudgetsController {
 
   @Get(':id')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async findOne(@Request() req: any, @Param('id') id: string): Promise<ApiResponse<BudgetDto>> {
+  async findOne(@Request() req: AuthenticatedRequest, @Param('id') id: string): Promise<ApiResponse<BudgetDto>> {
     const data = await this.getBudgetByIdUseCase.execute(req.user.id, id);
     return { data };
   }
 
   @Post()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async create(@Request() req: any, @Body() dto: CreateBudgetDto): Promise<ApiResponse<BudgetDto>> {
+  async create(@Request() req: AuthenticatedRequest, @Body() dto: CreateBudgetDto): Promise<ApiResponse<BudgetDto>> {
     const data = await this.createBudgetUseCase.execute(req.user.id, dto);
     return { data };
   }
 
   @Patch(':id')
   async update(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() dto: UpdateBudgetDto
   ): Promise<ApiResponse<BudgetDto>> {
@@ -63,14 +62,14 @@ export class BudgetsController {
   @Post(':id/deactivate')
   @HttpCode(HttpStatus.OK)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async deactivate(@Request() req: any, @Param('id') id: string): Promise<void> {
+  async deactivate(@Request() req: AuthenticatedRequest, @Param('id') id: string): Promise<void> {
     await this.deactivateBudgetUseCase.execute(req.user.id, id);
   }
 
   @Post(':id/reactivate')
   @HttpCode(HttpStatus.OK)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async reactivate(@Request() req: any, @Param('id') id: string): Promise<ApiResponse<BudgetDto>> {
+  async reactivate(@Request() req: AuthenticatedRequest, @Param('id') id: string): Promise<ApiResponse<BudgetDto>> {
     const data = await this.reactivateBudgetUseCase.execute(req.user.id, id);
     return { data };
   }

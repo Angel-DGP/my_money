@@ -121,7 +121,7 @@ export function CategoriesListWidget() {
               <div className="mt-4">
                 <CategoryForm 
                   initialData={editingCategory} 
-                  onSubmit={handleEditSubmit as any} 
+                  onSubmit={(data) => handleEditSubmit(data as UpdateCategoryDto)} 
                   onCancel={() => setIsEditDialogOpen(false)}
                   isLoading={updateCategory.isPending}
                 />

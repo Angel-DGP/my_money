@@ -1,10 +1,8 @@
 import { useSubscriptions } from '../api/useCatalogs';
-import { Button, Table, TableBody, TableCell, TableRow, Card, Icon, TableHeader } from '@mymoney/ui';
+import { Button, Icon, DataTable, type ColumnDef } from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
-import { Plus, Repeat } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useTableState } from '../../../shared/hooks/useTableState';
-import { DataTableToolbar, SortableHeader, TablePagination } from '../../../shared/ui/DataTableToolbar';
 import type { SubscriptionDto } from '../../../shared/api/dto/catalogs.dto';
 
 const formatCurrency = (value: number, currency: string) => {
@@ -18,42 +16,49 @@ export function SubscriptionsTab() {
   const { data: subscriptions, isLoading, isError, error, refetch } = useSubscriptions();
   const navigate = useNavigate();
 
-  const {
-    search,
-    setSearch,
-    sort,
-    toggleSort,
-    page,
-    setPage,
-    totalPages,
-    totalFiltered,
-    paginated,
-  } = useTableState<SubscriptionDto>({
-    data: subscriptions || [],
-    pageSize: 10,
-    searchFields: ['name'],
-    defaultSort: { column: 'name', direction: 'asc' },
-    sortFn: (a, b, col, dir) => {
-      let valA: any = '';
-      let valB: any = '';
-
-      if (col === 'name') {
-        valA = a.name;
-        valB = b.name;
-      } else if (col === 'amount') {
-        valA = Number(a.amount);
-        valB = Number(b.amount);
-        return dir === 'asc' ? valA - valB : valB - valA;
-      } else if (col === 'next_billing_date') {
-        valA = new Date(a.next_billing_date).getTime();
-        valB = new Date(b.next_billing_date).getTime();
-        return dir === 'asc' ? valA - valB : valB - valA;
-      }
-
-      const cmp = String(valA).localeCompare(String(valB));
-      return dir === 'asc' ? cmp : -cmp;
-    }
-  });
+  const columns: ColumnDef<SubscriptionDto>[] = [
+    {
+      key: 'name',
+      header: 'Servicio',
+      sortable: true,
+      className: 'font-medium',
+      cell: (sub) => sub.name,
+    },
+    {
+      key: 'amount',
+      header: 'Monto',
+      sortable: true,
+      cell: (sub) => formatCurrency(Number(sub.amount), sub.currency),
+    },
+    {
+      key: 'billing_cycle',
+      header: 'Ciclo',
+      cell: (sub) => sub.billing_cycle,
+    },
+    {
+      key: 'next_billing_date',
+      header: 'Próximo Cobro',
+      sortable: true,
+      cell: (sub) => new Date(sub.next_billing_date).toLocaleDateString(),
+    },
+    {
+      key: 'card',
+      header: 'Tarjeta Asoc.',
+      cell: (sub) => sub.card ? `${sub.card.brand?.name || ''} **${sub.card.last_four}` : '-',
+    },
+    {
+      key: 'actions',
+      header: 'Acciones',
+      align: 'right',
+      cell: () => (
+        <div className="flex items-center justify-end gap-1">
+          <Button variant="ghost" size="icon" aria-label="Editar">
+            <Icon name="pencil" size="sm" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-4 animate-in fade-in duration-300">
@@ -76,91 +81,38 @@ export function SubscriptionsTab() {
         onRetry={refetch}
       >
         {() => (
-          <div className="space-y-4">
-            <DataTableToolbar
-              search={search}
-              onSearchChange={setSearch}
-              placeholder="Buscar suscripción..."
-            />
+          <DataTable<SubscriptionDto>
+            data={subscriptions || []}
+            columns={columns}
+            pageSize={10}
+            searchFields={['name']}
+            searchPlaceholder="Buscar suscripción..."
+            defaultSort={{ column: 'name', direction: 'asc' }}
+            sortFn={(a, b, col, dir) => {
+              let valA: any = '';
+              let valB: any = '';
 
-            <Card padding="none" className="overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableCell asChild>
-                      <th>
-                        <SortableHeader column="name" sort={sort} onToggle={toggleSort}>
-                          Servicio
-                        </SortableHeader>
-                      </th>
-                    </TableCell>
-                    <TableCell asChild>
-                      <th>
-                        <SortableHeader column="amount" sort={sort} onToggle={toggleSort}>
-                          Monto
-                        </SortableHeader>
-                      </th>
-                    </TableCell>
-                    <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                      <th>Ciclo</th>
-                    </TableCell>
-                    <TableCell asChild>
-                      <th>
-                        <SortableHeader column="next_billing_date" sort={sort} onToggle={toggleSort}>
-                          Próximo Cobro
-                        </SortableHeader>
-                      </th>
-                    </TableCell>
-                    <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                      <th>Tarjeta Asoc.</th>
-                    </TableCell>
-                    <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                      <th>Acciones</th>
-                    </TableCell>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginated.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="h-32 text-center text-text-secondary">
-                        <div className="flex flex-col items-center justify-center gap-2">
-                          <Repeat className="w-8 h-8 text-text-tertiary" />
-                          <p>{search ? 'No se encontraron resultados.' : 'No tienes suscripciones registradas.'}</p>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    paginated.map((sub) => (
-                      <TableRow key={sub.id} className="hover:bg-surface-hover transition-colors">
-                        <TableCell className="font-medium">{sub.name}</TableCell>
-                        <TableCell>{formatCurrency(Number(sub.amount), sub.currency)}</TableCell>
-                        <TableCell>{sub.billing_cycle}</TableCell>
-                        <TableCell>{new Date(sub.next_billing_date).toLocaleDateString()}</TableCell>
-                        <TableCell>{sub.card ? `${sub.card.brand?.name || ''} **${sub.card.last_four}` : '-'}</TableCell>
-                        <TableCell className="text-right flex items-center justify-end gap-1">
-                          <Button variant="ghost" size="icon" aria-label="Editar">
-                            <Icon name="pencil" size="sm" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </Card>
+              if (col === 'name') {
+                valA = a.name;
+                valB = b.name;
+              } else if (col === 'amount') {
+                valA = Number(a.amount);
+                valB = Number(b.amount);
+                return dir === 'asc' ? valA - valB : valB - valA;
+              } else if (col === 'next_billing_date') {
+                valA = new Date(a.next_billing_date).getTime();
+                valB = new Date(b.next_billing_date).getTime();
+                return dir === 'asc' ? valA - valB : valB - valA;
+              }
 
-            {totalPages > 1 && (
-              <TablePagination
-                page={page}
-                totalPages={totalPages}
-                totalFiltered={totalFiltered}
-                pageSize={10}
-                onPageChange={setPage}
-              />
-            )}
-          </div>
+              const cmp = String(valA).localeCompare(String(valB));
+              return dir === 'asc' ? cmp : -cmp;
+            }}
+            emptyMessage="No tienes suscripciones registradas."
+          />
         )}
       </QueryState>
     </div>
   );
 }
+

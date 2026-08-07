@@ -49,13 +49,13 @@ export function DashboardPage() {
             <StatCard
               title="Saldo Disponible"
               value={formatCurrency(availableBalance, currency)}
-              trend={{ value: 2.5, isPositive: true } as any}
+              trend={{ value: 2.5, isPositive: true } as React.ComponentProps<typeof StatCard>['trend']}
               icon="wallet"
             />
             <StatCard
               title="Flujo Mensual"
               value={formatCurrency(currentMonthIncome - currentMonthExpense, currency)}
-              trend={{ value: currentMonthIncome > currentMonthExpense ? 5.0 : -2.0, direction: currentMonthIncome > currentMonthExpense ? 'up' : 'down' } as any}
+              trend={{ value: currentMonthIncome > currentMonthExpense ? 5.0 : -2.0, direction: currentMonthIncome > currentMonthExpense ? 'up' : 'down' } as React.ComponentProps<typeof StatCard>['trend']}
               icon={currentMonthIncome > currentMonthExpense ? 'arrow-up-right' : 'arrow-down-left'}
             />
           </div>

@@ -38,7 +38,7 @@ export function NewAccountPage() {
 
       <PageContainer.Body variant="transparent" className="py-6">
         <AccountForm
-        onSubmit={handleSubmit as any}
+          onSubmit={(data) => handleSubmit(data as CreateAccountDto)}
         onCancel={() => navigate('/accounts')}
         isLoading={createAccount.isPending}
       />

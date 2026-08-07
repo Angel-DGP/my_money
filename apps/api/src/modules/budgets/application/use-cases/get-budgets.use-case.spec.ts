@@ -1,14 +1,15 @@
+import { DomainEvent } from '@mymoney/shared';
 import { GetBudgetsUseCase } from './get-budgets.use-case';
 import { BudgetPeriod, BudgetStatus} from '../../domain/budget.entity';
 import { Money, Currency } from '@mymoney/shared';
 
 describe('GetBudgetsUseCase', () => {
   let useCase: GetBudgetsUseCase;
-  let mockBudgetRepo: any;
-  let mockUoW: any;
-  let mockEventEmitter: any;
-  let mockBudget: any;
-  let mockExpiredBudget: any;
+  let mockBudgetRepo: Record<string, jest.Mock>;
+  let mockUoW: Record<string, jest.Mock>;
+  let mockEventEmitter: Record<string, jest.Mock>;
+  let mockBudget: Record<string, jest.Mock>;
+  let mockExpiredBudget: Record<string, jest.Mock>;
 
   beforeEach(() => {
     mockBudget = {

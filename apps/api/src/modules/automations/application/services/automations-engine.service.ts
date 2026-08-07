@@ -3,6 +3,14 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { AUTO_RULE_REPOSITORY, IAutoRuleRepository } from '../../domain/auto-rule.repository.interface';
 import { TriggerType, ActionType, AutoRule } from '../../domain/auto-rule.entity';
 
+/** Minimal shape of the transaction.created event payload */
+interface TransactionEventPayload {
+  userId: string;
+  transactionId: string;
+  amount?: number;
+  [key: string]: unknown;
+}
+
 @Injectable()
 export class AutomationsEngineService {
   private readonly logger = new Logger(AutomationsEngineService.name);
@@ -13,14 +21,12 @@ export class AutomationsEngineService {
   ) {}
 
   @OnEvent('transaction.created')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async handleTransactionCreatedEvent(event: any) {
+  async handleTransactionCreatedEvent(event: TransactionEventPayload) {
     this.logger.log(`Received transaction.created event for user ${event.userId}`);
     await this.processRules(event.userId, TriggerType.INCOME_RECEIVED, event);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async processRules(userId: string, triggerType: TriggerType, eventPayload: any) {
+  private async processRules(userId: string, triggerType: TriggerType, eventPayload: TransactionEventPayload) {
     const rules = await this.autoRuleRepository.findActiveByUser(userId);
     const applicableRules = rules.filter(r => r.triggerType === triggerType);
 
@@ -31,8 +37,7 @@ export class AutomationsEngineService {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private evaluateConditions(rule: AutoRule, payload: any): boolean {
+  private evaluateConditions(rule: AutoRule, payload: TransactionEventPayload): boolean {
     if (!rule.conditions) return true; // No conditions = always execute
 
     // Basic condition evaluation
@@ -48,10 +53,13 @@ export class AutomationsEngineService {
         }
 
         // complex check
-        if (condition.$gt !== undefined && payloadValue <= condition.$gt) return false;
-        if (condition.$gte !== undefined && payloadValue < condition.$gte) return false;
-        if (condition.$lt !== undefined && payloadValue >= condition.$lt) return false;
-        if (condition.$lte !== undefined && payloadValue > condition.$lte) return false;
+        if (condition.$eq !== undefined && payloadValue !== condition.$eq) return false;
+        if (condition.$ne !== undefined && payloadValue === condition.$ne) return false;
+        if (condition.$gt !== undefined && (payloadValue as any) <= condition.$gt) return false;
+        if (condition.$gte !== undefined && (payloadValue as any) < condition.$gte) return false;
+        if (condition.$lt !== undefined && (payloadValue as any) >= condition.$lt) return false;
+        if (condition.$lte !== undefined && (payloadValue as any) > condition.$lte) return false;
+        if (condition.$in !== undefined && Array.isArray(condition.$in) && !condition.$in.includes(payloadValue)) return false;
       }
       return true;
     } catch (e) {
@@ -60,8 +68,7 @@ export class AutomationsEngineService {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async executeAction(rule: AutoRule, payload: any) {
+  private async executeAction(rule: AutoRule, payload: TransactionEventPayload) {
     this.logger.log(`Executing action ${rule.actionType} for rule ${rule.id}`);
     
     switch (rule.actionType) {

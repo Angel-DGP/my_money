@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { DeactivateBudgetUseCase } from './deactivate-budget.use-case';
 import { BudgetNotActiveException } from '../../domain/exceptions/budget.exceptions';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
@@ -5,10 +6,10 @@ import { BudgetStatus } from '../../domain/budget.entity';
 
 describe('DeactivateBudgetUseCase', () => {
   let useCase: DeactivateBudgetUseCase;
-  let mockBudgetRepo: any;
-  let mockUoW: any;
-  let mockEventEmitter: any;
-  let mockBudget: any;
+  let mockBudgetRepo: Record<string, jest.Mock>;
+  let mockUoW: Record<string, jest.Mock>;
+  let mockEventEmitter: Record<string, jest.Mock>;
+  let mockBudget: Record<string, jest.Mock>;
 
   beforeEach(() => {
     mockBudget = {
@@ -42,7 +43,7 @@ describe('DeactivateBudgetUseCase', () => {
   });
 
   it('should throw UnprocessableEntityException if budget is not active', async () => {
-    mockBudget.deactivate.mockImplementation(() => {
+    ((mockBudget.deactivate as jest.Mock) as jest.Mock).mockImplementation(() => {
       throw new BudgetNotActiveException();
     });
     mockBudgetRepo.findById.mockResolvedValue(mockBudget);
@@ -55,9 +56,9 @@ describe('DeactivateBudgetUseCase', () => {
     
     await useCase.execute('user-1', 'budget-1');
     
-    expect(mockBudget.deactivate).toHaveBeenCalledWith('USER_REQUEST');
+    expect((mockBudget.deactivate as jest.Mock)).toHaveBeenCalledWith('USER_REQUEST');
     expect(mockBudgetRepo.save).toHaveBeenCalledWith(mockBudget);
     expect(mockEventEmitter.emit).toHaveBeenCalledWith('BudgetDeactivated', { type: 'BudgetDeactivated' });
-    expect(mockBudget.clearDomainEvents).toHaveBeenCalled();
+    expect((mockBudget.clearDomainEvents as jest.Mock)).toHaveBeenCalled();
   });
 });

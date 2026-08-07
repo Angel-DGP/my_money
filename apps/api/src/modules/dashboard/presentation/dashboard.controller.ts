@@ -1,3 +1,4 @@
+import { AuthenticatedRequest } from '../../../common/interfaces/authenticated-request.interface';
 import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { GetDashboardSummaryUseCase } from '../application/use-cases/get-dashboard-summary.use-case';
@@ -16,8 +17,7 @@ export class DashboardController {
 
   @Get('summary')
   async getSummary(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
   ): Promise<ApiResponse<DashboardSummaryDto>> {
     const data = await this.getDashboardSummaryUseCase.execute(req.user.id);
     return { data };
@@ -25,8 +25,7 @@ export class DashboardController {
 
   @Get('monthly-flow')
   async getMonthlyFlow(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
   ): Promise<ApiResponse<MonthlyFlowResponseDto>> {
     const data = await this.getMonthlyFlowUseCase.execute(req.user.id);
     return { data };

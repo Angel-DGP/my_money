@@ -46,7 +46,7 @@ export function QuickActionsWidget() {
             <Card className="h-full p-4 hover:border-brand-500/50 transition-colors cursor-pointer flex flex-col justify-between">
               <div className="flex items-center gap-3 mb-3">
                 <div className={`p-2 rounded-lg ${action.bgColor} ${action.color}`}>
-                  <Icon name={action.icon as any} size="sm" />
+                  <Icon name={action.icon as React.ComponentProps<typeof Icon>['name']} size="sm" />
                 </div>
                 <h3 className="font-medium text-text-primary group-hover:text-brand-500 transition-colors">
                   {action.title}

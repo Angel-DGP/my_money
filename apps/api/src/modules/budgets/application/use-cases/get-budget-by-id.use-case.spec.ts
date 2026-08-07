@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { GetBudgetByIdUseCase } from './get-budget-by-id.use-case';
 import { BudgetStatus } from '../../domain/budget.entity';
 import { Money, Currency } from '@mymoney/shared';
@@ -5,11 +6,11 @@ import { NotFoundException } from '@nestjs/common';
 
 describe('GetBudgetByIdUseCase', () => {
   let useCase: GetBudgetByIdUseCase;
-  let mockBudgetRepo: any;
-  let mockUoW: any;
-  let mockEventEmitter: any;
-  let mockBudget: any;
-  let mockExpiredBudget: any;
+  let mockBudgetRepo: Record<string, jest.Mock>;
+  let mockUoW: Record<string, jest.Mock>;
+  let mockEventEmitter: Record<string, jest.Mock>;
+  let mockBudget: Record<string, jest.Mock>;
+  let mockExpiredBudget: Record<string, jest.Mock>;
 
   beforeEach(() => {
     mockBudget = {

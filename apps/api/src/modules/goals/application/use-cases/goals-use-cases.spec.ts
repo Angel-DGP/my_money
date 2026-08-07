@@ -4,15 +4,15 @@ import { GetGoalsUseCase } from './get-goals.use-case';
 import { GetGoalByIdUseCase } from './get-goal-by-id.use-case';
 import { Goal } from '../../domain/goal.entity';
 import { GoalStatus } from '../../domain/goal-status.enum';
-import { Money} from '@mymoney/shared';
+import { Money, Currency } from '@mymoney/shared';
 
 import { NotFoundException } from '@nestjs/common';
 import { GoalException } from '../../domain/exceptions/goal.exceptions';
 
 describe('Goals Use Cases', () => {
-  let mockGoalRepository: any;
-  let mockUnitOfWork: any;
-  let mockEventEmitter: any;
+  let mockGoalRepository: Record<string, jest.Mock>;
+  let mockUnitOfWork: Record<string, jest.Mock>;
+  let mockEventEmitter: Record<string, jest.Mock>;
   const userId = 'user-1';
 
   beforeEach(() => {
@@ -43,7 +43,7 @@ describe('Goals Use Cases', () => {
       const dto = {
         name: 'New Car',
         target_amount: 5000,
-        currency: 'USD',
+        currency: Currency.USD,
       };
 
       const result = await useCase.execute(userId, dto);
@@ -64,7 +64,7 @@ describe('Goals Use Cases', () => {
     });
 
     it('should return all goals when no status is provided', async () => {
-      const goal = Goal.create({ userId, name: 'Goal 1', targetAmount: Money.of(100, 'USD') });
+      const goal = Goal.create({ userId, name: 'Goal 1', targetAmount: Money.of(100, Currency.USD) });
       mockGoalRepository.findAllByUser.mockResolvedValue([goal]);
 
       const result = await useCase.execute(userId);
@@ -75,7 +75,7 @@ describe('Goals Use Cases', () => {
     });
 
     it('should return only ACTIVE goals when status is ACTIVE', async () => {
-      const goal = Goal.create({ userId, name: 'Goal 2', targetAmount: Money.of(200, 'USD') });
+      const goal = Goal.create({ userId, name: 'Goal 2', targetAmount: Money.of(200, Currency.USD) });
       mockGoalRepository.findActiveByUser.mockResolvedValue([goal]);
 
       const result = await useCase.execute(userId, 'ACTIVE');
@@ -93,7 +93,7 @@ describe('Goals Use Cases', () => {
     });
 
     it('should return a goal if it belongs to the user', async () => {
-      const goal = Goal.create({ userId, name: 'Goal 1', targetAmount: Money.of(100, 'USD') });
+      const goal = Goal.create({ userId, name: 'Goal 1', targetAmount: Money.of(100, Currency.USD) });
       mockGoalRepository.findById.mockResolvedValue(goal);
 
       const result = await useCase.execute(userId, goal.id);
@@ -108,7 +108,7 @@ describe('Goals Use Cases', () => {
     });
 
     it('should throw NotFoundException if goal belongs to another user', async () => {
-      const goal = Goal.create({ userId: 'other-user', name: 'Goal 1', targetAmount: Money.of(100, 'USD') });
+      const goal = Goal.create({ userId: 'other-user', name: 'Goal 1', targetAmount: Money.of(100, Currency.USD) });
       mockGoalRepository.findById.mockResolvedValue(goal);
 
       await expect(useCase.execute(userId, goal.id)).rejects.toThrow(NotFoundException);
@@ -121,12 +121,12 @@ describe('Goals Use Cases', () => {
 
     beforeEach(() => {
       useCase = new AddGoalProgressUseCase(mockGoalRepository, mockUnitOfWork, mockEventEmitter);
-      goal = Goal.create({ userId, name: 'Goal 1', targetAmount: Money.of(1000, 'USD') });
+      goal = Goal.create({ userId, name: 'Goal 1', targetAmount: Money.of(1000, Currency.USD) });
       mockGoalRepository.findById.mockResolvedValue(goal);
     });
 
     it('should add progress and emit events', async () => {
-      const dto = { amount: 200, currency: 'USD' };
+      const dto = { amount: 200, currency: Currency.USD };
 
       const result = await useCase.execute(userId, goal.id, dto);
 
@@ -138,11 +138,11 @@ describe('Goals Use Cases', () => {
     });
 
     it('should throw exception if goal is COMPLETED', async () => {
-      await useCase.execute(userId, goal.id, { amount: 1000, currency: 'USD' });
+      await useCase.execute(userId, goal.id, { amount: 1000, currency: Currency.USD });
       
       expect(goal.status).toBe(GoalStatus.COMPLETED);
 
-      await expect(useCase.execute(userId, goal.id, { amount: 100, currency: 'USD' })).rejects.toThrow(GoalException);
+      await expect(useCase.execute(userId, goal.id, { amount: 100, currency: Currency.USD })).rejects.toThrow(GoalException);
     });
   });
 });

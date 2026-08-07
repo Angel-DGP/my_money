@@ -7,7 +7,7 @@ export function NewInstitutionPage() {
   const navigate = useNavigate();
   const createInstitution = useCreateInstitution();
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: unknown) => {
     createInstitution.mutate(data, {
       onSuccess: () => {
         navigate('/catalogs');

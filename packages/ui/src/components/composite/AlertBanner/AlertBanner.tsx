@@ -4,7 +4,7 @@ import { Icon } from '../../core/Icon';
 export type AlertVariant = 'info' | 'warning' | 'error' | 'success';
 
 export interface AlertBannerProps {
-  variant?: AlertVariant;
+  variant?: AlertVariant | undefined;
   title: string;
   description?: string;
   onDismiss?: () => void;

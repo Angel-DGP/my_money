@@ -7,7 +7,7 @@ export const CatalogsService = {
     const response = await apiClient.get<InstitutionDto[]>('/catalogs/institutions');
     return response.data;
   },
-  async createInstitution(data: any): Promise<InstitutionDto> {
+  async createInstitution(data: unknown): Promise<InstitutionDto> {
     const response = await apiClient.post<InstitutionDto>('/catalogs/institutions', data);
     return response.data;
   },
@@ -17,7 +17,7 @@ export const CatalogsService = {
     const response = await apiClient.get<CardBrandDto[]>('/catalogs/card-brands');
     return response.data;
   },
-  async createCardBrand(data: any): Promise<CardBrandDto> {
+  async createCardBrand(data: unknown): Promise<CardBrandDto> {
     const response = await apiClient.post<CardBrandDto>('/catalogs/card-brands', data);
     return response.data;
   },
@@ -27,7 +27,7 @@ export const CatalogsService = {
     const response = await apiClient.get<CardTypeDto[]>('/catalogs/card-types');
     return response.data;
   },
-  async createCardType(data: any): Promise<CardTypeDto> {
+  async createCardType(data: unknown): Promise<CardTypeDto> {
     const response = await apiClient.post<CardTypeDto>('/catalogs/card-types', data);
     return response.data;
   },
@@ -37,7 +37,7 @@ export const CatalogsService = {
     const response = await apiClient.get<CardDto[]>('/catalogs/cards');
     return response.data;
   },
-  async createCard(data: any): Promise<CardDto> {
+  async createCard(data: unknown): Promise<CardDto> {
     const response = await apiClient.post<CardDto>('/catalogs/cards', data);
     return response.data;
   },
@@ -47,7 +47,7 @@ export const CatalogsService = {
     const response = await apiClient.get<SubscriptionDto[]>('/catalogs/subscriptions');
     return response.data;
   },
-  async createSubscription(data: any): Promise<SubscriptionDto> {
+  async createSubscription(data: unknown): Promise<SubscriptionDto> {
     const response = await apiClient.post<SubscriptionDto>('/catalogs/subscriptions', data);
     return response.data;
   },
@@ -57,7 +57,7 @@ export const CatalogsService = {
     const response = await apiClient.get<ProductServiceDto[]>('/catalogs/product-services');
     return response.data;
   },
-  async createProductService(data: any): Promise<ProductServiceDto> {
+  async createProductService(data: unknown): Promise<ProductServiceDto> {
     const response = await apiClient.post<ProductServiceDto>('/catalogs/product-services', data);
     return response.data;
   },

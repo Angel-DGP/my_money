@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { randomUUID } from 'crypto';
@@ -91,10 +92,10 @@ export class CreateTransferUseCase {
       await this.accountRepository.save(toAccount);
     });
 
-    fromTransaction.getDomainEvents().forEach((event: any) => this.eventEmitter.emit(event.type, event));
-    toTransaction.getDomainEvents().forEach((event: any) => this.eventEmitter.emit(event.type, event));
-    this.eventEmitter.emit(fromBalanceChangeEvent.type, fromBalanceChangeEvent);
-    this.eventEmitter.emit(toBalanceChangeEvent.type, toBalanceChangeEvent);
+    fromTransaction.getDomainEvents().forEach((event: DomainEvent) => this.eventEmitter.emit(event.constructor.name, event));
+    toTransaction.getDomainEvents().forEach((event: DomainEvent) => this.eventEmitter.emit(event.constructor.name, event));
+    this.eventEmitter.emit(fromBalanceChangeEvent.constructor.name, fromBalanceChangeEvent);
+    this.eventEmitter.emit(toBalanceChangeEvent.constructor.name, toBalanceChangeEvent);
 
     fromTransaction.clearDomainEvents();
     toTransaction.clearDomainEvents();

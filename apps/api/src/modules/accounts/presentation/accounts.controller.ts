@@ -1,3 +1,4 @@
+import { AuthenticatedRequest } from '../../../common/interfaces/authenticated-request.interface';
 import { 
   Controller, 
   Get, 
@@ -40,7 +41,7 @@ export class AccountsController {
   @ApiOperation({ summary: 'List all active accounts for the authenticated user' })
   @ApiResponse({ status: 200, description: 'Return all accounts.', type: [AccountDto] })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async findAll(@Request() req: any): Promise<CustomApiResponse<AccountDto[]>> {
+  async findAll(@Request() req: AuthenticatedRequest): Promise<CustomApiResponse<AccountDto[]>> {
     const userId = req.user.id;
     const data = await this.listAccountsUseCase.execute(userId);
     return { data };
@@ -50,7 +51,7 @@ export class AccountsController {
   @ApiOperation({ summary: 'Get account details' })
   @ApiResponse({ status: 200, description: 'Return account details.', type: AccountDto })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async findOne(@Param('id') id: string, @Request() req: any): Promise<CustomApiResponse<AccountDto>> {
+  async findOne(@Param('id') id: string, @Request() req: AuthenticatedRequest): Promise<CustomApiResponse<AccountDto>> {
     const userId = req.user.id;
     const data = await this.getAccountUseCase.execute(id, userId);
     return { data };
@@ -60,7 +61,7 @@ export class AccountsController {
   @ApiOperation({ summary: 'Create a new account' })
   @ApiResponse({ status: 201, description: 'The account has been successfully created.', type: AccountDto })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async create(@Body() createAccountDto: CreateAccountDto, @Request() req: any): Promise<CustomApiResponse<AccountDto>> {
+  async create(@Body() createAccountDto: CreateAccountDto, @Request() req: AuthenticatedRequest): Promise<CustomApiResponse<AccountDto>> {
     const userId = req.user.id;
     const data = await this.createAccountUseCase.execute(userId, createAccountDto);
     return { data };
@@ -72,8 +73,7 @@ export class AccountsController {
   async update(
     @Param('id') id: string, 
     @Body() updateAccountDto: UpdateAccountDto, 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Request() req: any
+  @Request() req: AuthenticatedRequest
   ): Promise<CustomApiResponse<AccountDto>> {
     const userId = req.user.id;
     const data = await this.updateAccountUseCase.execute(id, userId, updateAccountDto);
@@ -85,7 +85,7 @@ export class AccountsController {
   @ApiOperation({ summary: 'Archive an account' })
   @ApiResponse({ status: 204, description: 'The account has been successfully archived.' })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async remove(@Param('id') id: string, @Request() req: any) {
+  async remove(@Param('id') id: string, @Request() req: AuthenticatedRequest) {
     const userId = req.user.id;
     await this.deleteAccountUseCase.execute(id, userId);
   }

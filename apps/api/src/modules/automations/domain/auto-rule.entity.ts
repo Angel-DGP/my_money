@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { randomUUID } from 'crypto';
 
 export enum TriggerType {
@@ -35,7 +36,7 @@ export interface AutoRuleProps extends CreateAutoRuleProps {
 
 export class AutoRule {
   private props: AutoRuleProps;
-  private domainEvents: unknown[] = [];
+  private domainEvents: DomainEvent[] = [];
 
   private constructor(props: AutoRuleProps) {
     this.props = props;
@@ -57,7 +58,7 @@ export class AutoRule {
   get updatedAt(): Date { return this.props.updatedAt; }
 
   // Events
-  public getDomainEvents(): unknown[] {
+  public getDomainEvents(): DomainEvent[] {
     return [...this.domainEvents];
   }
 
@@ -65,8 +66,7 @@ export class AutoRule {
     this.domainEvents = [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private addDomainEvent(event: any): void {
+  private addDomainEvent(event: DomainEvent): void {
     this.domainEvents.push(event);
   }
 

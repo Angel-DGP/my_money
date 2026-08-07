@@ -40,7 +40,7 @@ export function FinancialHealthWidget({ data, className }: FinancialHealthWidget
           <h3 className="text-lg font-semibold text-text-primary">Salud Financiera</h3>
           <p className="text-sm text-text-secondary mt-1">Tu puntuación global basada en hábitos</p>
         </div>
-        <Badge variant={color as any}>{getStatusLabel(data.status)}</Badge>
+        <Badge variant={color as React.ComponentProps<typeof Badge>['variant']}>{getStatusLabel(data.status)}</Badge>
       </div>
 
       <div className="flex items-end gap-2">

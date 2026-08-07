@@ -40,7 +40,7 @@ export function useTableState<T>({
           const val =
             typeof field === 'function'
               ? field(item)
-              : String((item as any)[field] ?? '');
+              : String((item as Record<string, unknown>)[field as string] ?? '');
           return val.toLowerCase().includes(q);
         })
       );
@@ -58,8 +58,8 @@ export function useTableState<T>({
     if (!sort.column || !sort.direction) return filtered;
     return [...filtered].sort((a, b) => {
       if (sortFn) return sortFn(a, b, sort.column!, sort.direction);
-      const aVal = (a as any)[sort.column!];
-      const bVal = (b as any)[sort.column!];
+      const aVal = (a as Record<string, unknown>)[sort.column!];
+      const bVal = (b as Record<string, unknown>)[sort.column!];
       const cmp =
         typeof aVal === 'number' && typeof bVal === 'number'
           ? aVal - bVal

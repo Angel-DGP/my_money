@@ -8,7 +8,7 @@ interface QueryStateProps<T> {
   error?: Error | null;
   emptyTitle?: string;
   emptyDescription?: string;
-  emptyIcon?: any;
+  emptyIcon?: React.ComponentProps<typeof Icon>['name'];
   onRetry?: () => void;
   children: (data: NonNullable<T>) => React.ReactNode;
 }

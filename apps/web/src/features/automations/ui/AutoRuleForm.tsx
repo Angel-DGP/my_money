@@ -45,7 +45,7 @@ export function AutoRuleForm({ initialData, onSubmit, isSubmitting }: AutoRuleFo
             id="name" 
             placeholder="Ej: Ahorrar 10% de mi sueldo" 
             {...register('name', { required: 'El nombre es requerido' })}
-            error={errors.name?.message as any}
+            error={errors.name?.message}
           />
         </div>
 

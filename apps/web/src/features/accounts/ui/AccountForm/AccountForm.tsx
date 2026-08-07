@@ -1,0 +1,23 @@
+import { Button, FormLayout, PageContainer } from '@mymoney/ui';
+import { useAccountForm } from './hooks/useAccountForm';
+import { AccountFormFields } from './AccountFormFields';
+import type { AccountFormProps } from './AccountForm.types';
+
+export function AccountForm({ initialData, onSubmit: onSubmitCallback, onCancel, isLoading }: AccountFormProps) {
+  const { form, isEdit, onSubmit } = useAccountForm(initialData, onSubmitCallback);
+
+  return (
+    <FormLayout onSubmit={onSubmit}>
+      <AccountFormFields form={form} isEdit={isEdit} isLoading={isLoading} />
+
+      <PageContainer.Footer className="col-span-12">
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+          Cancelar
+        </Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Guardando...' : initialData ? 'Guardar Cambios' : 'Crear Cuenta'}
+        </Button>
+      </PageContainer.Footer>
+    </FormLayout>
+  );
+}

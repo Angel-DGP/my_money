@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { Injectable, Inject} from '@nestjs/common';
 import { IUnitOfWork, UNIT_OF_WORK } from '@mymoney/shared';
 import { Budget, BudgetStatus } from '../../domain/budget.entity';
@@ -52,7 +53,7 @@ export class GetBudgetsUseCase {
       // Emit events outside transaction
       for (const budget of expiredBudgets) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        budget.getDomainEvents().forEach((event: any) => this.eventEmitter.emit(event.type, event));
+        budget.getDomainEvents().forEach((event: DomainEvent) => this.eventEmitter.emit(event.constructor.name, event));
         budget.clearDomainEvents();
       }
     }

@@ -1,8 +1,7 @@
 import { Table, TableHeader, TableBody, TableRow, TableCell, Badge, Button, Icon, Checkbox } from '@mymoney/ui';
 import type { AutoRuleDto } from '@entities/automation';
 import { TriggerType, ActionType } from '@entities/automation';
-import { useTableState } from '../../../shared/hooks/useTableState';
-import { DataTableToolbar, SortableHeader, TablePagination } from '../../../shared/ui/DataTableToolbar';
+import { useTableState, DataTableToolbar, SortableHeader, TablePagination } from '@mymoney/ui';
 
 interface AutomationsTableProps {
   rules: AutoRuleDto[];
@@ -47,7 +46,7 @@ export function AutomationsTable({ rules, onEdit, onDelete, onToggleActive }: Au
     data: rules,
     pageSize: 10,
     searchFields: ['name', 'description'],
-    filterField: (r, f) => {
+    filterField: (r: AutoRuleDto, f: string) => {
       if (f === 'active') return r.is_active;
       if (f === 'inactive') return !r.is_active;
       return true;
@@ -99,7 +98,7 @@ export function AutomationsTable({ rules, onEdit, onDelete, onToggleActive }: Au
                 </TableCell>
               </TableRow>
             ) : (
-              paginated.map((rule) => (
+              paginated.map((rule: AutoRuleDto) => (
                 <TableRow key={rule.id} className="hover:bg-surface-hover transition-colors">
                   <TableCell>
                     <Checkbox

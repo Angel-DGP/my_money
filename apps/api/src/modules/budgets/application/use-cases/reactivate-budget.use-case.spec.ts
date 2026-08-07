@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { ReactivateBudgetUseCase } from './reactivate-budget.use-case';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { BudgetStatus, BudgetPeriod } from '../../domain/budget.entity';
@@ -5,10 +6,10 @@ import { Money, Currency } from '@mymoney/shared';
 
 describe('ReactivateBudgetUseCase', () => {
   let useCase: ReactivateBudgetUseCase;
-  let mockBudgetRepo: any;
-  let mockUoW: any;
-  let mockEventEmitter: any;
-  let mockBudget: any;
+  let mockBudgetRepo: Record<string, jest.Mock>;
+  let mockUoW: Record<string, jest.Mock>;
+  let mockEventEmitter: Record<string, jest.Mock>;
+  let mockBudget: Record<string, jest.Mock>;
 
   beforeEach(() => {
     mockBudget = {
@@ -68,7 +69,7 @@ describe('ReactivateBudgetUseCase', () => {
   });
 
   it('should throw UnprocessableEntityException if budget is not inactive', async () => {
-    mockBudget.reactivate.mockImplementation(() => {
+    (mockBudget.reactivate as jest.Mock).mockImplementation(() => {
       throw new Error('Only inactive budgets can be reactivated');
     });
     mockBudgetRepo.findById.mockResolvedValue(mockBudget);
@@ -82,9 +83,9 @@ describe('ReactivateBudgetUseCase', () => {
     const result = await useCase.execute('user-1', 'budget-1');
     
     expect(result).toBeDefined();
-    expect(mockBudget.reactivate).toHaveBeenCalled();
+    expect((mockBudget.reactivate as jest.Mock)).toHaveBeenCalled();
     expect(mockBudgetRepo.save).toHaveBeenCalledWith(mockBudget);
     expect(mockEventEmitter.emit).toHaveBeenCalledWith('BudgetReactivated', { type: 'BudgetReactivated' });
-    expect(mockBudget.clearDomainEvents).toHaveBeenCalled();
+    expect((mockBudget.clearDomainEvents as jest.Mock)).toHaveBeenCalled();
   });
 });

@@ -57,10 +57,10 @@ export class BudgetDto {
       ignore_transfers: budget.ignoreTransfers,
       is_frozen: budget.isFrozen,
       notes: budget.notes,
-      daily_expected_velocity: { value: budget.dailyExpectedVelocity.value.toString(), currency: budget.dailyExpectedVelocity.currency },
-      daily_actual_velocity: { value: budget.dailyActualVelocity.value.toString(), currency: budget.dailyActualVelocity.currency },
-      projected_end_amount: { value: budget.projectedEndAmount.value.toString(), currency: budget.projectedEndAmount.currency },
-      status_indicator: budget.statusIndicator,
+      daily_expected_velocity: { value: budget.velocity.dailyExpectedVelocity.value.toString(), currency: budget.velocity.dailyExpectedVelocity.currency },
+      daily_actual_velocity: { value: budget.velocity.dailyActualVelocity.value.toString(), currency: budget.velocity.dailyActualVelocity.currency },
+      projected_end_amount: { value: budget.velocity.projectedEndAmount.value.toString(), currency: budget.velocity.projectedEndAmount.currency },
+      status_indicator: budget.velocity.statusIndicator,
     };
   }
 }

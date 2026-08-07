@@ -1,0 +1,37 @@
+import { z } from 'zod';
+
+export const transactionSchema = z.object({
+  type: z.enum(['INCOME', 'EXPENSE', 'TRANSFER']),
+  amount: z.number().min(0.01, 'El monto debe ser mayor a 0'),
+  description: z.string().min(3, 'La descripción es requerida'),
+  note: z.string().optional(),
+  date: z.string(),
+  // For Income/Expense
+  account_id: z.string().optional(),
+  category_id: z.string().optional(),
+  // For Transfer
+  from_account_id: z.string().optional(),
+  to_account_id: z.string().optional(),
+  
+  // Catalogs
+  payment_method: z.string().optional(),
+  card_id: z.string().optional(),
+  subscription_id: z.string().optional(),
+  product_id: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.type === 'TRANSFER') {
+    if (!data.from_account_id) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['from_account_id'], message: 'Requerido para transferencias' });
+    }
+    if (!data.to_account_id) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['to_account_id'], message: 'Requerido para transferencias' });
+    }
+    if (data.from_account_id === data.to_account_id) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['to_account_id'], message: 'Las cuentas deben ser diferentes' });
+    }
+  } else {
+    if (!data.account_id) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['account_id'], message: 'Requerido' });
+    }
+  }
+});

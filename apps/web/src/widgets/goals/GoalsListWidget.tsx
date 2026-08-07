@@ -6,7 +6,7 @@ import {
   useCreateGoal, 
   useAddGoalProgress 
 } from '@entities/goal';
-import type { GoalDto } from '@entities/goal';
+import type { GoalDto, CreateGoalDto, AddGoalProgressDto } from '@entities/goal';
 import { GoalsTable } from '@features/goals';
 import { GoalForm } from '@features/goals';
 import { AddProgressForm } from '@features/goals';
@@ -38,19 +38,19 @@ export function GoalsListWidget() {
     setSelectedGoal(null);
   };
 
-  const handleCreateSubmit = (formData: any) => {
+  const handleCreateSubmit = (formData: CreateGoalDto) => {
     createGoal.mutate(formData, {
       onSuccess: () => {
         toast({ title: 'Éxito', description: 'Meta creada', variant: 'success' });
         handleCloseModal();
       },
-      onError: (error: any) => {
-        toast({ title: 'Error', description: error.message || 'No se pudo crear', variant: 'error' });
+      onError: (error: unknown) => {
+        toast({ title: 'Error', description: (error as Error).message || 'No se pudo crear', variant: 'error' });
       }
     });
   };
 
-  const handleAddProgressSubmit = (formData: any) => {
+  const handleAddProgressSubmit = (formData: AddGoalProgressDto) => {
     if (selectedGoal) {
       addProgress.mutate(
         { id: selectedGoal.id, data: formData },
@@ -59,8 +59,8 @@ export function GoalsListWidget() {
             toast({ title: 'Éxito', description: 'Aporte registrado', variant: 'success' });
             handleCloseModal();
           },
-          onError: (error: any) => {
-            toast({ title: 'Error', description: error.message || 'No se pudo registrar', variant: 'error' });
+          onError: (error: unknown) => {
+            toast({ title: 'Error', description: (error as Error).message || 'No se pudo registrar', variant: 'error' });
           }
         }
       );
@@ -116,7 +116,7 @@ export function GoalsListWidget() {
               <div className="mt-4">
                 {modalState === 'CREATE' && (
                   <GoalForm 
-                    onSubmit={handleCreateSubmit}
+                    onSubmit={(data) => handleCreateSubmit(data as CreateGoalDto)}
                     onCancel={handleCloseModal}
                     isLoading={createGoal.isPending}
                   />
@@ -126,7 +126,7 @@ export function GoalsListWidget() {
                   <AddProgressForm 
                     goalName={selectedGoal.name}
                     defaultCurrency={selectedGoal.target_amount.currency}
-                    onSubmit={handleAddProgressSubmit}
+                    onSubmit={(data) => handleAddProgressSubmit(data as AddGoalProgressDto)}
                     onCancel={handleCloseModal}
                     isLoading={addProgress.isPending}
                   />

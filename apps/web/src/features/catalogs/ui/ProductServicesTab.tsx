@@ -3,8 +3,7 @@ import { Button, Table, TableBody, TableCell, TableRow, Card, Icon, TableHeader 
 import { QueryState } from '../../../shared/ui/QueryState';
 import { Plus, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useTableState } from '../../../shared/hooks/useTableState';
-import { DataTableToolbar, SortableHeader, TablePagination } from '../../../shared/ui/DataTableToolbar';
+import { useTableState, DataTableToolbar, SortableHeader, TablePagination } from '@mymoney/ui';
 import type { ProductServiceDto } from '../../../shared/api/dto/catalogs.dto';
 
 export function ProductServicesTab() {
@@ -86,7 +85,7 @@ export function ProductServicesTab() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    paginated.map((prod) => (
+                    paginated.map((prod: ProductServiceDto) => (
                       <TableRow key={prod.id} className="hover:bg-surface-hover transition-colors">
                         <TableCell className="font-medium">{prod.name}</TableCell>
                         <TableCell className="text-text-secondary">...</TableCell>

@@ -1,3 +1,4 @@
+import { DomainEvent } from '@mymoney/shared';
 import { Injectable, Inject } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Money, Currency, IUnitOfWork, UNIT_OF_WORK } from '@mymoney/shared';
@@ -38,7 +39,7 @@ export class CreateGoalUseCase {
 
     // Enviar eventos de dominio si los hubiera
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    goal.getDomainEvents().forEach((event: any) => this.eventEmitter.emit(event.type, event));
+    goal.getDomainEvents().forEach((event: DomainEvent) => this.eventEmitter.emit(event.constructor.name, event));
     goal.clearDomainEvents();
 
     return GoalDto.fromDomain(goal);
