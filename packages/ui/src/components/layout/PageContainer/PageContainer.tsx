@@ -106,9 +106,8 @@ const PageContainerFooter = ({
     <div
       className={cn(
         'mt-auto shrink-0 sticky bottom-0 z-40',
-        // Restaura el padding horizontal y añade el vertical propio.
-        'px-4 sm:px-6 lg:px-8 py-4',
-        'bg-background/90 backdrop-blur-md border-t border-border-subtle',
+        'pt-4 pb-0',
+        'border-t border-border-subtle',
         'flex justify-end gap-3',
         className,
       )}
