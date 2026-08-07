@@ -19,7 +19,10 @@ interface InstitutionFormProps {
 export function InstitutionForm({ onSubmit, onCancel, isLoading }: InstitutionFormProps) {
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<InstitutionFormData>({
     resolver: zodResolver(institutionSchema),
-    defaultValues: { type: 'BANK' },
+    defaultValues: {
+      name: '',
+      type: 'BANK',
+    },
   });
 
   const type = watch('type');
@@ -57,7 +60,7 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading }: InstitutionFo
               label="Tipo de Entidad"
               value={type}
               disabled={isLoading}
-              onValueChange={(val) => setValue('type', val as 'BANK' | 'WALLET' | 'COOP' | 'OTHER')}
+              onValueChange={(val) => setValue('type', val as 'BANK' | 'WALLET' | 'COOP' | 'OTHER', { shouldValidate: true })}
               options={[
                 { label: 'Banco', value: 'BANK' },
                 { label: 'Billetera Digital', value: 'WALLET' },

@@ -23,6 +23,11 @@ export function ProductServiceForm({ onSubmit, onCancel, isLoading }: ProductSer
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
+    defaultValues: {
+      name: '',
+      category_id: '',
+      description: '',
+    },
   });
 
   const category_id = watch('category_id');
@@ -60,7 +65,7 @@ export function ProductServiceForm({ onSubmit, onCancel, isLoading }: ProductSer
               name="category_id"
               label="Categoría Principal"
               value={category_id || ''}
-              onValueChange={(val) => setValue('category_id', val)}
+              onValueChange={(val) => setValue('category_id', val, { shouldValidate: true })}
               error={errors.category_id?.message}
               searchable
               disabled={isLoading}

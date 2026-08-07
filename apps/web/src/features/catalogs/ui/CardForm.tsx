@@ -27,7 +27,13 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
   
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<CardFormData>({
     resolver: zodResolver(cardSchema),
-    defaultValues: {},
+    defaultValues: {
+      institution_id: '',
+      brand_id: '',
+      type_id: '',
+      name: '',
+      last_four: '',
+    },
   });
 
   const type_id = watch('type_id');
@@ -56,7 +62,7 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
               name="institution_id"
               label="Institución (Banco)"
               value={institution_id || ''}
-              onValueChange={(val) => setValue('institution_id', val)}
+              onValueChange={(val) => setValue('institution_id', val, { shouldValidate: true })}
               error={errors.institution_id?.message}
               searchable
               disabled={isLoading}
@@ -100,7 +106,7 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
               name="brand_id"
               label="Red (Marca)"
               value={brand_id || ''}
-              onValueChange={(val) => setValue('brand_id', val)}
+              onValueChange={(val) => setValue('brand_id', val, { shouldValidate: true })}
               error={errors.brand_id?.message}
               disabled={isLoading}
             >
@@ -117,7 +123,7 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
               name="type_id"
               label="Tipo de Tarjeta"
               value={type_id || ''}
-              onValueChange={(val) => setValue('type_id', val)}
+              onValueChange={(val) => setValue('type_id', val, { shouldValidate: true })}
               error={errors.type_id?.message}
               disabled={isLoading}
             >

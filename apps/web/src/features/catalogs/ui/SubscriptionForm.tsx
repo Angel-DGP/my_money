@@ -30,6 +30,11 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<SubscriptionFormData>({
     resolver: zodResolver(subscriptionSchema),
     defaultValues: {
+      name: '',
+      amount: 0,
+      category_id: '',
+      card_id: '',
+      next_billing_date: '',
       billing_cycle: 'MONTHLY',
       is_active: true,
     },
@@ -73,7 +78,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
               name="category_id"
               label="Categoría de Gasto"
               value={category_id || ''}
-              onValueChange={(val) => setValue('category_id', val)}
+              onValueChange={(val) => setValue('category_id', val, { shouldValidate: true })}
               error={errors.category_id?.message}
               searchable
               disabled={isLoading}
@@ -92,7 +97,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
               name="amount"
               value={amount || 0}
               disabled={isLoading}
-              onValueChange={(val) => setValue('amount', val ? Number(val) : 0)}
+              onValueChange={(val) => setValue('amount', val ? Number(val) : 0, { shouldValidate: true })}
             />
             {errors.amount && <p className="text-error-500 text-xs">{errors.amount.message}</p>}
           </div>
@@ -103,7 +108,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
               label="Ciclo de Facturación"
               value={billing_cycle}
               disabled={isLoading}
-              onValueChange={(val) => setValue('billing_cycle', val as 'MONTHLY' | 'YEARLY')}
+              onValueChange={(val) => setValue('billing_cycle', val as 'MONTHLY' | 'YEARLY', { shouldValidate: true })}
               options={[
                 { label: 'Mensual', value: 'MONTHLY' },
                 { label: 'Anual', value: 'YEARLY' },
@@ -145,7 +150,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
               name="card_id"
               label="Tarjeta Asociada (Opcional)"
               value={card_id || ''}
-              onValueChange={(val) => setValue('card_id', val)}
+              onValueChange={(val) => setValue('card_id', val, { shouldValidate: true })}
               error={errors.card_id?.message}
               disabled={isLoading}
             >

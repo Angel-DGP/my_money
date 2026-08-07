@@ -16,7 +16,7 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
   required?: boolean | undefined;
   searchable?: boolean | undefined;
   disabled?: boolean | undefined;
-  onValueChange?: <T = string>(value: T) => void;
+  onValueChange?: (value: any) => void;
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options?: Array<{ label: string; value: string; disabled?: boolean }>;
 }
