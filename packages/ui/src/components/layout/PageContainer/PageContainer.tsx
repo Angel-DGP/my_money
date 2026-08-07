@@ -34,8 +34,9 @@ export const PageContainerComponent = ({ children, className }: PageContainerPro
     <FooterPortalProvider>
       {/* Wrapper externo: NO scrollea, solo distribuye el espacio en columna */}
       <div className="flex flex-col h-full w-full">
-        {/* Scroll container: todo el contenido scrollea aquí */}
-        <div className={cn('flex-1 min-h-0 overflow-y-auto custom-scrollbar', className)}>
+        {/* Scroll container: todo el contenido scrollea aquí. pb-6 garantiza
+            espacio al fondo sin importar qué clases pasen las páginas al Body */}
+        <div className={cn('flex-1 min-h-0 overflow-y-auto custom-scrollbar pb-6', className)}>
           {children}
         </div>
         {/* Footer slot: siempre fuera del scroll, siempre pegado al fondo */}
@@ -106,8 +107,8 @@ const PageContainerBody = ({
       className={cn(
         'flex-1',
         variant === 'card'
-          ? 'px-4 sm:px-6 lg:px-8 pt-6 pb-6'
-          : 'px-4 sm:px-6 lg:px-8 pt-6 pb-6',
+          ? 'px-4 sm:px-6 lg:px-8 pt-6'
+          : 'px-4 sm:px-6 lg:px-8 pt-6',
         className,
       )}
     >
