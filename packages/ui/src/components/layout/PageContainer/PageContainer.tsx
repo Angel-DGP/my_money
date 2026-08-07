@@ -17,17 +17,28 @@ export interface PageContainerProps {
 /**
  * PageContainer
  *
- * Shell de página con scroll arquitecturalmente correcto y efecto backdrop blur:
- * El PageContainerComponent es el único scroll container (overflow-y-auto).
- * Esto permite que el contenido del Body pase por DEBAJO de Header y Footer,
- * logrando un efecto backdrop-blur muy premium en ambos extremos de la página.
+ * Arquitectura de scroll correcta y definitiva:
+ *
+ *   [Wrapper externo] flex-col h-full  ← sin overflow
+ *   ├── [Scroll container] flex-1 min-h-0 overflow-y-auto
+ *   │   ├── PageContainer.Header  sticky top-0  ← se pega al tope del scroll
+ *   │   └── PageContainer.Body   contenido de la página
+ *   └── [FooterPortalSlot] shrink-0  ← FUERA del scroll, SIEMPRE al fondo
+ *       └── PageContainerFooter  (renderizado via portal desde cualquier profundidad)
+ *
+ * El footer nunca necesita sticky porque vive estructuralmente al fondo.
+ * El header sticky funciona correctamente dentro del scroll container.
  */
 export const PageContainerComponent = ({ children, className }: PageContainerProps) => {
   return (
     <FooterPortalProvider>
-      <div className={cn('flex flex-col h-full w-full overflow-y-auto custom-scrollbar relative', className)}>
-        {children}
-        {/* Footer portal target: renders PageContainerFooter here, outside body scroll context but inside the page container scroll wrapper */}
+      {/* Wrapper externo: NO scrollea, solo distribuye el espacio en columna */}
+      <div className="flex flex-col h-full w-full">
+        {/* Scroll container: todo el contenido scrollea aquí */}
+        <div className={cn('flex-1 min-h-0 overflow-y-auto custom-scrollbar', className)}>
+          {children}
+        </div>
+        {/* Footer slot: siempre fuera del scroll, siempre pegado al fondo */}
         <FooterPortalSlot />
       </div>
     </FooterPortalProvider>
@@ -122,10 +133,9 @@ export interface PageContainerFooterProps {
 /**
  * PageContainerFooter
  *
- * Renders itself via a React portal into the FooterPortalSlot placed at the
- * bottom of PageContainer, OUTSIDE the body container structure but inside
- * the page scroll context. It stays sticky bottom-0, showing blurred content
- * beneath it when scrolled, and fits perfectly at the end of the page.
+ * Se renderiza via portal en FooterPortalSlot, que vive FUERA del scroll
+ * container. No necesita sticky ni z-index especial: siempre está al fondo
+ * de forma natural, como un flex sibling del scroll container.
  */
 const PageContainerFooter = ({
   children,
@@ -135,7 +145,7 @@ const PageContainerFooter = ({
     <FooterPortal>
       <div
         className={cn(
-          'sticky bottom-0 z-30 shrink-0',
+          'shrink-0',
           'px-4 sm:px-6 lg:px-8 py-4',
           'bg-background/80 backdrop-blur-md border-t border-border-subtle',
           'flex justify-end gap-3',
