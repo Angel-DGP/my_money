@@ -49,13 +49,13 @@ export function NotificationBell() {
         <Icon name="bell" size="sm" className="text-text-secondary" />
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1.5 flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
           </span>
         )}
       </Dropdown.Trigger>
       
-      <Dropdown.Content align="end" className="w-80 max-h-96 overflow-y-auto p-0">
+      <Dropdown.Content align="start" className="w-80 max-h-96 overflow-y-auto p-0">
         <div className="p-3 border-b border-border-subtle bg-surface/50 backdrop-blur-md sticky top-0 z-10 flex justify-between items-center">
           <h3 className="font-medium text-sm text-text-primary">Notificaciones</h3>
           {unreadCount > 0 && (
@@ -78,7 +78,7 @@ export function NotificationBell() {
               return (
                 <Dropdown.Item 
                   key={item.id} 
-                  className={`p-3 items-start gap-3 rounded-none border-b border-border-subtle last:border-0 ${isUnread ? 'bg-brand-500/5' : ''}`}
+                  className={`p-3 items-start gap-3 rounded-none border-b border-border-subtle last:border-0 ${isUnread ? 'bg-primary-500/5' : ''}`}
                   onClick={() => handleNotificationClick(item)}
                 >
                   <div className={`mt-0.5 shrink-0 ${iconProps.color}`}>
@@ -98,7 +98,7 @@ export function NotificationBell() {
                     </span>
                   </div>
                   {isUnread && (
-                    <div className="shrink-0 w-2 h-2 rounded-full bg-brand-500 mt-1.5" />
+                    <div className="shrink-0 w-2 h-2 rounded-full bg-primary-500 mt-1.5" />
                   )}
                 </Dropdown.Item>
               );
