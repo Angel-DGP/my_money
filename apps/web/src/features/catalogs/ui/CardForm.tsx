@@ -40,8 +40,11 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
   const institution_id = watch('institution_id');
   const brand_id = watch('brand_id');
 
+  console.log("Form Errors:", errors);
+  console.log("Watched Values:", { institution_id, type_id, brand_id });
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
+    <form id="card-form" onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
       
       {/* ─── SECCIÓN: ASIGNACIÓN BANCARIA ────────────────────────────────────── */}
       <div className="col-span-12 space-y-5">
@@ -152,7 +155,7 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined}>
+        <Button type="submit" form="card-form" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined}>
           {isLoading ? 'Guardando...' : 'Guardar Tarjeta'}
         </Button>
       </PageContainer.Footer>

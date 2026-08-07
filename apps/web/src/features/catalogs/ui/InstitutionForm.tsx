@@ -28,7 +28,7 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading }: InstitutionFo
   const type = watch('type');
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
+    <form id="institution-form" onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
       
       {/* ─── SECCIÓN: DETALLES DE LA INSTITUCIÓN ──────────────────────────────── */}
       <div className="col-span-12 space-y-5">
@@ -77,7 +77,7 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading }: InstitutionFo
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined}>
+        <Button type="submit" form="institution-form" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined}>
           {isLoading ? 'Guardando...' : 'Guardar Institución'}
         </Button>
       </PageContainer.Footer>

@@ -46,7 +46,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
   const amount = watch('amount');
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
+    <form id="subscription-form" onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
       
       {/* ─── SECCIÓN: INFORMACIÓN DE SUSCRIPCIÓN ──────────────────────────────── */}
       <div className="col-span-12 space-y-5">
@@ -167,7 +167,7 @@ export function SubscriptionForm({ onSubmit, onCancel, isLoading }: Subscription
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined}>
+        <Button type="submit" form="subscription-form" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined}>
           {isLoading ? 'Guardando...' : 'Guardar Suscripción'}
         </Button>
       </PageContainer.Footer>

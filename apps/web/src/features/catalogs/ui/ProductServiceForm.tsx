@@ -33,7 +33,7 @@ export function ProductServiceForm({ onSubmit, onCancel, isLoading }: ProductSer
   const category_id = watch('category_id');
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
+    <form id="product-form" onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
       
       {/* ─── SECCIÓN: INFORMACIÓN DEL COMERCIO/PRODUCTO ────────────────────── */}
       <div className="col-span-12 space-y-5">
@@ -94,7 +94,7 @@ export function ProductServiceForm({ onSubmit, onCancel, isLoading }: ProductSer
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined}>
+        <Button type="submit" form="product-form" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined}>
           {isLoading ? 'Guardando...' : 'Guardar Comercio'}
         </Button>
       </PageContainer.Footer>
