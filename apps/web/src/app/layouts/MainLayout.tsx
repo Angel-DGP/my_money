@@ -4,7 +4,6 @@ import { useAuth } from '@features/auth';
 import { Button, Icon, cn } from '@mymoney/ui';
 import { GlobalSearchWidget } from '@widgets/global-search';
 import { NotificationBell } from '@widgets/notification';
-import { useTheme } from '../providers/ThemeProvider';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Dashboard', icon: 'layout-dashboard' as const },
@@ -14,7 +13,7 @@ const NAV_ITEMS = [
   { path: '/budgets', label: 'Presupuestos', icon: 'pie-chart' as const },
   { path: '/goals', label: 'Metas', icon: 'target' as const },
   { path: '/automations', label: 'Automatizaciones', icon: 'repeat' as const },
-  { path: '/catalogs', label: 'Catálogos', icon: 'settings' as const },
+  { path: '/catalogs', label: 'Catálogos', icon: 'layers' as const },
   { path: '/ui-kit', label: 'Interfaz (UI Kit)', icon: 'palette' as const },
 ];
 
@@ -23,7 +22,6 @@ export function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -54,18 +52,25 @@ export function MainLayout() {
         "fixed inset-y-0 left-0 z-50 w-72 bg-background border-r border-border-subtle flex flex-col transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:w-64",
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="h-16 flex items-center justify-between px-6 border-b border-border-subtle">
-          <Link to="/" onClick={closeMobileMenu} className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand-600 text-white">
+        {/* Sidebar Header: Logo + NotificationBell */}
+        <div className="h-16 flex items-center justify-between px-5 border-b border-border-subtle shrink-0">
+          <Link to="/" onClick={closeMobileMenu} className="flex items-center gap-2.5 min-w-0">
+            <div className="flex items-center justify-center w-8 h-8 shrink-0 rounded-lg bg-brand-600 text-white">
               <Icon name="wallet" size="sm" />
             </div>
-            <span className="text-xl font-bold text-text-primary tracking-tight">MyMoney</span>
+            <span className="text-xl font-bold text-text-primary tracking-tight truncate">MyMoney</span>
           </Link>
-          <Button variant="ghost" className="md:hidden -mr-2 p-2" onClick={closeMobileMenu}>
-            <Icon name="x" size="sm" />
-          </Button>
+
+          <div className="flex items-center gap-1 shrink-0">
+            <NotificationBell />
+            {/* Close button (mobile only) */}
+            <Button variant="ghost" className="md:hidden p-2" onClick={closeMobileMenu} aria-label="Cerrar menú">
+              <Icon name="x" size="sm" />
+            </Button>
+          </div>
         </div>
         
+        {/* Nav Items */}
         <div className="flex-1 overflow-y-auto custom-scrollbar py-4 px-3 flex flex-col gap-1">
           {NAV_ITEMS.map((item) => (
             <Link
@@ -89,22 +94,46 @@ export function MainLayout() {
           ))}
         </div>
         
-        <div className="p-4 border-t border-border-subtle">
-          <Button variant="ghost" fullWidth onClick={handleLogout} className="justify-start text-text-secondary hover:text-text-primary hover:bg-surface">
+        {/* Sidebar Footer: Settings + Logout */}
+        <div className="p-3 border-t border-border-subtle flex flex-col gap-1 shrink-0">
+          <Link
+            to="/settings"
+            onClick={closeMobileMenu}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors",
+              isActive('/settings')
+                ? "bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-400"
+                : "text-text-secondary hover:text-text-primary hover:bg-surface"
+            )}
+          >
+            <Icon
+              name="settings"
+              size="sm"
+              className={cn(isActive('/settings') ? "text-brand-600 dark:text-brand-400" : "text-text-secondary")}
+            />
+            Configuración
+          </Link>
+          <Button
+            variant="ghost"
+            fullWidth
+            onClick={handleLogout}
+            className="justify-start text-text-secondary hover:text-text-primary hover:bg-surface"
+          >
             <Icon name="log-out" size="sm" className="mr-3" />
             Cerrar Sesión
           </Button>
         </div>
       </aside>
 
-      {/* Main Content */}
+      {/* Main Content — no top header, PageContainer owns the full right area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-background">
-        {/* Mobile Header */}
-        <header className="md:hidden h-16 bg-background/50 dark:bg-background/30 backdrop-blur-xl border-b border-border-subtle flex items-center justify-between px-4 shrink-0 z-10 sticky top-0">
+        {/* Mobile Header (preserved for mobile navigation) */}
+        <header className="md:hidden h-16 bg-background/80 backdrop-blur-md border-b border-border-subtle flex items-center justify-between px-4 shrink-0 z-10 sticky top-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(true)}
               className="p-2 -ml-2 text-text-secondary hover:text-text-primary rounded-lg hover:bg-surface transition-colors"
+              aria-label="Abrir menú"
             >
               <Icon name="menu" size="sm" />
             </button>
@@ -117,30 +146,12 @@ export function MainLayout() {
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-full hover:bg-surface transition-colors text-text-secondary"
-            >
-              <Icon name={theme === 'dark' ? 'sun' : 'moon'} size="sm" />
-            </button>
+          <div className="flex items-center gap-1">
             <NotificationBell />
           </div>
         </header>
         
-        {/* Desktop Header */}
-        <header className="hidden md:flex h-16 border-b border-border-subtle bg-background/50 dark:bg-background/30 backdrop-blur-xl items-center justify-end px-8 shrink-0 z-10 sticky top-0">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-full hover:bg-surface transition-colors text-text-secondary"
-            >
-              <Icon name={theme === 'dark' ? 'sun' : 'moon'} size="sm" />
-            </button>
-            <NotificationBell />
-          </div>
-        </header>
-        
+        {/* Outlet: PageContainer takes the full remaining space */}
         <div className="flex-1 min-h-0 flex flex-col bg-background">
           <Outlet />
         </div>

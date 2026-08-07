@@ -55,6 +55,8 @@ import {
   Sun,
   Moon,
   Palette,
+  Shield,
+  Layers,
 } from 'lucide-react';
 
 export const iconRegistry = {
@@ -114,6 +116,8 @@ export const iconRegistry = {
   sun: Sun,
   moon: Moon,
   palette: Palette,
+  shield: Shield,
+  layers: Layers,
 } as const;
 
 export type IconName = keyof typeof iconRegistry;

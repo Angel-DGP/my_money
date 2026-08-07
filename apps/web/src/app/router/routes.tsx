@@ -14,6 +14,7 @@ import { GoalsPage, NewGoalPage } from '@pages/goals';
 import { DashboardPage } from '@pages/dashboard';
 import { AutomationsPage, CreateAutomationPage, EditAutomationPage } from '@pages/automations';
 import { UIKitPage } from '@pages/ui-kit';
+import { SettingsPage } from '@pages/settings';
 import { 
   CatalogsPage,
   NewInstitutionPage,
@@ -133,6 +134,10 @@ export const routes: RouteObject[] = [
               {
                 path: '/ui-kit',
                 element: <UIKitPage />,
+              },
+              {
+                path: '/settings',
+                element: <SettingsPage />,
               },
             ],
           },
