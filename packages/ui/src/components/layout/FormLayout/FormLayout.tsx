@@ -30,7 +30,7 @@ export const FormLayout = React.forwardRef<HTMLFormElement, FormLayoutProps>(
         className={cn("flex flex-col flex-1", className)}
         {...props}
       >
-        <div className={cn("grid grid-cols-1 md:grid-cols-12 content-start", gapMap[gap])}>
+        <div className={cn("grid grid-cols-1 md:grid-cols-12 content-start pb-6", gapMap[gap])}>
           {gridChildren}
         </div>
         {footer}
