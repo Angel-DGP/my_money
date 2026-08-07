@@ -17,23 +17,17 @@ export interface PageContainerProps {
 /**
  * PageContainer
  *
- * Shell de página con scroll arquitecturalmente correcto:
- *
- *   PageContainer (h-full flex-col, provee FooterPortalProvider)
- *   ├── PageContainer.Header  (shrink-0)
- *   ├── PageContainer.Body    (flex-1 min-h-0 overflow-y-auto)  ← ÚNICO scroll
- *   │   └── cualquier contenido, incluyendo FormLayout
- *   └── FooterPortalSlot      ← aquí aparece el footer, fuera del scroll
- *
- * PageContainer.Footer usa FooterPortal para renderizarse en el Slot,
- * independientemente de cuán profundo esté anidado.
+ * Shell de página con scroll arquitecturalmente correcto y efecto backdrop blur:
+ * El PageContainerComponent es el único scroll container (overflow-y-auto).
+ * Esto permite que el contenido del Body pase por DEBAJO de Header y Footer,
+ * logrando un efecto backdrop-blur muy premium en ambos extremos de la página.
  */
 export const PageContainerComponent = ({ children, className }: PageContainerProps) => {
   return (
     <FooterPortalProvider>
-      <div className={cn('flex flex-col h-full w-full', className)}>
+      <div className={cn('flex flex-col h-full w-full overflow-y-auto custom-scrollbar relative', className)}>
         {children}
-        {/* Footer portal target: renders PageContainerFooter here, outside scroll */}
+        {/* Footer portal target: renders PageContainerFooter here, outside body scroll context but inside the page container scroll wrapper */}
         <FooterPortalSlot />
       </div>
     </FooterPortalProvider>
@@ -58,7 +52,12 @@ const PageContainerHeader = ({
   className,
 }: PageContainerHeaderProps) => {
   return (
-    <div className={cn('flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 shrink-0', className)}>
+    <div className={cn(
+      'sticky top-0 z-30 shrink-0',
+      'bg-background/80 backdrop-blur-md border-b border-border-subtle/50',
+      'flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6',
+      className
+    )}>
       <div className="flex items-center gap-4">
         {backTo && (
           <Button variant="ghost" onClick={backTo} className="px-2 -ml-2" aria-label="Volver">
@@ -94,7 +93,7 @@ const PageContainerBody = ({
   return (
     <div
       className={cn(
-        'flex-1 min-h-0 overflow-y-auto custom-scrollbar',
+        'flex-1',
         variant === 'card'
           ? 'px-4 sm:px-6 lg:px-8 pt-6 pb-6'
           : 'px-4 sm:px-6 lg:px-8 pt-6 pb-6',
@@ -124,10 +123,9 @@ export interface PageContainerFooterProps {
  * PageContainerFooter
  *
  * Renders itself via a React portal into the FooterPortalSlot placed at the
- * bottom of PageContainer, OUTSIDE the scroll area. This means the footer is
- * always visible regardless of scroll position and never affects layout.
- *
- * No sticky, no z-index hacks needed.
+ * bottom of PageContainer, OUTSIDE the body container structure but inside
+ * the page scroll context. It stays sticky bottom-0, showing blurred content
+ * beneath it when scrolled, and fits perfectly at the end of the page.
  */
 const PageContainerFooter = ({
   children,
@@ -137,9 +135,9 @@ const PageContainerFooter = ({
     <FooterPortal>
       <div
         className={cn(
-          'shrink-0',
+          'sticky bottom-0 z-30 shrink-0',
           'px-4 sm:px-6 lg:px-8 py-4',
-          'bg-background/95 backdrop-blur-md border-t border-border-subtle',
+          'bg-background/80 backdrop-blur-md border-t border-border-subtle',
           'flex justify-end gap-3',
           className,
         )}
