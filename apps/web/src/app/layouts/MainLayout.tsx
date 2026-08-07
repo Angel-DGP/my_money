@@ -141,7 +141,7 @@ export function MainLayout() {
           </div>
         </header>
         
-        <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar bg-background">
+        <div className="flex-1 min-h-0 flex flex-col bg-background">
           <Outlet />
         </div>
       </div>

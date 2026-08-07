@@ -2,6 +2,11 @@ import React from 'react';
 import { cn } from '../../../utils/cn';
 import { Button } from '../../core/Button';
 import { Icon } from '../../core/Icon';
+import {
+  FooterPortalProvider,
+  FooterPortalSlot,
+  FooterPortal,
+} from './PageContainerFooterPortal';
 
 export interface PageContainerProps {
   children: React.ReactNode;
@@ -12,15 +17,26 @@ export interface PageContainerProps {
 /**
  * PageContainer
  *
- * Provee el padding de página y estructura flex-col.
- * Requiere que el contenedor scroll ancestro tenga:
- *   overflow-y-auto + min-h-0  (esencial en flex-col para que sticky funcione)
+ * Shell de página con scroll arquitecturalmente correcto:
+ *
+ *   PageContainer (h-full flex-col, provee FooterPortalProvider)
+ *   ├── PageContainer.Header  (shrink-0)
+ *   ├── PageContainer.Body    (flex-1 min-h-0 overflow-y-auto)  ← ÚNICO scroll
+ *   │   └── cualquier contenido, incluyendo FormLayout
+ *   └── FooterPortalSlot      ← aquí aparece el footer, fuera del scroll
+ *
+ * PageContainer.Footer usa FooterPortal para renderizarse en el Slot,
+ * independientemente de cuán profundo esté anidado.
  */
 export const PageContainerComponent = ({ children, className }: PageContainerProps) => {
   return (
-    <div className={cn('flex flex-col min-h-full w-full', className)}>
-      {children}
-    </div>
+    <FooterPortalProvider>
+      <div className={cn('flex flex-col h-full w-full', className)}>
+        {children}
+        {/* Footer portal target: renders PageContainerFooter here, outside scroll */}
+        <FooterPortalSlot />
+      </div>
+    </FooterPortalProvider>
   );
 };
 
@@ -42,7 +58,7 @@ const PageContainerHeader = ({
   className,
 }: PageContainerHeaderProps) => {
   return (
-    <div className={cn('flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8', className)}>
+    <div className={cn('flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 shrink-0', className)}>
       <div className="flex items-center gap-4">
         {backTo && (
           <Button variant="ghost" onClick={backTo} className="px-2 -ml-2" aria-label="Volver">
@@ -78,14 +94,20 @@ const PageContainerBody = ({
   return (
     <div
       className={cn(
-        'px-4 sm:px-6 lg:px-8 pt-6 flex-1 flex flex-col',
+        'flex-1 min-h-0 overflow-y-auto custom-scrollbar',
         variant === 'card'
-          ? 'bg-surface p-6 sm:p-8 rounded-2xl border border-border-subtle shadow-sm mx-4 sm:mx-6 lg:mx-8 mb-6'
-          : 'bg-transparent',
+          ? 'px-4 sm:px-6 lg:px-8 pt-6 pb-6'
+          : 'px-4 sm:px-6 lg:px-8 pt-6 pb-6',
         className,
       )}
     >
-      {children}
+      {variant === 'card' ? (
+        <div className="bg-surface rounded-2xl border border-border-subtle shadow-sm p-6 sm:p-8">
+          {children}
+        </div>
+      ) : (
+        children
+      )}
     </div>
   );
 };
@@ -98,22 +120,33 @@ export interface PageContainerFooterProps {
   className?: string;
 }
 
+/**
+ * PageContainerFooter
+ *
+ * Renders itself via a React portal into the FooterPortalSlot placed at the
+ * bottom of PageContainer, OUTSIDE the scroll area. This means the footer is
+ * always visible regardless of scroll position and never affects layout.
+ *
+ * No sticky, no z-index hacks needed.
+ */
 const PageContainerFooter = ({
   children,
   className,
 }: PageContainerFooterProps) => {
   return (
-    <div
-      className={cn(
-        'mt-auto shrink-0 sticky bottom-0 z-40',
-        'px-4 sm:px-6 lg:px-8 py-4',
-        'bg-background/95 backdrop-blur-md border-t border-border-subtle',
-        'flex justify-end gap-3',
-        className,
-      )}
-    >
-      {children}
-    </div>
+    <FooterPortal>
+      <div
+        className={cn(
+          'shrink-0',
+          'px-4 sm:px-6 lg:px-8 py-4',
+          'bg-background/95 backdrop-blur-md border-t border-border-subtle',
+          'flex justify-end gap-3',
+          className,
+        )}
+      >
+        {children}
+      </div>
+    </FooterPortal>
   );
 };
 PageContainerFooter.displayName = 'PageContainerFooter';

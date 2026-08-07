@@ -13,27 +13,25 @@ const gapMap = {
   lg: 'gap-6',
 };
 
+/**
+ * FormLayout
+ *
+ * Contenedor de formulario que organiza los campos en un grid responsivo.
+ * El scroll de la página lo gestiona PageContainer.Body (overflow-y-auto).
+ * El footer (PageContainerFooter) se renderiza via portal fuera del scroll,
+ * por lo que puede colocarse directamente como hijo de FormLayout sin problemas.
+ */
 export const FormLayout = React.forwardRef<HTMLFormElement, FormLayoutProps>(
   ({ children, className, gap = 'default', ...props }, ref) => {
-    // Extraemos el Footer (si existe) para colocarlo fuera del grid
-    const childrenArray = React.Children.toArray(children);
-    const footer = childrenArray.find(
-      (child) => React.isValidElement(child) && (child.type as any).displayName === 'PageContainerFooter'
-    );
-    const gridChildren = childrenArray.filter(
-      (child) => React.isValidElement(child) ? (child.type as any).displayName !== 'PageContainerFooter' : true
-    );
-
     return (
       <form
         ref={ref}
-        className={cn("flex flex-col flex-1", className)}
+        className={cn('flex flex-col', className)}
         {...props}
       >
-        <div className={cn("grid grid-cols-1 md:grid-cols-12 content-start pb-6", gapMap[gap])}>
-          {gridChildren}
+        <div className={cn('grid grid-cols-1 md:grid-cols-12 content-start pb-6', gapMap[gap])}>
+          {children}
         </div>
-        {footer}
       </form>
     );
   }
