@@ -89,7 +89,7 @@ export function AutomationsTable({ rules, onEdit, onDelete, onToggleActive }: Au
                   Acción
                 </span>
               </TableHead>
-              <TableHead align="center" className="sticky right-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[-4px_0_12px_rgba(0,0,0,0.05)] text-center">
+              <TableHead align="center" className="sticky right-0 bg-surface z-10 w-[160px] min-w-[160px] max-w-[160px] px-2 shadow-[-4px_0_12px_rgba(0,0,0,0.05)] text-center">
                 <span className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
                   Acciones
                 </span>
@@ -131,7 +131,7 @@ export function AutomationsTable({ rules, onEdit, onDelete, onToggleActive }: Au
                       {actionLabels[rule.action_type] || rule.action_type}
                     </Badge>
                   </TableCell>
-                  <TableCell className="sticky right-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover">
+                  <TableCell className="sticky right-0 bg-surface z-10 w-[160px] min-w-[160px] max-w-[160px] px-2 shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover">
                     <div className="flex items-center justify-center gap-1">
                       <button type="button" aria-label="Editar" onClick={(e) => { e.stopPropagation(); onEdit(rule); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
                         <Icon name="edit" size="sm" />

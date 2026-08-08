@@ -100,6 +100,7 @@ export const iconRegistry = {
   plus: Plus,
   trash: Trash2,
   pencil: Pencil,
+  edit: Pencil,
   'chevron-right': ChevronRight,
   'chevron-left': ChevronLeft,
   'chevron-down': ChevronDown,
