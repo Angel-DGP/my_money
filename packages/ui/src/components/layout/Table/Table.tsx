@@ -6,7 +6,7 @@ const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableE
     <div className="relative w-full overflow-auto">
       <table
         ref={ref}
-        className={cn('w-full caption-bottom text-sm', className)}
+        className={cn('w-full caption-bottom text-sm border-separate border-spacing-0', className)}
         {...props}
       />
     </div>
@@ -16,7 +16,7 @@ Table.displayName = 'Table';
 
 const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
-    <thead ref={ref} className={cn('[&_tr]:border-b border-border-subtle', className)} {...props} />
+    <thead ref={ref} className={cn(className)} {...props} />
   )
 );
 TableHeader.displayName = 'Table.Header';
@@ -48,7 +48,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        'group border-b border-border-subtle transition-colors hover:bg-surface/50 data-[state=selected]:bg-surface',
+        'group transition-colors hover:bg-surface/50 data-[state=selected]:bg-surface',
         className
       )}
       {...props}
@@ -67,7 +67,7 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
     <th
       ref={ref}
       className={cn(
-        'h-12 px-4 text-left align-middle font-medium text-text-secondary [&:has([role=checkbox])]:pr-0',
+        'h-12 px-4 text-left align-middle font-medium text-text-secondary [&:has([role=checkbox])]:pr-0 border-b border-border-subtle',
         align === 'center' && 'text-center',
         align === 'right' && 'text-right',
         className
@@ -88,7 +88,7 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
     <td
       ref={ref}
       className={cn(
-        'p-4 align-middle [&:has([role=checkbox])]:pr-0',
+        'p-4 align-middle [&:has([role=checkbox])]:pr-0 border-b border-border-subtle group-last:border-0',
         align === 'center' && 'text-center',
         align === 'right' && 'text-right',
         className

@@ -1,4 +1,4 @@
-import { Table, TableHeader, TableBody, TableRow, TableCell, Badge, Button, Icon, Checkbox } from '@mymoney/ui';
+import { Table, TableHeader, TableBody, TableRow, TableCell, Badge, Icon, Checkbox } from '@mymoney/ui';
 import type { AutoRuleDto } from '@entities/automation';
 import { TriggerType, ActionType } from '@entities/automation';
 import { useTableState, DataTableToolbar, SortableHeader, TablePagination } from '@mymoney/ui';
@@ -85,7 +85,7 @@ export function AutomationsTable({ rules, onEdit, onDelete, onToggleActive }: Au
               <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
                 <th>Acción</th>
               </TableCell>
-              <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+              <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider sticky right-0 bg-surface z-10 shadow-[-4px_0_12px_rgba(0,0,0,0.05)]">
                 <th>Opciones</th>
               </TableCell>
             </TableRow>
@@ -125,13 +125,15 @@ export function AutomationsTable({ rules, onEdit, onDelete, onToggleActive }: Au
                       {actionLabels[rule.action_type] || rule.action_type}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right flex items-center justify-end gap-1">
-                    <Button variant="secondary" size="icon" aria-label="Editar" onClick={() => onEdit(rule)}>
-                      <Icon name="pencil" size="sm" />
-                    </Button>
-                    <Button variant="secondary" size="icon" className="text-error-500 hover:text-error-600 hover:bg-error-50 dark:hover:bg-error-950" aria-label="Eliminar" onClick={() => onDelete(rule)}>
-                      <Icon name="trash" size="sm" />
-                    </Button>
+                  <TableCell className="sticky right-0 bg-surface z-10 shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover">
+                    <div className="flex items-center justify-end gap-1">
+                      <button type="button" aria-label="Editar" onClick={(e) => { e.stopPropagation(); onEdit(rule); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+                        <Icon name="edit" size="sm" />
+                      </button>
+                      <button type="button" aria-label="Eliminar" onClick={(e) => { e.stopPropagation(); onDelete(rule); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
+                        <Icon name="trash" size="sm" />
+                      </button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
