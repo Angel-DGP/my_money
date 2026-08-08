@@ -32,7 +32,7 @@ export function TransactionsPage() {
           </Button>
         }
       />
-      <PageContainer.Body variant="transparent" className="p-0 border-none shadow-none bg-transparent">
+      <PageContainer.Body variant="transparent">
         {isLoading ? (
           <div className="flex justify-center py-12">
             <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>

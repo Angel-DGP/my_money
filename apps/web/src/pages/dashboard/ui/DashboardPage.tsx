@@ -36,7 +36,7 @@ export function DashboardPage() {
         title="Hola de nuevo 👋"
         description="Este es el resumen inteligente de tus finanzas"
       />
-      <PageContainer.Body variant="transparent" className="p-0 border-none shadow-none bg-transparent">
+      <PageContainer.Body variant="transparent">
       <div className="flex flex-col gap-8">
         <QuickActionsWidget />
 

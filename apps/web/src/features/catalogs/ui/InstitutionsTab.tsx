@@ -32,7 +32,7 @@ export function InstitutionsTab() {
       align: 'right',
       sticky: 'right',
       cell: (inst) => (
-        <div className="flex items-center justify-end gap-1">
+        <div className="flex items-center justify-center gap-1">
           <button type="button" onClick={() => navigate(`/catalogs/institutions/edit/${inst.id}`, { state: { isView: true } })} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
             <Icon name="eye" size="sm" />
           </button>

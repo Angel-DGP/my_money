@@ -35,7 +35,7 @@ export function UIKitPage() {
         title="UI Kit / Diseño de Interfaz"
         description="Visualiza todos los componentes de la aplicación en un solo lugar para ajustar estilos."
       />
-      <PageContainer.Body variant="transparent" className="p-0 border-none shadow-none bg-transparent">
+      <PageContainer.Body variant="transparent">
       <div className="flex flex-col gap-8 animate-in fade-in duration-500">
 
         {/* Tipografía */}

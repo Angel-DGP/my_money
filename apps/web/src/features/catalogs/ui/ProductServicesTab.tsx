@@ -35,7 +35,7 @@ export function ProductServicesTab() {
       align: 'right',
       sticky: 'right',
       cell: (prod) => (
-        <div className="flex items-center justify-end gap-1">
+        <div className="flex items-center justify-center gap-1">
           <button type="button" onClick={() => navigate(`/catalogs/products/${prod.id}/edit`, { state: { isView: true } })} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
             <Icon name="eye" size="sm" />
           </button>

@@ -55,7 +55,7 @@ export function CardsTab() {
       align: 'right',
       sticky: 'right',
       cell: (c) => (
-        <div className="flex items-center justify-end gap-1">
+        <div className="flex items-center justify-center gap-1">
           <button type="button" onClick={() => navigate(`/catalogs/cards/edit/${c.id}`, { state: { isView: true } })} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
             <Icon name="eye" size="sm" />
           </button>

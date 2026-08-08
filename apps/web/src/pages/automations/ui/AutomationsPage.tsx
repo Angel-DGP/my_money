@@ -49,7 +49,7 @@ export function AutomationsPage() {
           </Button>
         }
       />
-      <PageContainer.Body variant="transparent" className="p-0 border-none shadow-none bg-transparent">
+      <PageContainer.Body variant="transparent">
         {isLoading ? (
           <div className="p-8 text-center text-text-secondary">Cargando reglas...</div>
         ) : (
