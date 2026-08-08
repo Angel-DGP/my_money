@@ -3,7 +3,9 @@ import type { Transaction } from '@entities/transaction';
 
 interface TransactionsTableProps {
   transactions: Transaction[];
-  onTransactionClick: (transaction: Transaction) => void;
+  onView: (transaction: Transaction) => void;
+  onEdit: (transaction: Transaction) => void;
+  onDelete: (transaction: Transaction) => void;
 }
 
 const FILTERS = [
@@ -13,7 +15,7 @@ const FILTERS = [
   { label: 'Transferencia', value: 'TRANSFER' },
 ];
 
-export function TransactionsTable({ transactions, onTransactionClick }: TransactionsTableProps) {
+export function TransactionsTable({ transactions, onView, onEdit, onDelete }: TransactionsTableProps) {
   const columns: ColumnDef<Transaction>[] = [
     {
       key: 'type',
@@ -87,6 +89,25 @@ export function TransactionsTable({ transactions, onTransactionClick }: Transact
         />
       ),
     },
+    {
+      key: 'actions',
+      header: 'Acciones',
+      align: 'right',
+      sticky: 'right',
+      cell: (t) => (
+        <div className="flex justify-end gap-1">
+          <button type="button" onClick={(e) => { e.stopPropagation(); onView(t); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+            <Icon name="eye" size="sm" />
+          </button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(t); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+            <Icon name="edit" size="sm" />
+          </button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(t); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
+            <Icon name="trash" size="sm" />
+          </button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -99,7 +120,7 @@ export function TransactionsTable({ transactions, onTransactionClick }: Transact
       filters={FILTERS}
       filterField={(t, f) => t.type === f}
       defaultSort={{ column: 'date', direction: 'desc' }}
-      onRowClick={onTransactionClick}
+      onRowClick={onView}
       emptyMessage="No se encontraron transacciones"
     />
   );

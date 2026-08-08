@@ -9,8 +9,8 @@ import { NotFoundPage } from '@pages/not-found';
 import { AccountsPage, NewAccountPage, EditAccountPage } from '@pages/accounts';
 import { CategoriesPage, NewCategoryPage, EditCategoryPage } from '@pages/categories';
 import { TransactionsPage, NewTransactionPage, EditTransactionPage } from '@pages/transactions';
-import { BudgetsPage, NewBudgetPage } from '@pages/budgets';
-import { GoalsPage, NewGoalPage } from '@pages/goals';
+import { BudgetsPage, NewBudgetPage, EditBudgetPage } from '@pages/budgets';
+import { GoalsPage, NewGoalPage, EditGoalPage } from '@pages/goals';
 import { DashboardPage } from '@pages/dashboard';
 import { AutomationsPage, CreateAutomationPage, EditAutomationPage } from '@pages/automations';
 import { UIKitPage } from '@pages/ui-kit';
@@ -108,12 +108,20 @@ export const routes: RouteObject[] = [
                 element: <NewBudgetPage />,
               },
               {
+                path: '/budgets/:id/edit',
+                element: <EditBudgetPage />,
+              },
+              {
                 path: '/goals',
                 element: <GoalsPage />,
               },
               {
                 path: '/goals/new',
                 element: <NewGoalPage />,
+              },
+              {
+                path: '/goals/:id/edit',
+                element: <EditGoalPage />,
               },
               {
                 path: '/automations',

@@ -101,8 +101,8 @@ export function useTransactionForm(initialData?: Transaction) {
     }
   };
 
-  const handleDelete = async () => {
-    if (!initialData || !window.confirm('¿Eliminar esta transacción?')) return;
+  const handleConfirmDelete = async () => {
+    if (!initialData) return;
     try {
       await deleteTransaction.mutateAsync(initialData.id);
       navigate('/transactions');
@@ -116,7 +116,7 @@ export function useTransactionForm(initialData?: Transaction) {
     isEdit,
     isPending,
     onSubmit: form.handleSubmit(onSubmit),
-    handleDelete,
+    handleConfirmDelete,
     navigate,
   };
 }

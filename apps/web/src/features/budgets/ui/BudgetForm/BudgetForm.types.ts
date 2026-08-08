@@ -11,6 +11,7 @@ export interface CategoryOption {
 
 export interface BudgetFormProps {
   initialData?: BudgetDto | null;
+  isView?: boolean;
   categories: CategoryOption[];
   onSubmit: (data: any) => void;
   onCancel: () => void;
@@ -21,5 +22,6 @@ export interface BudgetFormFieldsProps {
   form: any;
   categories: CategoryOption[];
   isEdit: boolean;
+  isView?: boolean;
   isLoading?: boolean | undefined;
 }

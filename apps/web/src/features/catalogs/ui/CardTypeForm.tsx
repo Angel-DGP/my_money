@@ -15,9 +15,10 @@ interface CardTypeFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   initialData?: CardTypeDto | null;
+  isView?: boolean;
 }
 
-export function CardTypeForm({ onSubmit, onCancel, isLoading, initialData }: CardTypeFormProps) {
+export function CardTypeForm({ onSubmit, onCancel, isLoading, initialData, isView }: CardTypeFormProps) {
   const { register, handleSubmit, formState: { errors } } = useForm<CardTypeFormData>({
     resolver: zodResolver(cardTypeSchema),
     defaultValues: {
@@ -44,7 +45,7 @@ export function CardTypeForm({ onSubmit, onCancel, isLoading, initialData }: Car
             <Input
               id="name"
               placeholder="Ej: Crédito, Débito..."
-              disabled={isLoading}
+              disabled={isView || isLoading}
               error={errors.name?.message}
               required
               {...register('name')}
@@ -55,11 +56,13 @@ export function CardTypeForm({ onSubmit, onCancel, isLoading, initialData }: Car
 
       <PageContainer.Footer className="col-span-12">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
-          Cancelar
+          {isView ? 'Volver' : 'Cancelar'}
         </Button>
-        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="cardtype-form">
-          {isLoading ? 'Guardando...' : 'Guardar Tipo'}
-        </Button>
+        {!isView && (
+          <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="cardtype-form">
+            {isLoading ? 'Guardando...' : initialData ? 'Actualizar Tipo' : 'Guardar Tipo'}
+          </Button>
+        )}
       </PageContainer.Footer>
     </FormLayout>
   );

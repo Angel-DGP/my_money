@@ -6,6 +6,7 @@ export function EditTransactionPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const transaction = location.state?.transaction;
+  const isView = location.state?.isView;
 
   if (!transaction) {
     return <Navigate to="/transactions" replace />;
@@ -14,12 +15,12 @@ export function EditTransactionPage() {
   return (
     <PageContainer fullWidth>
       <PageContainer.Header
-        title="Editar Transacción"
-        description="Actualiza o elimina los detalles del movimiento"
+        title={isView ? "Ver Transacción" : "Editar Transacción"}
+        description={isView ? "Detalles del movimiento" : "Actualiza o elimina los detalles del movimiento"}
         backTo={() => navigate(-1)}
       />
       <PageContainer.Body variant="transparent" className="py-6">
-        <TransactionForm initialData={transaction} />
+        <TransactionForm initialData={transaction} isView={isView} />
       </PageContainer.Body>
     </PageContainer>
   );

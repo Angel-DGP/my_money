@@ -15,9 +15,10 @@ interface CardBrandFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   initialData?: CardBrandDto | null;
+  isView?: boolean;
 }
 
-export function CardBrandForm({ onSubmit, onCancel, isLoading, initialData }: CardBrandFormProps) {
+export function CardBrandForm({ onSubmit, onCancel, isLoading, initialData, isView }: CardBrandFormProps) {
   const { register, handleSubmit, formState: { errors } } = useForm<CardBrandFormData>({
     resolver: zodResolver(cardBrandSchema),
     defaultValues: {
@@ -44,7 +45,7 @@ export function CardBrandForm({ onSubmit, onCancel, isLoading, initialData }: Ca
             <Input
               id="name"
               placeholder="Ej: Visa, Mastercard..."
-              disabled={isLoading}
+              disabled={isView || isLoading}
               error={errors.name?.message}
               required
               {...register('name')}
@@ -55,11 +56,13 @@ export function CardBrandForm({ onSubmit, onCancel, isLoading, initialData }: Ca
 
       <PageContainer.Footer className="col-span-12">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
-          Cancelar
+          {isView ? 'Volver' : 'Cancelar'}
         </Button>
-        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="cardbrand-form">
-          {isLoading ? 'Guardando...' : 'Guardar Marca'}
-        </Button>
+        {!isView && (
+          <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="cardbrand-form">
+            {isLoading ? 'Guardando...' : initialData ? 'Actualizar Marca' : 'Guardar Marca'}
+          </Button>
+        )}
       </PageContainer.Footer>
     </FormLayout>
   );

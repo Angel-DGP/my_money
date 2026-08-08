@@ -1,7 +1,7 @@
 import { Input, Label, Select, Checkbox, Icon } from '@mymoney/ui';
 import type { BudgetFormFieldsProps } from './BudgetForm.types';
 
-export function BudgetFormFields({ form, categories, isEdit, isLoading }: BudgetFormFieldsProps) {
+export function BudgetFormFields({ form, categories, isEdit, isView, isLoading }: BudgetFormFieldsProps) {
   const { register, formState: { errors } } = form;
 
   return (
@@ -24,7 +24,7 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
             <Select
               id="category_id"
               label="Categoría"
-              disabled={isEdit || isLoading}
+              disabled={isView || isEdit || isLoading}
               required
               {...register('category_id')}
               placeholder="Seleccionar categoría..."
@@ -40,7 +40,7 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
             <Select
               id="period"
               label="Periodo"
-              disabled={isEdit || isLoading}
+              disabled={isView || isEdit || isLoading}
               required
               {...register('period')}
               placeholder="Seleccionar periodo..."
@@ -58,7 +58,7 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
               type="number"
               step="0.01"
               min="0"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               required
               placeholder="Ej: 500.00"
               leftIcon="dollar-sign"
@@ -71,7 +71,7 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
             <Label htmlFor="currency" required>Moneda</Label>
             <Input
               id="currency"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               required
               placeholder="Ej: USD, EUR, MXN"
               {...register('currency')}
@@ -84,7 +84,7 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
             <Input
               id="start_date"
               type="date"
-              disabled={isEdit || isLoading}
+              disabled={isView || isEdit || isLoading}
               required
               leftIcon="calendar"
               {...register('start_date')}
@@ -115,7 +115,7 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
               min="1"
               max="100"
               placeholder="Ej: 80"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               rightIcon="info"
               {...register('alert_threshold', { valueAsNumber: true })}
             />
@@ -130,7 +130,7 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
               step="0.01"
               min="0"
               placeholder="Aviso visual"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               leftIcon="dollar-sign"
               {...register('soft_limit', { valueAsNumber: true })}
             />
@@ -145,7 +145,7 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
               step="0.01"
               min="0"
               placeholder="Bloqueo o alerta roja"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               leftIcon="dollar-sign"
               {...register('hard_limit', { valueAsNumber: true })}
             />
@@ -168,23 +168,23 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-surface-2/40 p-5 rounded-xl border border-border-subtle">
           <Checkbox
-            disabled={isLoading}
+            disabled={isView || isLoading}
             label="Trasladar saldo sobrante al siguiente mes (Rollover)"
             {...register('carry_over')}
           />
           <Checkbox
-            disabled={isLoading}
+            disabled={isView || isLoading}
             label="Ignorar reembolsos"
             {...register('ignore_refunds')}
           />
           <Checkbox
-            disabled={isLoading}
+            disabled={isView || isLoading}
             label="Ignorar transferencias entre cuentas"
             {...register('ignore_transfers')}
           />
           {isEdit && (
             <Checkbox
-              disabled={isLoading}
+              disabled={isView || isLoading}
               label="Congelar presupuesto (No actualizar saldo)"
               {...register('is_frozen')}
             />
@@ -195,7 +195,7 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
           <Label htmlFor="notes">Notas (Opcional)</Label>
           <Input
             id="notes"
-            disabled={isLoading}
+            disabled={isView || isLoading}
             placeholder="Añade algún comentario o detalle sobre este presupuesto..."
             {...register('notes')}
           />

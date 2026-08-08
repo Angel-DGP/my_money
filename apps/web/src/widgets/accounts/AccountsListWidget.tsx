@@ -2,42 +2,27 @@ import { useNavigate } from 'react-router-dom';
 import { useAccountsQuery, useDeleteAccount } from '@entities/account';
 import type { Account } from '@entities/account';
 import { AccountsTable } from '@features/accounts';
-import { Button, Icon, toast, PageContainer } from '@mymoney/ui';
+import { Button, Icon, toast, PageContainer, AlertDialog } from '@mymoney/ui';
+import { useState } from 'react';
 import { QueryState } from '@shared/ui/QueryState';
 
 export function AccountsListWidget() {
   const navigate = useNavigate();
   const accountsQuery = useAccountsQuery();
   const deleteAccount = useDeleteAccount();
+  const [accountToDelete, setAccountToDelete] = useState<Account | null>(null);
+
+  const handleView = (account: Account) => {
+    navigate(`/accounts/${account.id}/edit`, { state: { isView: true } });
+  };
 
   const handleEdit = (account: Account) => {
     navigate(`/accounts/${account.id}/edit`);
   };
 
   const handleDelete = (account: Account) => {
-    if (window.confirm(`¿Estás seguro de eliminar la cuenta ${account.name}?`)) {
-      deleteAccount.mutate(account.id, {
-        onSuccess: () => {
-          toast({
-            title: 'Cuenta eliminada',
-            description: 'La cuenta ha sido eliminada.',
-            variant: 'success',
-          });
-        },
-        onError: () => {
-          toast({
-            title: 'Error al eliminar',
-            description: 'No se pudo eliminar la cuenta.',
-            variant: 'error',
-          });
-        }
-      });
-    }
-  };
-
-
-
-  return (
+    setAccountToDelete(account);
+  };  return (
     <PageContainer className="max-w-7xl">
       <PageContainer.Header
         title="Mis Cuentas"
@@ -63,6 +48,7 @@ export function AccountsListWidget() {
         {(accounts) => (
           <AccountsTable 
             accounts={accounts}
+            onView={handleView}
             onEdit={handleEdit} 
             onDelete={handleDelete} 
           />
@@ -71,6 +57,37 @@ export function AccountsListWidget() {
 
 
       </PageContainer.Body>
+
+      <AlertDialog
+        open={!!accountToDelete}
+        onOpenChange={(open) => !open && setAccountToDelete(null)}
+        title="Eliminar Cuenta"
+        description={`¿Estás seguro de que deseas eliminar la cuenta "${accountToDelete?.name}"? Esta acción no se puede deshacer.`}
+        type="error"
+        confirmText="Sí, eliminar"
+        isLoading={deleteAccount.isPending}
+        onConfirm={() => {
+          if (accountToDelete) {
+            deleteAccount.mutate(accountToDelete.id, {
+              onSuccess: () => {
+                setAccountToDelete(null);
+                toast({
+                  title: 'Cuenta eliminada',
+                  description: 'La cuenta ha sido eliminada.',
+                  variant: 'success',
+                });
+              },
+              onError: () => {
+                toast({
+                  title: 'Error al eliminar',
+                  description: 'No se pudo eliminar la cuenta.',
+                  variant: 'error',
+                });
+              }
+            });
+          }
+        }}
+      />
     </PageContainer>
   );
 }

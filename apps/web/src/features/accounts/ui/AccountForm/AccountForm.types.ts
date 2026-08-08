@@ -7,6 +7,7 @@ export type AccountFormData = z.infer<typeof accountSchema>;
 
 export interface AccountFormProps {
   initialData?: Account | null;
+  isView?: boolean;
   onSubmit: (data: CreateAccountDto | UpdateAccountDto) => void;
   onCancel: () => void;
   isLoading?: boolean | undefined;
@@ -15,5 +16,6 @@ export interface AccountFormProps {
 export interface AccountFormFieldsProps {
   form: UseFormReturn<AccountFormData>;
   isEdit: boolean;
+  isView?: boolean;
   isLoading?: boolean | undefined;
 }

@@ -1,8 +1,9 @@
-import { Badge, Icon, Button, Amount, DataTable, type ColumnDef } from '@mymoney/ui';
+import { DataTable, Icon, Badge, Amount, type ColumnDef } from '@mymoney/ui';
 import type { Account } from '@entities/account';
 
 interface AccountsTableProps {
   accounts: Account[];
+  onView: (account: Account) => void;
   onEdit: (account: Account) => void;
   onDelete: (account: Account) => void;
 }
@@ -16,7 +17,7 @@ const FILTERS = [
   { label: 'Inversión', value: 'INVESTMENT' },
 ];
 
-export function AccountsTable({ accounts, onEdit, onDelete }: AccountsTableProps) {
+export function AccountsTable({ accounts, onView, onEdit, onDelete }: AccountsTableProps) {
   const columns: ColumnDef<Account>[] = [
     {
       key: 'name',
@@ -51,18 +52,18 @@ export function AccountsTable({ accounts, onEdit, onDelete }: AccountsTableProps
       key: 'actions',
       header: 'Acciones',
       align: 'right',
-      className: 'w-24',
+      sticky: 'right',
       cell: (account) => (
-        <div className="flex items-center justify-end gap-1">
-          <Button variant="secondary" size="icon" aria-label="Ver" className="hidden sm:inline-flex" onClick={() => onEdit(account)}>
+        <div className="flex justify-end gap-1">
+          <button type="button" onClick={(e) => { e.stopPropagation(); onView(account); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
             <Icon name="eye" size="sm" />
-          </Button>
-          <Button variant="secondary" size="icon" aria-label="Editar" onClick={() => onEdit(account)}>
-            <Icon name="pencil" size="sm" />
-          </Button>
-          <Button variant="secondary" size="icon" className="text-error-500 hover:text-error-600 hover:bg-error-50 dark:hover:bg-error-950" aria-label="Eliminar" onClick={() => onDelete(account)}>
+          </button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(account); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+            <Icon name="edit" size="sm" />
+          </button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(account); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
             <Icon name="trash" size="sm" />
-          </Button>
+          </button>
         </div>
       ),
     },
@@ -89,6 +90,7 @@ export function AccountsTable({ accounts, onEdit, onDelete }: AccountsTableProps
         const cmp = String(aVal ?? '').localeCompare(String(bVal ?? ''));
         return dir === 'asc' ? cmp : -cmp;
       }}
+      onRowClick={onView}
       emptyMessage="No se encontraron cuentas"
     />
   );

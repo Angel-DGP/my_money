@@ -1,5 +1,5 @@
 import { useSubscriptions, useDeleteSubscription } from '../api/useCatalogs';
-import { Dialog, Modal, ModalHeader, ModalFooter, Button, Icon, PageContainer, DataTable, type ColumnDef } from '@mymoney/ui';
+import { AlertDialog, Button, Icon, PageContainer, DataTable, type ColumnDef } from '@mymoney/ui';
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -53,14 +53,18 @@ export function SubscriptionsTab() {
       key: 'actions',
       header: 'Acciones',
       align: 'right',
+      sticky: 'right',
       cell: (sub) => (
         <div className="flex items-center justify-end gap-1">
-          <Button variant="ghost" size="icon" aria-label="Editar" onClick={() => navigate(`/catalogs/subscriptions/${sub.id}/edit`)}>
-            <Icon name="pencil" size="sm" />
-          </Button>
-          <Button variant="ghost" size="icon" aria-label="Eliminar" className="text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20" onClick={() => setSubToDelete(sub)}>
+          <button type="button" onClick={() => navigate(`/catalogs/subscriptions/${sub.id}/edit`, { state: { isView: true } })} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+            <Icon name="eye" size="sm" />
+          </button>
+          <button type="button" onClick={() => navigate(`/catalogs/subscriptions/${sub.id}/edit`)} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+            <Icon name="edit" size="sm" />
+          </button>
+          <button type="button" onClick={() => setSubToDelete(sub)} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
             <Icon name="trash" size="sm" />
-          </Button>
+          </button>
         </div>
       ),
     },
@@ -114,44 +118,30 @@ export function SubscriptionsTab() {
                   const cmp = String(valA).localeCompare(String(valB));
                   return dir === 'asc' ? cmp : -cmp;
                 }}
+                onRowClick={(sub) => navigate(`/catalogs/subscriptions/${sub.id}/edit`, { state: { isView: true } })}
                 emptyMessage="No tienes suscripciones registradas."
               />
             )}
           </QueryState>
 
-          <Dialog.Root open={!!subToDelete} onOpenChange={(open) => !open && setSubToDelete(null)}>
-            <Dialog.Portal>
-              <Modal>
-                <ModalHeader>
-                  <Dialog.Title className="text-lg font-semibold text-text-primary">¿Eliminar suscripción?</Dialog.Title>
-                  <Dialog.Description className="text-sm text-text-secondary mt-2">
-                    Estás a punto de eliminar la suscripción "{subToDelete?.name}". Esta acción no se puede deshacer.
-                  </Dialog.Description>
-                </ModalHeader>
-                <ModalFooter>
-                  <Button variant="ghost" onClick={() => setSubToDelete(null)} disabled={deleteSubscription.isPending}>
-                    Cancelar
-                  </Button>
-                  <Button
-                    className="bg-error-500 hover:bg-error-600 text-white"
-                    disabled={deleteSubscription.isPending}
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      if (!subToDelete) return;
-                      try {
-                        await deleteSubscription.mutateAsync(subToDelete.id);
-                        setSubToDelete(null);
-                      } catch (error) {
-                        console.error(error);
-                      }
-                    }}
-                  >
-                    {deleteSubscription.isPending ? 'Eliminando...' : 'Eliminar'}
-                  </Button>
-                </ModalFooter>
-              </Modal>
-            </Dialog.Portal>
-          </Dialog.Root>
+          <AlertDialog
+            open={!!subToDelete}
+            onOpenChange={(open) => !open && setSubToDelete(null)}
+            title="¿Eliminar suscripción?"
+            description={`Estás a punto de eliminar la suscripción "${subToDelete?.name}". Esta acción no se puede deshacer.`}
+            type="error"
+            confirmText="Eliminar"
+            isLoading={deleteSubscription.isPending}
+            onConfirm={async () => {
+              if (!subToDelete) return;
+              try {
+                await deleteSubscription.mutateAsync(subToDelete.id);
+                setSubToDelete(null);
+              } catch (error) {
+                console.error(error);
+              }
+            }}
+          />
         </div>
       </PageContainer.Body>
     </PageContainer>

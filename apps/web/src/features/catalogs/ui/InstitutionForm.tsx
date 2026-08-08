@@ -16,9 +16,10 @@ interface InstitutionFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   initialData?: InstitutionDto | null;
+  isView?: boolean;
 }
 
-export function InstitutionForm({ onSubmit, onCancel, isLoading, initialData }: InstitutionFormProps) {
+export function InstitutionForm({ onSubmit, onCancel, isLoading, initialData, isView }: InstitutionFormProps) {
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<InstitutionFormData>({
     resolver: zodResolver(institutionSchema),
     defaultValues: {
@@ -50,7 +51,7 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading, initialData }: 
             <Input
               id="name"
               placeholder="Ej: Banco Pichincha, Deuna..."
-              disabled={isLoading}
+              disabled={isView || isLoading}
               error={errors.name?.message}
               required
               {...register('name')}
@@ -62,7 +63,7 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading, initialData }: 
               id="type"
               label="Tipo de Entidad"
               value={type}
-              disabled={isLoading}
+              disabled={isView || isLoading}
               onValueChange={(val) => setValue('type', val as 'BANK' | 'WALLET' | 'COOP' | 'OTHER', { shouldValidate: true })}
               options={[
                 { label: 'Banco', value: 'BANK' },
@@ -80,11 +81,13 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading, initialData }: 
 
       <PageContainer.Footer className="col-span-12">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
-          Cancelar
+          {isView ? 'Volver' : 'Cancelar'}
         </Button>
-        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="institutionform-form">
-          {isLoading ? 'Guardando...' : 'Guardar Institución'}
-        </Button>
+        {!isView && (
+          <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="institutionform-form">
+            {isLoading ? 'Guardando...' : initialData ? 'Actualizar Institución' : 'Guardar Institución'}
+          </Button>
+        )}
       </PageContainer.Footer>
     </FormLayout>
   );

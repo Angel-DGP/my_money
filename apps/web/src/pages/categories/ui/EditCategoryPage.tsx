@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { toast, PageContainer } from '@mymoney/ui';
 import { CategoryForm } from '@features/categories';
 import { useUpdateCategory, useCategoriesQuery } from '@entities/category';
@@ -7,6 +7,8 @@ import { QueryState } from '@shared/ui/QueryState';
 
 export function EditCategoryPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isView = location.state?.isView;
   const { id } = useParams<{ id: string }>();
   
   const { data: categories, isLoading, isError, error } = useCategoriesQuery();
@@ -38,8 +40,8 @@ export function EditCategoryPage() {
   return (
     <PageContainer>
       <PageContainer.Header
-        title="Editar Categoría"
-        description="Modifica los detalles de la categoría"
+        title={isView ? "Ver Categoría" : "Editar Categoría"}
+        description={isView ? "Detalles de la categoría" : "Modifica los detalles de la categoría"}
         backTo={() => navigate(-1)}
       />
 
@@ -53,6 +55,7 @@ export function EditCategoryPage() {
           {(cat) => (
             <CategoryForm
               initialData={cat}
+              isView={isView}
               onSubmit={(data) => handleSubmit(data as UpdateCategoryDto)}
               onCancel={() => navigate('/categories')}
               isLoading={updateCategory.isPending}

@@ -5,6 +5,7 @@ import { useTableState, DataTableToolbar, SortableHeader, TablePagination } from
 
 interface CategoriesTableProps {
   categories: Category[];
+  onView: (category: Category) => void;
   onEdit: (category: Category) => void;
   onDelete: (category: Category) => void;
 }
@@ -15,7 +16,7 @@ const FILTERS = [
   { label: 'Ingreso', value: 'INCOME' },
 ];
 
-export function CategoriesTable({ categories, onEdit, onDelete }: CategoriesTableProps) {
+export function CategoriesTable({ categories, onView, onEdit, onDelete }: CategoriesTableProps) {
   // Flatten categories and subcategories
   const flatCategories = React.useMemo(() => {
     if (!Array.isArray(categories)) return [];
@@ -105,7 +106,7 @@ export function CategoriesTable({ categories, onEdit, onDelete }: CategoriesTabl
               <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
                 <th>Sistema</th>
               </TableCell>
-              <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+              <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider sticky right-0 bg-surface z-10 shadow-[-4px_0_12px_rgba(0,0,0,0.05)]">
                 <th>Acciones</th>
               </TableCell>
             </TableRow>
@@ -119,7 +120,7 @@ export function CategoriesTable({ categories, onEdit, onDelete }: CategoriesTabl
               </TableRow>
             ) : (
               paginated.map((category) => (
-                <TableRow key={category.id} className="hover:bg-surface-hover transition-colors">
+                <TableRow key={category.id} className="hover:bg-surface-hover transition-colors cursor-pointer" onClick={() => onView(category)}>
                   <TableCell>
                     <div className={`flex items-center gap-3 ${category.isChild ? 'ml-8 relative before:content-[""] before:absolute before:w-4 before:h-px before:bg-border-subtle before:-left-5 before:top-1/2' : ''}`}>
                       <div 
@@ -145,16 +146,19 @@ export function CategoriesTable({ categories, onEdit, onDelete }: CategoriesTabl
                       <span className="text-text-muted text-sm">Personalizada</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-right flex items-center justify-end gap-1">
+                  <TableCell className="text-right flex items-center justify-end gap-1 sticky right-0 bg-surface z-10 shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover">
+                      <button type="button" onClick={(e) => { e.stopPropagation(); onView(category); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+                        <Icon name="eye" size="sm" />
+                      </button>
                       {!category.is_system && (
-                        <Button variant="secondary" size="icon" aria-label="Editar" onClick={() => onEdit(category)}>
-                          <Icon name="pencil" size="sm" />
-                        </Button>
+                        <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(category); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+                          <Icon name="edit" size="sm" />
+                        </button>
                       )}
                       {!category.is_system && (
-                        <Button variant="secondary" size="icon" className="text-error-500 hover:text-error-600 hover:bg-error-50 dark:hover:bg-error-950" aria-label="Eliminar" onClick={() => onDelete(category)}>
+                        <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(category); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
                           <Icon name="trash" size="sm" />
-                        </Button>
+                        </button>
                       )}
                   </TableCell>
                 </TableRow>

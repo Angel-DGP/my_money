@@ -21,9 +21,10 @@ interface SubscriptionFormProps {
   onSubmit: (data: SubscriptionFormData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  isView?: boolean;
 }
 
-export function SubscriptionForm({ initialData, onSubmit, onCancel, isLoading }: SubscriptionFormProps) {
+export function SubscriptionForm({ initialData, onSubmit, onCancel, isLoading, isView }: SubscriptionFormProps) {
   const { data: cards } = useCards();
   const { data: categories } = useCategoriesQuery();
 
@@ -65,7 +66,7 @@ export function SubscriptionForm({ initialData, onSubmit, onCancel, isLoading }:
             <Input
               id="name"
               placeholder="Ej: Netflix, Spotify, Gimnasio..."
-              disabled={isLoading}
+              disabled={isView || isLoading}
               error={errors.name?.message}
               required
               {...register('name')}
@@ -81,7 +82,7 @@ export function SubscriptionForm({ initialData, onSubmit, onCancel, isLoading }:
               onValueChange={(val) => setValue('category_id', val, { shouldValidate: true })}
               error={errors.category_id?.message}
               searchable
-              disabled={isLoading}
+              disabled={isView || isLoading}
               required
               placeholder="Seleccionar categoría..."
             >
@@ -97,7 +98,7 @@ export function SubscriptionForm({ initialData, onSubmit, onCancel, isLoading }:
               id="amount"
               name="amount"
               value={amount || 0}
-              disabled={isLoading}
+              disabled={isView || isLoading}
               required
               onValueChange={(val) => setValue('amount', val ? Number(val) : 0, { shouldValidate: true })}
             />
@@ -109,7 +110,7 @@ export function SubscriptionForm({ initialData, onSubmit, onCancel, isLoading }:
               id="billing_cycle"
               label="Ciclo de Facturación"
               value={billing_cycle}
-              disabled={isLoading}
+              disabled={isView || isLoading}
               onValueChange={(val) => setValue('billing_cycle', val as 'MONTHLY' | 'YEARLY', { shouldValidate: true })}
               options={[
                 { label: 'Mensual', value: 'MONTHLY' },
@@ -127,7 +128,7 @@ export function SubscriptionForm({ initialData, onSubmit, onCancel, isLoading }:
               id="next_billing_date"
               type="date"
               leftIcon="calendar"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               error={errors.next_billing_date?.message}
               required
               {...register('next_billing_date')}
@@ -157,7 +158,7 @@ export function SubscriptionForm({ initialData, onSubmit, onCancel, isLoading }:
               value={card_id || ''}
               onValueChange={(val) => setValue('card_id', val === 'none' ? '' : val, { shouldValidate: true })}
               error={errors.card_id?.message}
-              disabled={isLoading}
+              disabled={isView || isLoading}
               placeholder="Seleccionar tarjeta..."
             >
               <option value="none">No aplica / Pago manual</option>
@@ -171,11 +172,13 @@ export function SubscriptionForm({ initialData, onSubmit, onCancel, isLoading }:
 
       <PageContainer.Footer className="col-span-12">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
-          Cancelar
+          {isView ? 'Volver' : 'Cancelar'}
         </Button>
-        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="subscriptionform-form">
-          {isLoading ? 'Guardando...' : 'Guardar Suscripción'}
-        </Button>
+        {!isView && (
+          <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="subscriptionform-form">
+            {isLoading ? 'Guardando...' : initialData ? 'Actualizar Suscripción' : 'Guardar Suscripción'}
+          </Button>
+        )}
       </PageContainer.Footer>
     </FormLayout>
   );

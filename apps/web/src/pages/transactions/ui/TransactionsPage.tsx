@@ -1,11 +1,24 @@
-import { useTransactionsQuery } from '@entities/transaction';
+import { useTransactionsQuery, useDeleteTransaction, type Transaction } from '@entities/transaction';
 import { TransactionsTable } from '@features/transactions';
-import { Button, Icon, PageContainer, Text } from '@mymoney/ui';
+import { Button, Icon, PageContainer, Text, AlertDialog } from '@mymoney/ui';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export function TransactionsPage() {
   const navigate = useNavigate();
   const { data, isLoading, isError } = useTransactionsQuery({ page: 1, limit: 15 });
+  const deleteTransaction = useDeleteTransaction();
+  const [txToDelete, setTxToDelete] = useState<Transaction | null>(null);
+
+  const handleDeleteConfirm = async () => {
+    if (!txToDelete) return;
+    try {
+      await deleteTransaction.mutateAsync(txToDelete.id);
+      setTxToDelete(null);
+    } catch (error) {
+      console.error('Error deleting transaction', error);
+    }
+  };
 
   return (
     <PageContainer className="max-w-7xl">
@@ -38,7 +51,20 @@ export function TransactionsPage() {
           <>
             <TransactionsTable 
               transactions={data || []}
-              onTransactionClick={(tx) => navigate('/transactions/edit', { state: { transaction: tx } })} 
+              onView={(tx) => navigate('/transactions/edit', { state: { transaction: tx, isView: true } })} 
+              onEdit={(tx) => navigate('/transactions/edit', { state: { transaction: tx } })}
+              onDelete={(tx) => setTxToDelete(tx)}
+            />
+
+            <AlertDialog
+              open={!!txToDelete}
+              onOpenChange={(open) => !open && setTxToDelete(null)}
+              title="Eliminar Transacción"
+              description={`¿Estás seguro de que deseas eliminar esta transacción por ${txToDelete?.amount.value}?`}
+              type="error"
+              confirmText="Eliminar"
+              onConfirm={handleDeleteConfirm}
+              isLoading={deleteTransaction.isPending}
             />
 
             {/* Paginación - Omitido temporalmente ya que API no expone meta aún */}

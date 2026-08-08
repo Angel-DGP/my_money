@@ -33,6 +33,28 @@ export function useCreateGoal() {
   });
 }
 
+export function useUpdateGoal() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<CreateGoalDto> }) => GoalsService.update(id, data),
+    onSuccess: (_, variables) => {
+      goalInvalidations.onUpdate(queryClient, variables.id);
+    },
+  });
+}
+
+export function useDeleteGoal() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => GoalsService.remove(id),
+    onSuccess: () => {
+      goalInvalidations.onDelete(queryClient);
+    },
+  });
+}
+
 export function useAddGoalProgress() {
   const queryClient = useQueryClient();
 

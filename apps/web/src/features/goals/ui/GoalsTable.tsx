@@ -3,6 +3,9 @@ import type { GoalDto } from '@entities/goal';
 
 interface GoalsTableProps {
   goals: GoalDto[];
+  onView: (goal: GoalDto) => void;
+  onEdit: (goal: GoalDto) => void;
+  onDelete: (goal: GoalDto) => void;
   onAddProgress: (goal: GoalDto) => void;
 }
 
@@ -12,7 +15,7 @@ const FILTERS = [
   { label: 'Completadas', value: 'completed' },
 ];
 
-export function GoalsTable({ goals, onAddProgress }: GoalsTableProps) {
+export function GoalsTable({ goals, onView, onEdit, onDelete, onAddProgress }: GoalsTableProps) {
   const columns: ColumnDef<GoalDto>[] = [
     {
       key: 'name',
@@ -80,17 +83,28 @@ export function GoalsTable({ goals, onAddProgress }: GoalsTableProps) {
       key: 'actions',
       header: 'Acciones',
       align: 'right',
+      sticky: 'right',
       cell: (goal) => (
-        <div className="flex items-center justify-end gap-1">
+        <div className="flex justify-end gap-1">
           <Button 
             variant="secondary" 
             size="sm" 
-            onClick={() => onAddProgress(goal)}
+            className="mr-2"
+            onClick={(e) => { e.stopPropagation(); onAddProgress(goal); }}
             disabled={goal.status === 'completed'}
           >
             <Icon name="plus" size="sm" className="mr-1" />
             Aportar
           </Button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); onView(goal); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+            <Icon name="eye" size="sm" />
+          </button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(goal); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+            <Icon name="edit" size="sm" />
+          </button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(goal); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
+            <Icon name="trash" size="sm" />
+          </button>
         </div>
       ),
     },
@@ -130,6 +144,7 @@ export function GoalsTable({ goals, onAddProgress }: GoalsTableProps) {
         const cmp = String(valA).localeCompare(String(valB));
         return dir === 'asc' ? cmp : -cmp;
       }}
+      onRowClick={onView}
       emptyMessage="No se encontraron metas"
     />
   );

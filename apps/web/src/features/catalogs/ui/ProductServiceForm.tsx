@@ -17,9 +17,10 @@ interface ProductServiceFormProps {
   onSubmit: (data: ProductFormData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  isView?: boolean;
 }
 
-export function ProductServiceForm({ initialData, onSubmit, onCancel, isLoading }: ProductServiceFormProps) {
+export function ProductServiceForm({ initialData, onSubmit, onCancel, isLoading, isView }: ProductServiceFormProps) {
   const { data: categories } = useCategoriesQuery();
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ProductFormData>({
@@ -54,7 +55,7 @@ export function ProductServiceForm({ initialData, onSubmit, onCancel, isLoading 
             <Input
               id="name"
               placeholder="Ej: Supermaxi, Amazon, Apple..."
-              disabled={isLoading}
+              disabled={isView || isLoading}
               error={errors.name?.message}
               required
               {...register('name')}
@@ -70,7 +71,7 @@ export function ProductServiceForm({ initialData, onSubmit, onCancel, isLoading 
               onValueChange={(val) => setValue('category_id', val, { shouldValidate: true })}
               error={errors.category_id?.message}
               searchable
-              disabled={isLoading}
+              disabled={isView || isLoading}
               required
               placeholder="Seleccionar categoría..."
             >
@@ -85,7 +86,7 @@ export function ProductServiceForm({ initialData, onSubmit, onCancel, isLoading 
             <Input
               id="description"
               placeholder="Categoría general o notas"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               error={errors.description?.message}
               {...register('description')}
             />
@@ -95,11 +96,13 @@ export function ProductServiceForm({ initialData, onSubmit, onCancel, isLoading 
 
       <PageContainer.Footer className="col-span-12">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
-          Cancelar
+          {isView ? 'Volver' : 'Cancelar'}
         </Button>
-        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="productserviceform-form">
-          {isLoading ? 'Guardando...' : 'Guardar Comercio'}
-        </Button>
+        {!isView && (
+          <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="productserviceform-form">
+            {isLoading ? 'Guardando...' : initialData ? 'Actualizar Comercio' : 'Guardar Comercio'}
+          </Button>
+        )}
       </PageContainer.Footer>
     </FormLayout>
   );

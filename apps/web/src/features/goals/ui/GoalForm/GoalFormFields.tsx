@@ -2,7 +2,7 @@ import { Input, Label, Select, ColorPicker, Icon } from '@mymoney/ui';
 import { useAccountsQuery, type Account } from '@entities/account';
 import type { GoalFormFieldsProps } from './GoalForm.types';
 
-export function GoalFormFields({ form, isLoading }: GoalFormFieldsProps) {
+export function GoalFormFields({ form, isView, isLoading }: GoalFormFieldsProps) {
   const { register, watch, setValue, formState: { errors } } = form;
   const { data: accountsResponse } = useAccountsQuery();
   
@@ -31,7 +31,7 @@ export function GoalFormFields({ form, isLoading }: GoalFormFieldsProps) {
             <Label htmlFor="name" required>Nombre de la Meta</Label>
             <Input
               id="name"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               required
               placeholder="Ej: Ahorro para vacaciones"
               {...register('name')}
@@ -46,7 +46,7 @@ export function GoalFormFields({ form, isLoading }: GoalFormFieldsProps) {
               type="number"
               step="0.01"
               min="0"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               required
               placeholder="Ej: 5000.00"
               leftIcon="dollar-sign"
@@ -59,7 +59,7 @@ export function GoalFormFields({ form, isLoading }: GoalFormFieldsProps) {
             <Label htmlFor="description">Descripción (Opcional)</Label>
             <Input
               id="description"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               placeholder="Ej: Viaje a Japón en 2027"
               {...register('description')}
             />
@@ -73,7 +73,7 @@ export function GoalFormFields({ form, isLoading }: GoalFormFieldsProps) {
               label="Color de la Meta"
               value={color || '#3B82F6'}
               onChange={(c) => setValue('color', c)}
-              disabled={isLoading}
+              disabled={isView || isLoading}
             />
           </div>
         </div>
@@ -97,7 +97,7 @@ export function GoalFormFields({ form, isLoading }: GoalFormFieldsProps) {
             <Input
               id="target_date"
               type="date"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               leftIcon="calendar"
               {...register('target_date')}
             />
@@ -108,7 +108,7 @@ export function GoalFormFields({ form, isLoading }: GoalFormFieldsProps) {
             <Select
               id="priority"
               label="Prioridad"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               required
               {...register('priority')}
               placeholder="Seleccionar prioridad..."
@@ -124,7 +124,7 @@ export function GoalFormFields({ form, isLoading }: GoalFormFieldsProps) {
             <Select
               id="account_id"
               label="Cuenta Vinculada (Opcional)"
-              disabled={isLoading}
+              disabled={isView || isLoading}
               {...register('account_id')}
               placeholder="Seleccionar cuenta..."
             >

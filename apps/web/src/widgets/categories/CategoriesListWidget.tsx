@@ -2,13 +2,19 @@ import { useNavigate } from 'react-router-dom';
 import { useCategoriesQuery, useDeleteCategory } from '@entities/category';
 import type { Category } from '@entities/category';
 import { CategoriesTable } from '@features/categories';
-import { Button, Icon, toast, PageContainer } from '@mymoney/ui';
+import { Button, Icon, toast, PageContainer, AlertDialog } from '@mymoney/ui';
+import { useState } from 'react';
 import { QueryState } from '@shared/ui/QueryState';
 
 export function CategoriesListWidget() {
   const navigate = useNavigate();
   const categoriesQuery = useCategoriesQuery();
   const deleteCategory = useDeleteCategory();
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+
+  const handleView = (category: Category) => {
+    navigate(`/categories/edit/${category.id}`, { state: { isView: true } });
+  };
 
   const handleEdit = (category: Category) => {
     navigate(`/categories/edit/${category.id}`);
@@ -23,25 +29,7 @@ export function CategoriesListWidget() {
       });
       return;
     }
-
-    if (window.confirm(`¿Estás seguro de eliminar la categoría ${category.name}?`)) {
-      deleteCategory.mutate(category.id, {
-        onSuccess: () => {
-          toast({
-            title: 'Categoría eliminada',
-            description: 'La categoría ha sido eliminada.',
-            variant: 'success',
-          });
-        },
-        onError: () => {
-          toast({
-            title: 'Error al eliminar',
-            description: 'No se pudo eliminar la categoría.',
-            variant: 'error',
-          });
-        }
-      });
-    }
+    setCategoryToDelete(category);
   };
 
 
@@ -71,6 +59,7 @@ export function CategoriesListWidget() {
         {(categories) => (
           <CategoriesTable 
             categories={categories}
+            onView={handleView}
             onEdit={handleEdit} 
             onDelete={handleDelete} 
           />
@@ -78,6 +67,37 @@ export function CategoriesListWidget() {
       </QueryState>
 
       </PageContainer.Body>
+
+      <AlertDialog
+        open={!!categoryToDelete}
+        onOpenChange={(open) => !open && setCategoryToDelete(null)}
+        title="Eliminar Categoría"
+        description={`¿Estás seguro de que deseas eliminar la categoría "${categoryToDelete?.name}"? Esta acción no se puede deshacer.`}
+        type="error"
+        confirmText="Sí, eliminar"
+        isLoading={deleteCategory.isPending}
+        onConfirm={() => {
+          if (categoryToDelete) {
+            deleteCategory.mutate(categoryToDelete.id, {
+              onSuccess: () => {
+                setCategoryToDelete(null);
+                toast({
+                  title: 'Categoría eliminada',
+                  description: 'La categoría ha sido eliminada.',
+                  variant: 'success',
+                });
+              },
+              onError: () => {
+                toast({
+                  title: 'Error al eliminar',
+                  description: 'No se pudo eliminar la categoría.',
+                  variant: 'error',
+                });
+              }
+            });
+          }
+        }}
+      />
     </PageContainer>
   );
 }

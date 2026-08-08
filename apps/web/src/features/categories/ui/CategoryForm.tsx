@@ -6,12 +6,13 @@ import type { Category, CreateCategoryDto, UpdateCategoryDto, CategoryType } fro
 
 interface CategoryFormProps {
   initialData?: Category | null;
+  isView?: boolean;
   onSubmit: (data: CreateCategoryDto | UpdateCategoryDto) => void;
   onCancel: () => void;
   isLoading?: boolean;
 }
 
-export function CategoryForm({ initialData, onSubmit, onCancel, isLoading }: CategoryFormProps) {
+export function CategoryForm({ initialData, isView, onSubmit, onCancel, isLoading }: CategoryFormProps) {
   const { data: categories = [] } = useCategoriesQuery();
   const [name, setName] = useState(initialData?.name || '');
   const [type, setType] = useState<CategoryType>(initialData?.type || 'EXPENSE');
@@ -53,6 +54,7 @@ export function CategoryForm({ initialData, onSubmit, onCancel, isLoading }: Cat
           onChange={(e) => setName(e.target.value)} 
           minLength={2}
           maxLength={50}
+          disabled={isView || !!isLoading}
           required 
         />
       </div>
@@ -64,7 +66,7 @@ export function CategoryForm({ initialData, onSubmit, onCancel, isLoading }: Cat
           label="Tipo"
           value={type}
           onChange={(e) => setType(e.target.value as CategoryType)}
-          disabled={!!initialData}
+          disabled={isView || !!initialData}
           required
         >
           <option value="EXPENSE">Gasto</option>
@@ -86,7 +88,7 @@ export function CategoryForm({ initialData, onSubmit, onCancel, isLoading }: Cat
               if (parent) setType(parent.type);
             }
           }}
-          disabled={!!initialData && initialData.subcategories && initialData.subcategories.length > 0} // Can't have a parent if it already has children
+          disabled={isView || (!!initialData && initialData.subcategories && initialData.subcategories.length > 0)} // Can't have a parent if it already has children
           placeholder="Seleccionar categoría..."
         >
           <option value="none">Ninguna</option>
@@ -104,6 +106,7 @@ export function CategoryForm({ initialData, onSubmit, onCancel, isLoading }: Cat
           value={color} 
           onChange={setColor} 
           label="Color de la categoría" 
+          disabled={isView}
         />
       </div>
 
@@ -121,17 +124,19 @@ export function CategoryForm({ initialData, onSubmit, onCancel, isLoading }: Cat
           </div>
         </div>
         <div className="w-full">
-          <IconPicker value={icon} onChange={setIcon} />
+          <IconPicker value={icon} onChange={setIcon} disabled={isView} />
         </div>
       </div>
 
       <PageContainer.Footer className="col-span-12">
         <Button type="button" variant="outline" onClick={onCancel} disabled={!!isLoading}>
-          Cancelar
+          {isView ? 'Volver' : 'Cancelar'}
         </Button>
-        <Button type="submit" form="category-form" disabled={!!isLoading}>
-          {isLoading ? 'Guardando...' : initialData ? 'Actualizar Categoría' : 'Crear Categoría'}
-        </Button>
+        {!isView && (
+          <Button type="submit" form="category-form" disabled={!!isLoading}>
+            {isLoading ? 'Guardando...' : initialData ? 'Actualizar Categoría' : 'Crear Categoría'}
+          </Button>
+        )}
       </PageContainer.Footer>
     </FormLayout>
   );

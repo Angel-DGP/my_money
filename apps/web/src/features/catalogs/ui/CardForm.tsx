@@ -20,9 +20,10 @@ interface CardFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   initialData?: CardDto | null;
+  isView?: boolean;
 }
 
-export function CardForm({ onSubmit, onCancel, isLoading, initialData }: CardFormProps) {
+export function CardForm({ onSubmit, onCancel, isLoading, initialData, isView }: CardFormProps) {
   const { data: institutions } = useInstitutions();
   const { data: brands } = useCardBrands();
   const { data: types } = useCardTypes();
@@ -70,7 +71,7 @@ export function CardForm({ onSubmit, onCancel, isLoading, initialData }: CardFor
               onValueChange={(val) => setValue('institution_id', val, { shouldValidate: true })}
               error={errors.institution_id?.message}
               searchable
-              disabled={isLoading}
+              disabled={isView || isLoading}
               required
               placeholder="Seleccionar institución"
             >
@@ -85,7 +86,7 @@ export function CardForm({ onSubmit, onCancel, isLoading, initialData }: CardFor
             <Input
               id="name"
               placeholder="Ej: Tarjeta Principal, Mi Visa..."
-              disabled={isLoading}
+              disabled={isView || isLoading}
               error={errors.name?.message}
               required
               {...register('name')}
@@ -115,7 +116,7 @@ export function CardForm({ onSubmit, onCancel, isLoading, initialData }: CardFor
               value={brand_id || ''}
               onValueChange={(val) => setValue('brand_id', val, { shouldValidate: true })}
               error={errors.brand_id?.message}
-              disabled={isLoading}
+              disabled={isView || isLoading}
               required
               placeholder="Seleccionar marca"
             >
@@ -133,7 +134,7 @@ export function CardForm({ onSubmit, onCancel, isLoading, initialData }: CardFor
               value={type_id || ''}
               onValueChange={(val) => setValue('type_id', val, { shouldValidate: true })}
               error={errors.type_id?.message}
-              disabled={isLoading}
+              disabled={isView || isLoading}
               required
               placeholder="Seleccionar tipo"
             >
@@ -149,7 +150,7 @@ export function CardForm({ onSubmit, onCancel, isLoading, initialData }: CardFor
               id="last_four"
               placeholder="1234"
               maxLength={4}
-              disabled={isLoading}
+              disabled={isView || isLoading}
               error={errors.last_four?.message}
               required
               {...register('last_four')}
@@ -160,11 +161,13 @@ export function CardForm({ onSubmit, onCancel, isLoading, initialData }: CardFor
 
       <PageContainer.Footer className="col-span-12">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
-          Cancelar
+          {isView ? 'Volver' : 'Cancelar'}
         </Button>
-        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="cardform-form">
-          {isLoading ? 'Guardando...' : 'Guardar Tarjeta'}
-        </Button>
+        {!isView && (
+          <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="cardform-form">
+            {isLoading ? 'Guardando...' : initialData ? 'Actualizar Tarjeta' : 'Guardar Tarjeta'}
+          </Button>
+        )}
       </PageContainer.Footer>
     </FormLayout>
   );

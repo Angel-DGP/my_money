@@ -24,39 +24,39 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
         <div className="flex bg-surface-2 p-1.5 rounded-xl border border-border-subtle shadow-sm">
           <button
             type="button"
-            onClick={() => !isEdit && setValue('type', 'EXPENSE')}
-            disabled={isEdit}
+            onClick={() => !isEdit && !isView && setValue('type', 'EXPENSE')}
+            disabled={isEdit || isView}
             className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold rounded-lg transition-all ${
               selectedType === 'EXPENSE' 
                 ? 'bg-background shadow-sm text-error-600 dark:text-error-400' 
                 : 'text-text-secondary hover:text-text-primary'
-            } ${isEdit ? 'opacity-70 cursor-not-allowed' : ''}`}
+            } ${isEdit || isView ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             <Icon name="trending-down" size="sm" /> Gasto
           </button>
           
           <button
             type="button"
-            onClick={() => !isEdit && setValue('type', 'INCOME')}
-            disabled={isEdit}
+            onClick={() => !isEdit && !isView && setValue('type', 'INCOME')}
+            disabled={isEdit || isView}
             className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold rounded-lg transition-all ${
               selectedType === 'INCOME' 
                 ? 'bg-background shadow-sm text-success-600 dark:text-success-400' 
                 : 'text-text-secondary hover:text-text-primary'
-            } ${isEdit ? 'opacity-70 cursor-not-allowed' : ''}`}
+            } ${isEdit || isView ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             <Icon name="trending-up" size="sm" /> Ingreso
           </button>
           
           <button
             type="button"
-            onClick={() => !isEdit && setValue('type', 'TRANSFER')}
-            disabled={isEdit} 
+            onClick={() => !isEdit && !isView && setValue('type', 'TRANSFER')}
+            disabled={isEdit || isView} 
             className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold rounded-lg transition-all ${
               selectedType === 'TRANSFER' 
                 ? 'bg-background shadow-sm text-brand-600 dark:text-brand-400' 
                 : 'text-text-secondary hover:text-text-primary'
-            } ${isEdit ? 'opacity-70 cursor-not-allowed' : ''}`}
+            } ${isEdit || isView ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             <Icon name="arrow-left-right" size="sm" /> Transferencia
           </button>
@@ -86,6 +86,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
               min="0"
               placeholder="0.00"
               leftIcon="dollar-sign"
+              disabled={isView}
               error={errors.amount?.message as string}
               {...register('amount', { valueAsNumber: true })} 
             />
@@ -98,6 +99,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
               required
               type="date"
               leftIcon="calendar"
+              disabled={isView}
               error={errors.date?.message as string}
               {...register('date')} 
             />
@@ -109,6 +111,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
               label="Descripción"
               required
               placeholder="Ej. Compra semanal" 
+              disabled={isView}
               error={errors.description?.message as string}
               {...register('description')} 
             />
@@ -132,7 +135,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
           {selectedType !== 'TRANSFER' ? (
             <>
               <div className="col-span-12 md:col-span-6 space-y-2">
-                <Select id="account_id" label="Cuenta" required error={errors.account_id?.message as string} {...register('account_id')} placeholder="Seleccionar cuenta...">
+                <Select id="account_id" label="Cuenta" disabled={isView} required error={errors.account_id?.message as string} {...register('account_id')} placeholder="Seleccionar cuenta...">
                   {accounts.map((acc: Account) => (
                     <option key={acc.id} value={acc.id}>{acc.name}</option>
                   ))}
@@ -140,7 +143,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
               </div>
 
               <div className="col-span-12 md:col-span-6 space-y-2">
-                <Select id="category_id" label="Categoría (Opcional)" error={errors.category_id?.message as string} {...register('category_id')} placeholder="Seleccionar categoría...">
+                <Select id="category_id" label="Categoría (Opcional)" disabled={isView} error={errors.category_id?.message as string} {...register('category_id')} placeholder="Seleccionar categoría...">
                   <option value="none">Ninguna</option>
                   {filteredCategories.map((cat: Category) => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -151,7 +154,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
           ) : (
             <>
               <div className="col-span-12 md:col-span-6 space-y-2">
-                <Select id="from_account_id" label="Cuenta Origen" required error={errors.from_account_id?.message as string} {...register('from_account_id')} placeholder="Seleccionar cuenta origen...">
+                <Select id="from_account_id" label="Cuenta Origen" disabled={isView} required error={errors.from_account_id?.message as string} {...register('from_account_id')} placeholder="Seleccionar cuenta origen...">
                   {accounts.map((acc: Account) => (
                     <option key={acc.id} value={acc.id}>{acc.name}</option>
                   ))}
@@ -159,7 +162,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
               </div>
 
               <div className="col-span-12 md:col-span-6 space-y-2">
-                <Select id="to_account_id" label="Cuenta Destino" required error={errors.to_account_id?.message as string} {...register('to_account_id')} placeholder="Seleccionar cuenta destino...">
+                <Select id="to_account_id" label="Cuenta Destino" disabled={isView} required error={errors.to_account_id?.message as string} {...register('to_account_id')} placeholder="Seleccionar cuenta destino...">
                   {accounts.map((acc: Account) => (
                     <option key={acc.id} value={acc.id}>{acc.name}</option>
                   ))}
@@ -186,7 +189,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-surface-2/40 p-5 rounded-xl border border-border-subtle">
             
             <div className="col-span-12 md:col-span-6 space-y-2">
-              <Select id="payment_method" label="Método de Pago" error={errors.payment_method?.message as string} {...register('payment_method')} placeholder="Seleccionar método...">
+              <Select id="payment_method" label="Método de Pago" disabled={isView} error={errors.payment_method?.message as string} {...register('payment_method')} placeholder="Seleccionar método...">
                 <option value="none">Ninguno (Efectivo / Transferencia)</option>
                 <option value="CARD">Tarjeta</option>
                 <option value="CASH">Efectivo Físico</option>
@@ -195,7 +198,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
             </div>
             
             <div className="col-span-12 md:col-span-6 space-y-2">
-              <Select id="card_id" label="Tarjeta Usada" error={errors.card_id?.message as string} {...register('card_id')} placeholder="Seleccionar tarjeta...">
+              <Select id="card_id" label="Tarjeta Usada" disabled={isView} error={errors.card_id?.message as string} {...register('card_id')} placeholder="Seleccionar tarjeta...">
                 <option value="none">Ninguna</option>
                 {cards.map((c: { id: string; name: string; last_four?: string }) => (
                   <option key={c.id} value={c.id}>{c.name} (*{c.last_four})</option>
@@ -204,7 +207,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
             </div>
 
             <div className="col-span-12 md:col-span-6 space-y-2">
-              <Select id="subscription_id" label="Suscripción Relacionada" error={errors.subscription_id?.message as string} {...register('subscription_id')} placeholder="Seleccionar suscripción...">
+              <Select id="subscription_id" label="Suscripción Relacionada" disabled={isView} error={errors.subscription_id?.message as string} {...register('subscription_id')} placeholder="Seleccionar suscripción...">
                 <option value="none">Ninguna</option>
                 {subscriptions.map((s: { id: string; name: string; amount: string | number }) => (
                   <option key={s.id} value={s.id}>{s.name} ({s.amount})</option>
@@ -213,7 +216,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
             </div>
 
             <div className="col-span-12 md:col-span-6 space-y-2">
-              <Select id="product_id" label="Comercio / Producto" error={errors.product_id?.message as string} {...register('product_id')} placeholder="Seleccionar producto...">
+              <Select id="product_id" label="Comercio / Producto" disabled={isView} error={errors.product_id?.message as string} {...register('product_id')} placeholder="Seleccionar producto...">
                 <option value="none">Ninguno</option>
                 {products.map((p: any) => {
                   const catName = p.category?.name || 'Sin Categoría';
@@ -231,6 +234,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
                 id="note" 
                 label="Notas Generales"
                 placeholder="Añade algún comentario o detalle..." 
+                disabled={isView}
                 error={errors.note?.message as string}
                 {...register('note')} 
               />
@@ -245,6 +249,7 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
             id="note" 
             label="Notas (Opcional)"
             placeholder="Motivo de la transferencia..." 
+            disabled={isView}
             error={errors.note?.message as string}
             {...register('note')} 
           />

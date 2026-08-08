@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useCards, useDeleteCard } from '../api/useCatalogs';
-import { Button, Tabs, TabsList, TabsTrigger, TabsContent, Icon, DataTable, type ColumnDef, PageContainer, Dialog, Modal, ModalHeader, ModalFooter } from '@mymoney/ui';
+import { Button, Tabs, TabsList, TabsTrigger, TabsContent, Icon, DataTable, type ColumnDef, PageContainer, AlertDialog } from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -53,14 +53,18 @@ export function CardsTab() {
       key: 'actions',
       header: 'Acciones',
       align: 'right',
+      sticky: 'right',
       cell: (c) => (
         <div className="flex items-center justify-end gap-1">
-          <Button variant="ghost" size="icon" aria-label="Editar" onClick={() => navigate(`/catalogs/cards/edit/${c.id}`)}>
-            <Icon name="pencil" size="sm" />
-          </Button>
-          <Button variant="ghost" size="icon" className="text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20" aria-label="Eliminar" onClick={() => setCardToDelete(c)}>
+          <button type="button" onClick={() => navigate(`/catalogs/cards/edit/${c.id}`, { state: { isView: true } })} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+            <Icon name="eye" size="sm" />
+          </button>
+          <button type="button" onClick={() => navigate(`/catalogs/cards/edit/${c.id}`)} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+            <Icon name="edit" size="sm" />
+          </button>
+          <button type="button" onClick={() => setCardToDelete(c)} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
             <Icon name="trash" size="sm" />
-          </Button>
+          </button>
         </div>
       ),
     },
@@ -130,45 +134,30 @@ export function CardsTab() {
                   return true;
                 }}
                 defaultSort={{ column: 'name', direction: 'asc' }}
+                onRowClick={(c) => navigate(`/catalogs/cards/edit/${c.id}`, { state: { isView: true } })}
                 emptyMessage="No se encontraron resultados."
               />
             )}
           </QueryState>
 
-          <Dialog.Root open={!!cardToDelete} onOpenChange={(open) => !open && setCardToDelete(null)}>
-            <Dialog.Portal>
-              <Modal>
-                <ModalHeader>
-                  <Dialog.Title className="text-lg font-semibold text-text-primary">¿Eliminar tarjeta?</Dialog.Title>
-                  <Dialog.Description className="text-sm text-text-secondary mt-2">
-                    Estás a punto de eliminar la tarjeta "{cardToDelete?.name}". Esta acción no se puede deshacer y puede fallar si la tarjeta tiene transacciones asociadas.
-                  </Dialog.Description>
-                </ModalHeader>
-                <ModalFooter>
-                  <Button variant="ghost" onClick={() => setCardToDelete(null)} disabled={deleteCard.isPending}>
-                    Cancelar
-                  </Button>
-                  <Button
-                    className="bg-error-500 hover:bg-error-600 text-white"
-                    disabled={deleteCard.isPending}
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      if (!cardToDelete) return;
-                      try {
-                        await deleteCard.mutateAsync(cardToDelete.id);
-                        setCardToDelete(null);
-                      } catch (error) {
-                        console.error("Error al eliminar la tarjeta", error);
-                        // Dependiendo del error del backend (fk constraint), deberíamos mostrar un Toast aquí
-                      }
-                    }}
-                  >
-                    {deleteCard.isPending ? 'Eliminando...' : 'Eliminar'}
-                  </Button>
-                </ModalFooter>
-              </Modal>
-            </Dialog.Portal>
-          </Dialog.Root>
+          <AlertDialog
+            open={!!cardToDelete}
+            onOpenChange={(open) => !open && setCardToDelete(null)}
+            title="¿Eliminar tarjeta?"
+            description={`Estás a punto de eliminar la tarjeta "${cardToDelete?.name}". Esta acción no se puede deshacer y puede fallar si la tarjeta tiene transacciones asociadas.`}
+            type="error"
+            confirmText="Eliminar"
+            isLoading={deleteCard.isPending}
+            onConfirm={async () => {
+              if (!cardToDelete) return;
+              try {
+                await deleteCard.mutateAsync(cardToDelete.id);
+                setCardToDelete(null);
+              } catch (error) {
+                console.error("Error al eliminar la tarjeta", error);
+              }
+            }}
+          />
 
         </TabsContent>
 

@@ -2,23 +2,25 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { goalSchema } from '../GoalForm.schema';
 import type { GoalFormData } from '../GoalForm.types';
-import type { CreateGoalDto } from '@entities/goal';
+import type { CreateGoalDto, GoalDto } from '@entities/goal';
 
-export function useGoalForm(onSubmitCallback: (data: CreateGoalDto) => void) {
+export function useGoalForm(initialData: GoalDto | null | undefined, onSubmitCallback: (data: any) => void) {
   const form = useForm<GoalFormData>({
     resolver: zodResolver(goalSchema),
     defaultValues: {
-      name: '',
-      target_amount: undefined,
-      currency: 'USD',
-      target_date: '',
-      description: '',
-      priority: '3',
-      color: '#3B82F6',
-      icon: 'target',
-      account_id: '',
+      name: initialData?.name || '',
+      target_amount: initialData ? Number(initialData.target_amount.value) : undefined,
+      currency: initialData?.target_amount.currency || 'USD',
+      target_date: initialData?.target_date ? new Date(initialData.target_date).toISOString().split('T')[0] : '',
+      description: initialData?.description || '',
+      priority: initialData?.priority ? String(initialData.priority) : '3',
+      color: initialData?.color || '#3B82F6',
+      icon: initialData?.icon || 'target',
+      account_id: initialData?.account_id || '',
     } as unknown as GoalFormData,
   });
+
+  const isEdit = !!initialData;
 
   const onSubmit = (data: GoalFormData) => {
     onSubmitCallback({
@@ -36,6 +38,7 @@ export function useGoalForm(onSubmitCallback: (data: CreateGoalDto) => void) {
 
   return {
     form,
+    isEdit,
     onSubmit: form.handleSubmit(onSubmit),
   };
 }

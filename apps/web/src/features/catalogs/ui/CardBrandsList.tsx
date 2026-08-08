@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useCardBrands, useDeleteCardBrand } from '../api/useCatalogs';
-import { Button, Icon, DataTable, type ColumnDef, Dialog, Modal, ModalHeader, ModalFooter } from '@mymoney/ui';
+import { Button, Icon, DataTable, type ColumnDef, AlertDialog } from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
 import { useNavigate } from 'react-router-dom';
 import type { CardBrandDto } from '../../../shared/api/dto/catalogs.dto';
@@ -24,14 +24,18 @@ export function CardBrandsList() {
       key: 'actions',
       header: 'Acciones',
       align: 'right',
+      sticky: 'right',
       cell: (b) => (
         <div className="flex items-center justify-end gap-1">
-          <Button variant="ghost" size="icon" aria-label="Editar" onClick={() => navigate(`/catalogs/card-brands/edit/${b.id}`)}>
-            <Icon name="pencil" size="sm" />
-          </Button>
-          <Button variant="ghost" size="icon" className="text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20" aria-label="Eliminar" onClick={() => setBrandToDelete(b)}>
+          <button type="button" onClick={() => navigate(`/catalogs/card-brands/edit/${b.id}`, { state: { isView: true } })} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+            <Icon name="eye" size="sm" />
+          </button>
+          <button type="button" onClick={() => navigate(`/catalogs/card-brands/edit/${b.id}`)} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+            <Icon name="edit" size="sm" />
+          </button>
+          <button type="button" onClick={() => setBrandToDelete(b)} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
             <Icon name="trash" size="sm" />
-          </Button>
+          </button>
         </div>
       ),
     },
@@ -49,44 +53,30 @@ export function CardBrandsList() {
             searchFields={['name']}
             searchPlaceholder="Buscar marca..."
             defaultSort={{ column: 'name', direction: 'asc' }}
+            onRowClick={(b) => navigate(`/catalogs/card-brands/edit/${b.id}`, { state: { isView: true } })}
             emptyMessage="No hay marcas configuradas."
           />
         )}
       </QueryState>
 
-      <Dialog.Root open={!!brandToDelete} onOpenChange={(open) => !open && setBrandToDelete(null)}>
-        <Dialog.Portal>
-          <Modal>
-            <ModalHeader>
-              <Dialog.Title className="text-lg font-semibold text-text-primary">¿Eliminar marca?</Dialog.Title>
-              <Dialog.Description className="text-sm text-text-secondary mt-2">
-                Estás a punto de eliminar la marca "{brandToDelete?.name}". Esta acción no se puede deshacer.
-              </Dialog.Description>
-            </ModalHeader>
-            <ModalFooter>
-              <Button variant="ghost" onClick={() => setBrandToDelete(null)} disabled={deleteBrand.isPending}>
-                Cancelar
-              </Button>
-              <Button
-                className="bg-error-500 hover:bg-error-600 text-white"
-                disabled={deleteBrand.isPending}
-                onClick={async (e) => {
-                  e.preventDefault();
-                  if (!brandToDelete) return;
-                  try {
-                    await deleteBrand.mutateAsync(brandToDelete.id);
-                    setBrandToDelete(null);
-                  } catch (error) {
-                    console.error(error);
-                  }
-                }}
-              >
-                {deleteBrand.isPending ? 'Eliminando...' : 'Eliminar'}
-              </Button>
-            </ModalFooter>
-          </Modal>
-        </Dialog.Portal>
-      </Dialog.Root>
+      <AlertDialog
+        open={!!brandToDelete}
+        onOpenChange={(open) => !open && setBrandToDelete(null)}
+        title="¿Eliminar marca?"
+        description={`Estás a punto de eliminar la marca "${brandToDelete?.name}". Esta acción no se puede deshacer.`}
+        type="error"
+        confirmText="Eliminar"
+        isLoading={deleteBrand.isPending}
+        onConfirm={async () => {
+          if (!brandToDelete) return;
+          try {
+            await deleteBrand.mutateAsync(brandToDelete.id);
+            setBrandToDelete(null);
+          } catch (error) {
+            console.error(error);
+          }
+        }}
+      />
     </div>
   );
 }

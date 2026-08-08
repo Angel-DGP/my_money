@@ -3,6 +3,7 @@ import type { BudgetDto } from '@entities/budget';
 
 interface BudgetsTableProps {
   budgets: BudgetDto[];
+  onView: (budget: BudgetDto) => void;
   onEdit: (budget: BudgetDto) => void;
   onDelete: (budget: BudgetDto) => void;
   categories: Record<string, string>; // Map category_id to name
@@ -14,7 +15,7 @@ const FILTERS = [
   { label: 'Anual', value: 'YEARLY' },
 ];
 
-export function BudgetsTable({ budgets, onEdit, onDelete, categories }: BudgetsTableProps) {
+export function BudgetsTable({ budgets, onView, onEdit, onDelete, categories }: BudgetsTableProps) {
   const columns: ColumnDef<BudgetDto>[] = [
     {
       key: 'category_name',
@@ -70,14 +71,18 @@ export function BudgetsTable({ budgets, onEdit, onDelete, categories }: BudgetsT
       key: 'actions',
       header: 'Acciones',
       align: 'right',
+      sticky: 'right',
       cell: (budget) => (
-        <div className="flex items-center justify-end gap-1">
-          <Button variant="secondary" size="icon" aria-label="Editar" onClick={() => onEdit(budget)}>
-            <Icon name="pencil" size="sm" />
-          </Button>
-          <Button variant="secondary" size="icon" className="text-error-500 hover:text-error-600 hover:bg-error-50 dark:hover:bg-error-950" aria-label="Eliminar" onClick={() => onDelete(budget)}>
+        <div className="flex justify-end gap-1">
+          <button type="button" onClick={(e) => { e.stopPropagation(); onView(budget); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+            <Icon name="eye" size="sm" />
+          </button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(budget); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+            <Icon name="edit" size="sm" />
+          </button>
+          <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(budget); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
             <Icon name="trash" size="sm" />
-          </Button>
+          </button>
         </div>
       ),
     },
@@ -109,6 +114,7 @@ export function BudgetsTable({ budgets, onEdit, onDelete, categories }: BudgetsT
         const cmp = String(valA).localeCompare(String(valB));
         return dir === 'asc' ? cmp : -cmp;
       }}
+      onRowClick={onView}
       emptyMessage="No se encontraron presupuestos"
     />
   );

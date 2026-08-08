@@ -2,7 +2,7 @@ import { Input, Label, Select, MoneyInput, Icon } from '@mymoney/ui';
 import { useInstitutions } from '../../../catalogs/api/useCatalogs';
 import type { AccountFormFieldsProps } from './AccountForm.types';
 
-export function AccountFormFields({ form, isEdit, isLoading }: AccountFormFieldsProps) {
+export function AccountFormFields({ form, isEdit, isView, isLoading }: AccountFormFieldsProps) {
   const { register, setValue, watch, formState: { errors } } = form;
   const { data: institutions } = useInstitutions();
 
@@ -29,7 +29,7 @@ export function AccountFormFields({ form, isEdit, isLoading }: AccountFormFields
             <Input 
               id="name" 
               placeholder="Ej: Ahorros Banreservas" 
-              disabled={isLoading}
+              disabled={isView || isLoading}
               required 
               {...register('name')}
             />
@@ -40,7 +40,7 @@ export function AccountFormFields({ form, isEdit, isLoading }: AccountFormFields
             <Select 
               id="type"
               label="Tipo General"
-              disabled={isEdit || isLoading}
+              disabled={isView || isEdit || isLoading}
               required
               {...register('type')}
               placeholder="Seleccionar tipo..."
@@ -59,7 +59,7 @@ export function AccountFormFields({ form, isEdit, isLoading }: AccountFormFields
               id="institution_id"
               label="Institución (Opcional)"
               searchable
-              disabled={isLoading}
+              disabled={isView || isLoading}
               {...register('institution_id')}
               placeholder="Seleccionar institución..."
             >
@@ -75,7 +75,7 @@ export function AccountFormFields({ form, isEdit, isLoading }: AccountFormFields
             <Input 
               id="specific_type" 
               placeholder="Ej: Plan Jubilación..." 
-              disabled={isLoading}
+              disabled={isView || isLoading}
               {...register('specific_type')}
             />
           </div>

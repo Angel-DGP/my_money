@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { toast, PageContainer } from '@mymoney/ui';
 import { QueryState } from '@shared/ui/QueryState';
 import { AccountForm } from '@features/accounts';
@@ -8,6 +8,8 @@ import type { UpdateAccountDto, Account } from '@entities/account';
 export function EditAccountPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isView = location.state?.isView;
   const updateAccount = useUpdateAccount();
   const accountQuery = useAccountQuery(id || '');
 
@@ -35,8 +37,8 @@ export function EditAccountPage() {
   return (
     <PageContainer>
       <PageContainer.Header
-        title="Editar Cuenta"
-        description="Modifica los datos de tu cuenta."
+        title={isView ? "Ver Cuenta" : "Editar Cuenta"}
+        description={isView ? "Detalles de tu cuenta." : "Modifica los datos de tu cuenta."}
         backTo={() => navigate(-1)}
       />
 
@@ -50,6 +52,7 @@ export function EditAccountPage() {
           {(account: Account) => (
             <AccountForm
               initialData={account}
+              isView={isView}
               onSubmit={(data) => handleSubmit(data as UpdateAccountDto)}
               onCancel={() => navigate('/accounts')}
               isLoading={updateAccount.isPending}

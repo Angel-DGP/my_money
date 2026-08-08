@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useCardTypes, useDeleteCardType } from '../api/useCatalogs';
-import { Button, Icon, DataTable, type ColumnDef, Dialog, Modal, ModalHeader, ModalFooter } from '@mymoney/ui';
+import { Button, Icon, DataTable, type ColumnDef, AlertDialog } from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
 import { useNavigate } from 'react-router-dom';
 import type { CardTypeDto } from '../../../shared/api/dto/catalogs.dto';
@@ -24,14 +24,18 @@ export function CardTypesList() {
       key: 'actions',
       header: 'Acciones',
       align: 'right',
+      sticky: 'right',
       cell: (t) => (
         <div className="flex items-center justify-end gap-1">
-          <Button variant="ghost" size="icon" aria-label="Editar" onClick={() => navigate(`/catalogs/card-types/edit/${t.id}`)}>
-            <Icon name="pencil" size="sm" />
-          </Button>
-          <Button variant="ghost" size="icon" className="text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20" aria-label="Eliminar" onClick={() => setTypeToDelete(t)}>
+          <button type="button" onClick={() => navigate(`/catalogs/card-types/edit/${t.id}`, { state: { isView: true } })} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+            <Icon name="eye" size="sm" />
+          </button>
+          <button type="button" onClick={() => navigate(`/catalogs/card-types/edit/${t.id}`)} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+            <Icon name="edit" size="sm" />
+          </button>
+          <button type="button" onClick={() => setTypeToDelete(t)} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
             <Icon name="trash" size="sm" />
-          </Button>
+          </button>
         </div>
       ),
     },
@@ -49,44 +53,30 @@ export function CardTypesList() {
             searchFields={['name']}
             searchPlaceholder="Buscar tipo..."
             defaultSort={{ column: 'name', direction: 'asc' }}
+            onRowClick={(t) => navigate(`/catalogs/card-types/edit/${t.id}`, { state: { isView: true } })}
             emptyMessage="No hay tipos configurados."
           />
         )}
       </QueryState>
 
-      <Dialog.Root open={!!typeToDelete} onOpenChange={(open) => !open && setTypeToDelete(null)}>
-        <Dialog.Portal>
-          <Modal>
-            <ModalHeader>
-              <Dialog.Title className="text-lg font-semibold text-text-primary">¿Eliminar tipo?</Dialog.Title>
-              <Dialog.Description className="text-sm text-text-secondary mt-2">
-                Estás a punto de eliminar el tipo "{typeToDelete?.name}". Esta acción no se puede deshacer.
-              </Dialog.Description>
-            </ModalHeader>
-            <ModalFooter>
-              <Button variant="ghost" onClick={() => setTypeToDelete(null)} disabled={deleteType.isPending}>
-                Cancelar
-              </Button>
-              <Button
-                className="bg-error-500 hover:bg-error-600 text-white"
-                disabled={deleteType.isPending}
-                onClick={async (e) => {
-                  e.preventDefault();
-                  if (!typeToDelete) return;
-                  try {
-                    await deleteType.mutateAsync(typeToDelete.id);
-                    setTypeToDelete(null);
-                  } catch (error) {
-                    console.error(error);
-                  }
-                }}
-              >
-                {deleteType.isPending ? 'Eliminando...' : 'Eliminar'}
-              </Button>
-            </ModalFooter>
-          </Modal>
-        </Dialog.Portal>
-      </Dialog.Root>
+      <AlertDialog
+        open={!!typeToDelete}
+        onOpenChange={(open) => !open && setTypeToDelete(null)}
+        title="¿Eliminar tipo?"
+        description={`Estás a punto de eliminar el tipo "${typeToDelete?.name}". Esta acción no se puede deshacer.`}
+        type="error"
+        confirmText="Eliminar"
+        isLoading={deleteType.isPending}
+        onConfirm={async () => {
+          if (!typeToDelete) return;
+          try {
+            await deleteType.mutateAsync(typeToDelete.id);
+            setTypeToDelete(null);
+          } catch (error) {
+            console.error(error);
+          }
+        }}
+      />
     </div>
   );
 }

@@ -198,6 +198,7 @@ export interface ColumnDef<T> {
   header: React.ReactNode;
   sortable?: boolean;
   align?: 'left' | 'center' | 'right';
+  sticky?: 'left' | 'right';
   cell: (item: T) => React.ReactNode;
   className?: string;
 }
@@ -251,19 +252,27 @@ export function DataTable<T>({
         <Table>
           <TableHeader>
             <TableRow>
-              {columns.map((col) => (
-                <TableHead key={col.key} align={col.align} className={col.className}>
-                  {col.sortable ? (
-                    <SortableHeader column={col.key} sort={sort} onToggle={toggleSort}>
-                      {col.header}
-                    </SortableHeader>
-                  ) : (
-                    <span className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                      {col.header}
-                    </span>
-                  )}
-                </TableHead>
-              ))}
+              {columns.map((col) => {
+                const stickyClass = col.sticky === 'right' 
+                  ? 'sticky right-0 bg-surface z-10 shadow-[-4px_0_12px_rgba(0,0,0,0.05)]' 
+                  : col.sticky === 'left' 
+                  ? 'sticky left-0 bg-surface z-10 shadow-[4px_0_12px_rgba(0,0,0,0.05)]' 
+                  : '';
+                
+                return (
+                  <TableHead key={col.key} align={col.align} className={cn(stickyClass, col.className)}>
+                    {col.sortable ? (
+                      <SortableHeader column={col.key} sort={sort} onToggle={toggleSort}>
+                        {col.header}
+                      </SortableHeader>
+                    ) : (
+                      <span className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                        {col.header}
+                      </span>
+                    )}
+                  </TableHead>
+                );
+              })}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -280,11 +289,19 @@ export function DataTable<T>({
                   className={cn("hover:bg-surface-hover transition-colors", onRowClick && "cursor-pointer")}
                   onClick={() => onRowClick?.(item)}
                 >
-                  {columns.map((col) => (
-                    <TableCell key={col.key} align={col.align} className={col.className}>
-                      {col.cell(item)}
-                    </TableCell>
-                  ))}
+                  {columns.map((col) => {
+                    const stickyClass = col.sticky === 'right' 
+                      ? 'sticky right-0 bg-surface z-10 shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover' 
+                      : col.sticky === 'left' 
+                      ? 'sticky left-0 bg-surface z-10 shadow-[4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover' 
+                      : '';
+                      
+                    return (
+                      <TableCell key={col.key} align={col.align} className={cn(stickyClass, col.className)}>
+                        {col.cell(item)}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             )}

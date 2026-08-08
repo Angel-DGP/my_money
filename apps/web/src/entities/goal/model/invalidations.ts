@@ -9,4 +9,11 @@ export const goalInvalidations = {
     queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
     queryClient.invalidateQueries({ queryKey: goalKeys.detail(id) });
   },
+  onUpdate: (queryClient: QueryClient, id: string) => {
+    queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
+    queryClient.invalidateQueries({ queryKey: goalKeys.detail(id) });
+  },
+  onDelete: (queryClient: QueryClient) => {
+    queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
+  },
 };

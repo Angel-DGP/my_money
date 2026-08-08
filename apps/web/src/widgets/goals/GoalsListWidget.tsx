@@ -1,31 +1,42 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Dialog, Icon, useToast, PageContainer } from '@mymoney/ui';
+import { Button, Dialog, Icon, useToast, PageContainer, AlertDialog } from '@mymoney/ui';
 import { 
   useGoalsQuery, 
-  useCreateGoal, 
+  useDeleteGoal, 
   useAddGoalProgress 
 } from '@entities/goal';
 import type { GoalDto, CreateGoalDto, AddGoalProgressDto } from '@entities/goal';
 import { GoalsTable } from '@features/goals';
-import { GoalForm } from '@features/goals';
 import { AddProgressForm } from '@features/goals';
 import { QueryState } from '@shared/ui/QueryState';
 
-type ModalState = 'NONE' | 'CREATE' | 'ADD_PROGRESS';
+type ModalState = 'NONE' | 'ADD_PROGRESS';
 
 export function GoalsListWidget() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [modalState, setModalState] = useState<ModalState>('NONE');
   const [selectedGoal, setSelectedGoal] = useState<GoalDto | null>(null);
+  const [goalToDelete, setGoalToDelete] = useState<GoalDto | null>(null);
 
   const { data: goals, isLoading, isError, error } = useGoalsQuery();
-  const createGoal = useCreateGoal();
   const addProgress = useAddGoalProgress();
+  const deleteGoal = useDeleteGoal();
 
   const handleOpenCreate = () => {
     navigate('/goals/new');
+  };
+
+  const handleOpenView = (goal: GoalDto) => {
+    navigate(`/goals/${goal.id}/edit`, { state: { isView: true } });
+  };
+
+  const handleOpenEdit = (goal: GoalDto) => {
+    navigate(`/goals/${goal.id}/edit`);
+  };
+  const handleDelete = (goal: GoalDto) => {
+    setGoalToDelete(goal);
   };
 
   const handleOpenAddProgress = (goal: GoalDto) => {
@@ -38,17 +49,6 @@ export function GoalsListWidget() {
     setSelectedGoal(null);
   };
 
-  const handleCreateSubmit = (formData: CreateGoalDto) => {
-    createGoal.mutate(formData, {
-      onSuccess: () => {
-        toast({ title: 'Éxito', description: 'Meta creada', variant: 'success' });
-        handleCloseModal();
-      },
-      onError: (error: unknown) => {
-        toast({ title: 'Error', description: (error as Error).message || 'No se pudo crear', variant: 'error' });
-      }
-    });
-  };
 
   const handleAddProgressSubmit = (formData: AddGoalProgressDto) => {
     if (selectedGoal) {
@@ -92,6 +92,9 @@ export function GoalsListWidget() {
         {(goalsData) => (
           <GoalsTable 
             goals={goalsData} 
+            onView={handleOpenView}
+            onEdit={handleOpenEdit}
+            onDelete={handleDelete}
             onAddProgress={handleOpenAddProgress} 
           />
         )}
@@ -104,23 +107,14 @@ export function GoalsListWidget() {
             <div className="relative z-50 grid w-full max-w-lg gap-4 rounded-xl border border-border-subtle bg-background p-6 shadow-lg sm:rounded-2xl">
               <div className="flex flex-col space-y-1.5 text-center sm:text-left">
                 <Dialog.Title className="text-lg font-semibold leading-none tracking-tight">
-                  {modalState === 'CREATE' ? 'Nueva Meta' : 'Aportar a Meta'}
+                  Aportar a Meta
                 </Dialog.Title>
                 <Dialog.Description className="text-sm text-text-secondary">
-                  {modalState === 'CREATE' 
-                    ? 'Define un nuevo objetivo de ahorro.' 
-                    : 'Registra un avance hacia tu meta.'}
+                  Registra un avance hacia tu meta.
                 </Dialog.Description>
               </div>
               
               <div className="mt-4">
-                {modalState === 'CREATE' && (
-                  <GoalForm 
-                    onSubmit={(data) => handleCreateSubmit(data as CreateGoalDto)}
-                    onCancel={handleCloseModal}
-                    isLoading={createGoal.isPending}
-                  />
-                )}
 
                 {modalState === 'ADD_PROGRESS' && selectedGoal && (
                   <AddProgressForm 
@@ -141,6 +135,29 @@ export function GoalsListWidget() {
         </Dialog.Portal>
       </Dialog.Root>
       </PageContainer.Body>
+
+      <AlertDialog
+        open={!!goalToDelete}
+        onOpenChange={(open) => !open && setGoalToDelete(null)}
+        title="Eliminar Meta"
+        description={`¿Estás seguro de que deseas eliminar la meta "${goalToDelete?.name}"? Esta acción no se puede deshacer.`}
+        type="error"
+        confirmText="Sí, eliminar"
+        isLoading={deleteGoal.isPending}
+        onConfirm={() => {
+          if (goalToDelete) {
+            deleteGoal.mutate(goalToDelete.id, {
+              onSuccess: () => {
+                setGoalToDelete(null);
+                toast({ title: 'Éxito', description: 'Meta eliminada', variant: 'success' });
+              },
+              onError: (error: unknown) => {
+                toast({ title: 'Error', description: (error as Error).message || 'No se pudo eliminar', variant: 'error' });
+              }
+            });
+          }
+        }}
+      />
     </PageContainer>
   );
 }
