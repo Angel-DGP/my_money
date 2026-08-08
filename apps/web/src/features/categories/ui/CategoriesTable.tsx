@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, TableHeader, TableRow, TableBody, TableCell, TableHead, Icon, Button, Badge } from '@mymoney/ui';
+import { Table, TableHeader, TableRow, TableBody, TableCell, TableHead, Icon, Badge } from '@mymoney/ui';
 import type { Category } from '@entities/category';
 import { useTableState, DataTableToolbar, SortableHeader, TablePagination } from '@mymoney/ui';
 
