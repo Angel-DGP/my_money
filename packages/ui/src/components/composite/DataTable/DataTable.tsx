@@ -254,9 +254,9 @@ export function DataTable<T>({
             <TableRow>
               {columns.map((col) => {
                 const stickyClass = col.sticky === 'right' 
-                  ? 'sticky right-0 bg-surface z-10 shadow-[-4px_0_12px_rgba(0,0,0,0.05)]' 
+                  ? 'sticky right-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[-4px_0_12px_rgba(0,0,0,0.05)]' 
                   : col.sticky === 'left' 
-                  ? 'sticky left-0 bg-surface z-10 shadow-[4px_0_12px_rgba(0,0,0,0.05)]' 
+                  ? 'sticky left-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[4px_0_12px_rgba(0,0,0,0.05)]' 
                   : '';
                 
                 return (
@@ -291,9 +291,9 @@ export function DataTable<T>({
                 >
                   {columns.map((col) => {
                     const stickyClass = col.sticky === 'right' 
-                      ? 'sticky right-0 bg-surface z-10 shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover' 
+                      ? 'sticky right-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover' 
                       : col.sticky === 'left' 
-                      ? 'sticky left-0 bg-surface z-10 shadow-[4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover' 
+                      ? 'sticky left-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover' 
                       : '';
                       
                     return (

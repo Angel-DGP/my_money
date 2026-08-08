@@ -1,4 +1,4 @@
-import { Badge, Button, Icon, GoalProgress, DataTable, type ColumnDef } from '@mymoney/ui';
+import { Badge, Icon, GoalProgress, DataTable, type ColumnDef } from '@mymoney/ui';
 import type { GoalDto } from '@entities/goal';
 
 interface GoalsTableProps {
@@ -86,23 +86,16 @@ export function GoalsTable({ goals, onView, onEdit, onDelete, onAddProgress }: G
       sticky: 'right',
       cell: (goal) => (
         <div className="flex justify-end gap-1">
-          <Button 
-            variant="secondary" 
-            size="sm" 
-            className="mr-2"
-            onClick={(e) => { e.stopPropagation(); onAddProgress(goal); }}
-            disabled={goal.status === 'completed'}
-          >
-            <Icon name="plus" size="sm" className="mr-1" />
-            Aportar
-          </Button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); onView(goal); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+          <button type="button" aria-label="Aportar" disabled={goal.status === 'completed'} onClick={(e) => { e.stopPropagation(); onAddProgress(goal); }} className="p-1.5 text-text-muted hover:text-success-500 hover:bg-success-50 dark:hover:bg-success-900/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            <Icon name="piggy-bank" size="sm" />
+          </button>
+          <button type="button" aria-label="Ver" onClick={(e) => { e.stopPropagation(); onView(goal); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
             <Icon name="eye" size="sm" />
           </button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(goal); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+          <button type="button" aria-label="Editar" onClick={(e) => { e.stopPropagation(); onEdit(goal); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
             <Icon name="edit" size="sm" />
           </button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(goal); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
+          <button type="button" aria-label="Eliminar" onClick={(e) => { e.stopPropagation(); onDelete(goal); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
             <Icon name="trash" size="sm" />
           </button>
         </div>

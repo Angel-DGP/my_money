@@ -106,7 +106,7 @@ export function CategoriesTable({ categories, onView, onEdit, onDelete }: Catego
               <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
                 <th>Sistema</th>
               </TableCell>
-              <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider sticky right-0 bg-surface z-10 shadow-[-4px_0_12px_rgba(0,0,0,0.05)]">
+              <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider sticky right-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[-4px_0_12px_rgba(0,0,0,0.05)]">
                 <th>Acciones</th>
               </TableCell>
             </TableRow>
@@ -146,7 +146,7 @@ export function CategoriesTable({ categories, onView, onEdit, onDelete }: Catego
                       <span className="text-text-muted text-sm">Personalizada</span>
                     )}
                   </TableCell>
-                  <TableCell className="sticky right-0 bg-surface z-10 shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover">
+                  <TableCell className="sticky right-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover">
                     <div className="flex items-center justify-end gap-1">
                       <button type="button" onClick={(e) => { e.stopPropagation(); onView(category); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
                         <Icon name="eye" size="sm" />
