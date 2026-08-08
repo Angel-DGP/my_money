@@ -28,7 +28,7 @@ export function GoalFormFields({ form, isLoading }: GoalFormFieldsProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Label htmlFor="name">Nombre de la Meta</Label>
+            <Label htmlFor="name" required>Nombre de la Meta</Label>
             <Input
               id="name"
               disabled={isLoading}
@@ -40,7 +40,7 @@ export function GoalFormFields({ form, isLoading }: GoalFormFieldsProps) {
           </div>
 
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Label htmlFor="target_amount">Objetivo (Monto a alcanzar)</Label>
+            <Label htmlFor="target_amount" required>Objetivo (Monto a alcanzar)</Label>
             <Input
               id="target_amount"
               type="number"
@@ -109,7 +109,9 @@ export function GoalFormFields({ form, isLoading }: GoalFormFieldsProps) {
               id="priority"
               label="Prioridad"
               disabled={isLoading}
+              required
               {...register('priority')}
+              placeholder="Seleccionar prioridad..."
             >
               <option value="1">Alta (1)</option>
               <option value="2">Media (2)</option>
@@ -124,8 +126,9 @@ export function GoalFormFields({ form, isLoading }: GoalFormFieldsProps) {
               label="Cuenta Vinculada (Opcional)"
               disabled={isLoading}
               {...register('account_id')}
+              placeholder="Seleccionar cuenta..."
             >
-              <option value="">Ninguna</option>
+              <option value="none">Ninguna</option>
               {accounts.map(acc => (
                 <option key={acc.id} value={acc.id}>{acc.name} ({acc.currency})</option>
               ))}

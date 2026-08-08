@@ -27,8 +27,8 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
               disabled={isEdit || isLoading}
               required
               {...register('category_id')}
+              placeholder="Seleccionar categoría..."
             >
-              <option value="" disabled>Seleccione una categoría</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>{cat.name}</option>
               ))}
@@ -41,7 +41,9 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
               id="period"
               label="Periodo"
               disabled={isEdit || isLoading}
+              required
               {...register('period')}
+              placeholder="Seleccionar periodo..."
             >
               <option value="MONTHLY">Mensual</option>
               <option value="YEARLY">Anual</option>
@@ -50,7 +52,7 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="amount">Límite</Label>
+            <Label htmlFor="amount" required>Límite</Label>
             <Input
               id="amount"
               type="number"
@@ -66,7 +68,7 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="currency">Moneda</Label>
+            <Label htmlFor="currency" required>Moneda</Label>
             <Input
               id="currency"
               disabled={isLoading}
@@ -78,7 +80,7 @@ export function BudgetFormFields({ form, categories, isEdit, isLoading }: Budget
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="start_date">Fecha de Inicio</Label>
+            <Label htmlFor="start_date" required>Fecha de Inicio</Label>
             <Input
               id="start_date"
               type="date"

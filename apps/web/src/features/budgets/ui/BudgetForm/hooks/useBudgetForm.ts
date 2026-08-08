@@ -45,7 +45,7 @@ export function useBudgetForm(initialData?: BudgetDto | null, onSubmitCallback?:
     } else {
       onSubmitCallback({
         category_id: data.category_id,
-        period: data.period.toLowerCase() as 'monthly' | 'yearly',
+        period: data.period as 'WEEKLY' | 'MONTHLY' | 'YEARLY',
         amount: data.amount.toString(),
         currency: data.currency,
         start_date: data.start_date,

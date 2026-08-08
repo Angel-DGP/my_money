@@ -21,6 +21,10 @@ export class PrismaTransactionRepository implements ITransactionRepository {
         user_id: userId,
         deleted_at: null,
       },
+      include: {
+        account: true,
+        category: true,
+      },
     });
     if (!raw) return null;
     return TransactionMapper.toDomain(raw as unknown as RawTransaction);
@@ -67,6 +71,10 @@ export class PrismaTransactionRepository implements ITransactionRepository {
         transfer_pair_id: transferPairId,
         user_id: userId,
       },
+      include: {
+        account: true,
+        category: true,
+      },
     });
     return raw.map(r => TransactionMapper.toDomain(r as unknown as RawTransaction));
   }
@@ -93,6 +101,10 @@ export class PrismaTransactionRepository implements ITransactionRepository {
         where,
         skip,
         take,
+        include: {
+          account: true,
+          category: true,
+        },
         orderBy: [
           { date: 'desc' },
           { created_at: 'desc' }

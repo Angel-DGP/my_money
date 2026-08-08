@@ -10,7 +10,7 @@ export function NewCardPage() {
   const handleSubmit = (data: unknown) => {
     createCard.mutate(data, {
       onSuccess: () => {
-        navigate('/catalogs');
+        navigate('/catalogs/cards');
       }
     });
   };
@@ -20,12 +20,12 @@ export function NewCardPage() {
       <PageContainer.Header
         title="Nueva Tarjeta"
         description="Agrega una tarjeta para vincular a tus pagos o suscripciones."
-        backTo={() => navigate(-1)}
+        backTo={() => navigate('/catalogs/cards')}
       />
       <PageContainer.Body variant="transparent" className="py-6">
         <CardForm
           onSubmit={handleSubmit}
-          onCancel={() => navigate('/catalogs')}
+          onCancel={() => navigate('/catalogs/cards')}
           isLoading={createCard.isPending}
         />
       </PageContainer.Body>

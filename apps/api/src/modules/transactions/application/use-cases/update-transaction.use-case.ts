@@ -95,6 +95,20 @@ export class UpdateTransactionUseCase {
       transaction.updateThirdPartyStatus(isThirdParty, owner, note, userId);
     }
 
+    if (
+      dto.payment_method !== undefined ||
+      dto.card_id !== undefined ||
+      dto.subscription_id !== undefined ||
+      dto.product_id !== undefined
+    ) {
+      const paymentMethod = dto.payment_method !== undefined ? dto.payment_method : transaction.paymentMethod;
+      const cardId = dto.card_id !== undefined ? dto.card_id : transaction.cardId;
+      const subscriptionId = dto.subscription_id !== undefined ? dto.subscription_id : transaction.subscriptionId;
+      const productId = dto.product_id !== undefined ? dto.product_id : transaction.productId;
+
+      transaction.updateMetadata(paymentMethod ?? null, cardId ?? null, subscriptionId ?? null, productId ?? null, userId);
+    }
+
     await this.unitOfWork.execute(async () => {
       await this.transactionRepository.save(transaction);
       if (account) {

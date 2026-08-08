@@ -13,13 +13,6 @@ export function useCategoriesQuery() {
   });
 }
 
-export function useCategoryDetailQuery(id: string) {
-  return useQuery({
-    queryKey: categoryKeys.detail(id),
-    queryFn: () => CategoriesService.getById(id),
-    enabled: !!id,
-  });
-}
 
 export function useCreateCategory() {
   const queryClient = useQueryClient();

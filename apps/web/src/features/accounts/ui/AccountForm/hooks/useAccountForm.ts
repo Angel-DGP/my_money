@@ -14,7 +14,7 @@ export function useAccountForm(initialData?: Account | null, onSubmitCallback?: 
       type: (initialData?.type as any) || 'CHECKING',
       currency: initialData?.currency || 'USD',
       initial_balance: initialData?.current_balance.value || '0.00',
-      institution_id: initialData?.institution_id || '',
+      institution_id: initialData?.institution_id || (initialData ? 'none' : ''),
       specific_type: initialData?.specific_type || '',
     },
   });
@@ -27,7 +27,7 @@ export function useAccountForm(initialData?: Account | null, onSubmitCallback?: 
         name: data.name,
         type: data.type,
         currency: data.currency,
-        institution_id: data.institution_id || undefined,
+        institution_id: data.institution_id === 'none' ? undefined : (data.institution_id || undefined),
         specific_type: data.specific_type || undefined,
       } as UpdateAccountDto);
     } else {
@@ -38,7 +38,7 @@ export function useAccountForm(initialData?: Account | null, onSubmitCallback?: 
         initial_balance: data.initial_balance,
         color: '#10B981',
         icon: 'wallet',
-        institution_id: data.institution_id || undefined,
+        institution_id: data.institution_id === 'none' ? undefined : (data.institution_id || undefined),
         specific_type: data.specific_type || undefined,
       } as CreateAccountDto);
     }

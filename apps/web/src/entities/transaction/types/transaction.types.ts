@@ -9,7 +9,8 @@ export interface Transaction {
   id: string;
   account_id: string;
   category_id: string | null;
-  type: TransactionType;
+  transfer_pair_id: string | null;
+  type: TransactionType | 'TRANSFER';
   amount: Money;
   date: string;
   description: string | null;
@@ -57,17 +58,17 @@ export interface CreateTransferDto {
 }
 
 export interface UpdateTransactionDto {
-  category_id?: string;
+  category_id?: string | null;
   amount?: string;
   date?: string;
   description?: string;
   is_third_party?: boolean;
-  third_party_owner?: string;
-  third_party_note?: string;
-  payment_method?: string;
-  card_id?: string;
-  subscription_id?: string;
-  product_id?: string;
+  third_party_owner?: string | null;
+  third_party_note?: string | null;
+  payment_method?: string | null;
+  card_id?: string | null;
+  subscription_id?: string | null;
+  product_id?: string | null;
 }
 
 export interface PaginatedResponse<T> {

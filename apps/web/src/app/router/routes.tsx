@@ -7,7 +7,7 @@ import { MainLayout } from '../layouts/MainLayout';
 import { ErrorPage } from '@pages/error';
 import { NotFoundPage } from '@pages/not-found';
 import { AccountsPage, NewAccountPage, EditAccountPage } from '@pages/accounts';
-import { CategoriesPage, NewCategoryPage } from '@pages/categories';
+import { CategoriesPage, NewCategoryPage, EditCategoryPage } from '@pages/categories';
 import { TransactionsPage, NewTransactionPage, EditTransactionPage } from '@pages/transactions';
 import { BudgetsPage, NewBudgetPage } from '@pages/budgets';
 import { GoalsPage, NewGoalPage } from '@pages/goals';
@@ -22,9 +22,17 @@ import {
   SubscriptionsPage,
   ProductServicesPage,
   NewInstitutionPage,
+  EditInstitutionPage,
   NewCardPage,
+  EditCardPage,
+  NewCardBrandPage,
+  EditCardBrandPage,
+  NewCardTypePage,
+  EditCardTypePage,
   NewSubscriptionPage,
-  NewProductServicePage
+  EditSubscriptionPage,
+  NewProductServicePage,
+  EditProductPage
 } from '@pages/catalogs';
 
 // Lazy loading pages can be done here or in index.tsx
@@ -74,6 +82,10 @@ export const routes: RouteObject[] = [
               {
                 path: '/categories/new',
                 element: <NewCategoryPage />,
+              },
+              {
+                path: '/categories/edit/:id',
+                element: <EditCategoryPage />,
               },
               {
                 path: '/transactions',
@@ -131,16 +143,48 @@ export const routes: RouteObject[] = [
                 element: <NewInstitutionPage />,
               },
               {
+                path: '/catalogs/institutions/edit/:id',
+                element: <EditInstitutionPage />,
+              },
+              {
                 path: '/catalogs/cards/new',
                 element: <NewCardPage />,
+              },
+              {
+                path: '/catalogs/cards/edit/:id',
+                element: <EditCardPage />,
+              },
+              {
+                path: '/catalogs/card-brands/new',
+                element: <NewCardBrandPage />,
+              },
+              {
+                path: '/catalogs/card-brands/edit/:id',
+                element: <EditCardBrandPage />,
+              },
+              {
+                path: '/catalogs/card-types/new',
+                element: <NewCardTypePage />,
+              },
+              {
+                path: '/catalogs/card-types/edit/:id',
+                element: <EditCardTypePage />,
               },
               {
                 path: '/catalogs/subscriptions/new',
                 element: <NewSubscriptionPage />,
               },
               {
+                path: '/catalogs/subscriptions/:id/edit',
+                element: <EditSubscriptionPage />,
+              },
+              {
                 path: '/catalogs/products/new',
                 element: <NewProductServicePage />,
+              },
+              {
+                path: '/catalogs/products/:id/edit',
+                element: <EditProductPage />,
               },
               {
                 path: '/ui-kit',

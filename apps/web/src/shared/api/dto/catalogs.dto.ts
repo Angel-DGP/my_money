@@ -49,4 +49,10 @@ export interface ProductServiceDto {
   id: string;
   category_id: string;
   name: string;
+  category?: {
+    id: string;
+    name: string;
+    color: string;
+    icon: string;
+  };
 }

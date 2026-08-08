@@ -25,6 +25,14 @@ export function useTransactionDetailQuery(id: string) {
   });
 }
 
+export function useTransferPairQuery(pairId?: string | null) {
+  return useQuery({
+    queryKey: ['transferPair', pairId],
+    queryFn: () => TransactionsService.getTransferPair(pairId!),
+    enabled: !!pairId,
+  });
+}
+
 export function useCreateTransaction() {
   const queryClient = useQueryClient();
 
@@ -56,6 +64,7 @@ export function useCreateTransaction() {
             card_id: newTransaction.card_id || null,
             subscription_id: newTransaction.subscription_id || null,
             product_id: newTransaction.product_id || null,
+            transfer_pair_id: null,
           };
 
           return [optimisticTransaction, ...oldData];

@@ -17,6 +17,7 @@ export interface Category {
   is_system: boolean;
   icon?: string;
   color?: string;
+  parent_id?: string;
   subcategories?: Subcategory[];
 }
 
@@ -28,4 +29,4 @@ export interface CreateCategoryDto {
   color?: string;
 }
 
-export interface UpdateCategoryDto extends Partial<CreateCategoryDto> {}
+export interface UpdateCategoryDto extends Omit<Partial<CreateCategoryDto>, 'type'> {}

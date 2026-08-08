@@ -7,14 +7,14 @@ export function AccountForm({ initialData, onSubmit: onSubmitCallback, onCancel,
   const { form, isEdit, onSubmit } = useAccountForm(initialData, onSubmitCallback);
 
   return (
-    <FormLayout onSubmit={onSubmit}>
+    <FormLayout id="accountform-form" onSubmit={onSubmit}>
       <AccountFormFields form={form} isEdit={isEdit} isLoading={isLoading} />
 
       <PageContainer.Footer className="col-span-12">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} form="accountform-form">
           {isLoading ? 'Guardando...' : initialData ? 'Guardar Cambios' : 'Crear Cuenta'}
         </Button>
       </PageContainer.Footer>

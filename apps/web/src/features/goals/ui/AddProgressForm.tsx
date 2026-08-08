@@ -30,7 +30,7 @@ export function AddProgressForm({ goalName, defaultCurrency, onSubmit, onCancel,
   };
 
   return (
-    <FormLayout onSubmit={handleSubmit}>
+    <FormLayout id="addprogressform-form" onSubmit={handleSubmit}>
       <div className="col-span-12 text-sm text-text-secondary mb-4">
         Aportando a: <span className="font-medium text-text-primary">{goalName}</span>
       </div>
@@ -66,7 +66,7 @@ export function AddProgressForm({ goalName, defaultCurrency, onSubmit, onCancel,
         <Button type="button" variant="outline" onClick={onCancel} disabled={!!isLoading}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={!!isLoading}>
+        <Button type="submit" disabled={!!isLoading} form="addprogressform-form">
           {isLoading ? 'Guardando...' : 'Aportar'}
         </Button>
       </PageContainer.Footer>

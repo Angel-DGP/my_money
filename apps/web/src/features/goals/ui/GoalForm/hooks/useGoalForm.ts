@@ -30,7 +30,7 @@ export function useGoalForm(onSubmitCallback: (data: CreateGoalDto) => void) {
       icon: data.icon || 'target',
       ...(data.target_date ? { target_date: data.target_date } : {}),
       ...(data.description ? { description: data.description } : {}),
-      ...(data.account_id ? { account_id: data.account_id } : {}),
+      ...(data.account_id && data.account_id !== 'none' ? { account_id: data.account_id } : {}),
     } as CreateGoalDto);
   };
 

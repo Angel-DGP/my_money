@@ -11,6 +11,13 @@ export const CatalogsService = {
     const response = await apiClient.post<InstitutionDto>('/catalogs/institutions', data);
     return response.data;
   },
+  async updateInstitution(id: string, data: unknown): Promise<InstitutionDto> {
+    const response = await apiClient.put<InstitutionDto>(`/catalogs/institutions/${id}`, data);
+    return response.data;
+  },
+  async deleteInstitution(id: string): Promise<void> {
+    await apiClient.delete(`/catalogs/institutions/${id}`);
+  },
 
   // --- Card Brands ---
   async getCardBrands(): Promise<CardBrandDto[]> {
@@ -20,6 +27,13 @@ export const CatalogsService = {
   async createCardBrand(data: unknown): Promise<CardBrandDto> {
     const response = await apiClient.post<CardBrandDto>('/catalogs/card-brands', data);
     return response.data;
+  },
+  async updateCardBrand(id: string, data: unknown): Promise<CardBrandDto> {
+    const response = await apiClient.put<CardBrandDto>(`/catalogs/card-brands/${id}`, data);
+    return response.data;
+  },
+  async deleteCardBrand(id: string): Promise<void> {
+    await apiClient.delete(`/catalogs/card-brands/${id}`);
   },
 
   // --- Card Types ---
@@ -31,6 +45,13 @@ export const CatalogsService = {
     const response = await apiClient.post<CardTypeDto>('/catalogs/card-types', data);
     return response.data;
   },
+  async updateCardType(id: string, data: unknown): Promise<CardTypeDto> {
+    const response = await apiClient.put<CardTypeDto>(`/catalogs/card-types/${id}`, data);
+    return response.data;
+  },
+  async deleteCardType(id: string): Promise<void> {
+    await apiClient.delete(`/catalogs/card-types/${id}`);
+  },
 
   // --- Cards ---
   async getCards(): Promise<CardDto[]> {
@@ -40,6 +61,13 @@ export const CatalogsService = {
   async createCard(data: unknown): Promise<CardDto> {
     const response = await apiClient.post<CardDto>('/catalogs/cards', data);
     return response.data;
+  },
+  async updateCard(id: string, data: unknown): Promise<CardDto> {
+    const response = await apiClient.put<CardDto>(`/catalogs/cards/${id}`, data);
+    return response.data;
+  },
+  async deleteCard(id: string): Promise<void> {
+    await apiClient.delete(`/catalogs/cards/${id}`);
   },
 
   // Subscriptions
@@ -51,6 +79,13 @@ export const CatalogsService = {
     const response = await apiClient.post<SubscriptionDto>('/catalogs/subscriptions', data);
     return response.data;
   },
+  async updateSubscription(id: string, data: unknown): Promise<SubscriptionDto> {
+    const response = await apiClient.put<SubscriptionDto>(`/catalogs/subscriptions/${id}`, data);
+    return response.data;
+  },
+  async deleteSubscription(id: string): Promise<void> {
+    await apiClient.delete(`/catalogs/subscriptions/${id}`);
+  },
 
   // Product Services
   async getProductServices(): Promise<ProductServiceDto[]> {
@@ -60,5 +95,12 @@ export const CatalogsService = {
   async createProductService(data: unknown): Promise<ProductServiceDto> {
     const response = await apiClient.post<ProductServiceDto>('/catalogs/product-services', data);
     return response.data;
+  },
+  async updateProductService(id: string, data: unknown): Promise<ProductServiceDto> {
+    const response = await apiClient.put<ProductServiceDto>(`/catalogs/product-services/${id}`, data);
+    return response.data;
+  },
+  async deleteProductService(id: string): Promise<void> {
+    await apiClient.delete(`/catalogs/product-services/${id}`);
   },
 };

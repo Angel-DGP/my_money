@@ -36,8 +36,10 @@ export function useSelect(
   useEffect(() => {
     if (propValue !== undefined) {
       setInternalValue(propValue);
+    } else if (selectRef.current && selectRef.current.value !== String(internalValue ?? '')) {
+      setInternalValue(selectRef.current.value);
     }
-  }, [propValue]);
+  });
 
   const selectRef = useRef<HTMLSelectElement | null>(null);
 

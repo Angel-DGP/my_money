@@ -5,6 +5,7 @@ import { UpdateTransactionUseCase } from './application/use-cases/update-transac
 import { DeleteTransactionUseCase } from './application/use-cases/delete-transaction.use-case';
 import { ListTransactionsUseCase } from './application/use-cases/list-transactions.use-case';
 import { CreateTransferUseCase } from './application/use-cases/create-transfer.use-case';
+import { GetTransferPairUseCase } from './application/use-cases/get-transfer-pair.use-case';
 import { PrismaTransactionRepository } from './infrastructure/prisma/prisma-transaction.repository';
 import { TRANSACTION_REPOSITORY } from './domain/transaction.repository.interface';
 import { AccountsModule } from '../accounts/accounts.module';
@@ -26,6 +27,7 @@ import { SessionsModule } from '../../sessions/sessions.module';
     DeleteTransactionUseCase,
     ListTransactionsUseCase,
     CreateTransferUseCase,
+    GetTransferPairUseCase,
     {
       provide: TRANSACTION_REPOSITORY,
       useClass: PrismaTransactionRepository,

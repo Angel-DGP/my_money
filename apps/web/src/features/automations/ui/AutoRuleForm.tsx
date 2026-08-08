@@ -38,9 +38,9 @@ export function AutoRuleForm({ initialData, onSubmit, isSubmitting }: AutoRuleFo
   const selectedAction = watch('action_type');
 
   return (
-    <FormLayout onSubmit={handleSubmit(onSubmit)}>
+    <FormLayout id="autoruleform-form" onSubmit={handleSubmit(onSubmit)}>
       <div className="col-span-12 space-y-1">
-          <Label htmlFor="name" id="label-name">Nombre de la Regla</Label>
+          <Label htmlFor="name" id="label-name" required>Nombre de la Regla</Label>
           <Input 
             id="name" 
             placeholder="Ej: Ahorrar 10% de mi sueldo" 
@@ -59,7 +59,7 @@ export function AutoRuleForm({ initialData, onSubmit, isSubmitting }: AutoRuleFo
         </div>
 
         <div className="col-span-12 md:col-span-6 space-y-1">
-            <Label htmlFor="trigger_type" id="label-trigger">Desencadenante (Trigger)</Label>
+            <Label htmlFor="trigger_type" id="label-trigger" required>Desencadenante (Trigger)</Label>
             <Controller
               name="trigger_type"
               control={control}
@@ -70,6 +70,7 @@ export function AutoRuleForm({ initialData, onSubmit, isSubmitting }: AutoRuleFo
                   name={field.name}
                   value={field.value}
                   onChange={field.onChange}
+                  placeholder="Seleccionar desencadenante..."
                 >
                   {triggerOptions.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -80,7 +81,7 @@ export function AutoRuleForm({ initialData, onSubmit, isSubmitting }: AutoRuleFo
           </div>
 
           <div className="col-span-12 md:col-span-6 space-y-1">
-            <Label htmlFor="action_type" id="label-action">Acción a realizar</Label>
+            <Label htmlFor="action_type" id="label-action" required>Acción a realizar</Label>
             <Controller
               name="action_type"
               control={control}
@@ -91,6 +92,7 @@ export function AutoRuleForm({ initialData, onSubmit, isSubmitting }: AutoRuleFo
                   name={field.name}
                   value={field.value}
                   onChange={field.onChange}
+                  placeholder="Seleccionar acción..."
                 >
                   {actionOptions.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -147,7 +149,7 @@ export function AutoRuleForm({ initialData, onSubmit, isSubmitting }: AutoRuleFo
         </div>
 
       <PageContainer.Footer className="col-span-12">
-        <Button type="submit" disabled={!!isSubmitting}>
+        <Button type="submit" disabled={!!isSubmitting} form="autoruleform-form">
           {isSubmitting ? 'Guardando...' : initialData ? 'Guardar Cambios' : 'Crear Regla'}
         </Button>
       </PageContainer.Footer>

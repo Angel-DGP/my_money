@@ -1,94 +1,92 @@
 import { useState } from 'react';
-import { useCardTypes, useCreateCardType } from '../api/useCatalogs';
-import { Button, Input, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Card, Icon } from '@mymoney/ui';
+import { useCardTypes, useDeleteCardType } from '../api/useCatalogs';
+import { Button, Icon, DataTable, type ColumnDef, Dialog, Modal, ModalHeader, ModalFooter } from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
-import { Plus, CreditCard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import type { CardTypeDto } from '../../../shared/api/dto/catalogs.dto';
 
 export function CardTypesList() {
   const { data: types, isLoading, isError, error, refetch } = useCardTypes();
-  const createType = useCreateCardType();
-  const [isCreating, setIsCreating] = useState(false);
-  const [newTypeName, setNewTypeName] = useState('');
+  const deleteType = useDeleteCardType();
+  const navigate = useNavigate();
+  
+  const [typeToDelete, setTypeToDelete] = useState<CardTypeDto | null>(null);
 
-  const handleCreate = async () => {
-    if (!newTypeName.trim()) return;
-    try {
-      await createType.mutateAsync({ name: newTypeName });
-      setIsCreating(false);
-      setNewTypeName('');
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const columns: ColumnDef<CardTypeDto>[] = [
+    {
+      key: 'name',
+      header: 'Nombre del Tipo',
+      sortable: true,
+      className: 'font-medium',
+      cell: (t) => t.name,
+    },
+    {
+      key: 'actions',
+      header: 'Acciones',
+      align: 'right',
+      cell: (t) => (
+        <div className="flex items-center justify-end gap-1">
+          <Button variant="ghost" size="icon" aria-label="Editar" onClick={() => navigate(`/catalogs/card-types/edit/${t.id}`)}>
+            <Icon name="pencil" size="sm" />
+          </Button>
+          <Button variant="ghost" size="icon" className="text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20" aria-label="Eliminar" onClick={() => setTypeToDelete(t)}>
+            <Icon name="trash" size="sm" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <div className="flex flex-col gap-4 animate-in fade-in duration-300 mt-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-lg font-semibold text-text-primary">Tipos de Tarjeta</h3>
-          <p className="text-sm text-text-secondary">Gestiona los tipos de tarjetas disponibles (Ej. Crédito, Débito).</p>
-        </div>
-        {!isCreating && (
-          <Button onClick={() => setIsCreating(true)} size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            Nuevo Tipo
-          </Button>
-        )}
-      </div>
-
-      {isCreating && (
-        <Card className="p-4 flex flex-col gap-4 bg-surface-2 border-brand-200 dark:border-brand-900/30">
-          <h4 className="font-medium text-sm text-text-primary">Crear Nuevo Tipo</h4>
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <Input 
-                placeholder="Nombre del tipo (ej. Prepago)" 
-                value={newTypeName}
-                onChange={(e) => setNewTypeName(e.target.value)}
-                autoFocus
-              />
-            </div>
-            <Button variant="ghost" onClick={() => setIsCreating(false)} disabled={createType.isPending}>Cancelar</Button>
-            <Button onClick={handleCreate} disabled={createType.isPending || !newTypeName.trim()}>Guardar</Button>
-          </div>
-        </Card>
-      )}
+    <div className="flex flex-col gap-4 animate-in fade-in duration-300">
 
       <QueryState data={types} isLoading={isLoading} isError={isError} error={error} onRetry={refetch}>
         {() => (
-          <Card padding="none" className="overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Tipo de Tarjeta</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {types?.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={2} className="h-32 text-center text-text-secondary">
-                      <div className="flex flex-col items-center gap-2">
-                        <CreditCard className="w-8 h-8 text-text-tertiary" />
-                        <p>No hay tipos configurados.</p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  types?.map((t) => (
-                    <TableRow key={t.id}>
-                      <TableCell className="font-medium">{t.name}</TableCell>
-                      <TableCell className="text-right flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="icon" className="text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20" aria-label="Eliminar"><Icon name="trash" size="sm" /></Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </Card>
+          <DataTable<CardTypeDto>
+            data={types || []}
+            columns={columns}
+            pageSize={10}
+            searchFields={['name']}
+            searchPlaceholder="Buscar tipo..."
+            defaultSort={{ column: 'name', direction: 'asc' }}
+            emptyMessage="No hay tipos configurados."
+          />
         )}
       </QueryState>
+
+      <Dialog.Root open={!!typeToDelete} onOpenChange={(open) => !open && setTypeToDelete(null)}>
+        <Dialog.Portal>
+          <Modal>
+            <ModalHeader>
+              <Dialog.Title className="text-lg font-semibold text-text-primary">¿Eliminar tipo?</Dialog.Title>
+              <Dialog.Description className="text-sm text-text-secondary mt-2">
+                Estás a punto de eliminar el tipo "{typeToDelete?.name}". Esta acción no se puede deshacer.
+              </Dialog.Description>
+            </ModalHeader>
+            <ModalFooter>
+              <Button variant="ghost" onClick={() => setTypeToDelete(null)} disabled={deleteType.isPending}>
+                Cancelar
+              </Button>
+              <Button
+                className="bg-error-500 hover:bg-error-600 text-white"
+                disabled={deleteType.isPending}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  if (!typeToDelete) return;
+                  try {
+                    await deleteType.mutateAsync(typeToDelete.id);
+                    setTypeToDelete(null);
+                  } catch (error) {
+                    console.error(error);
+                  }
+                }}
+              >
+                {deleteType.isPending ? 'Eliminando...' : 'Eliminar'}
+              </Button>
+            </ModalFooter>
+          </Modal>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 }

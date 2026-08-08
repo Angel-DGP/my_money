@@ -1,7 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Button, Input, Select, PageContainer, Icon, Label } from '@mymoney/ui';
+import { Button, Input, Select, PageContainer, Icon, Label, FormLayout } from '@mymoney/ui';
+import type { InstitutionDto } from '../../../shared/api/dto/catalogs.dto';
 
 const institutionSchema = z.object({
   name: z.string().min(2, 'El nombre es requerido'),
@@ -14,21 +15,22 @@ interface InstitutionFormProps {
   onSubmit: (data: InstitutionFormData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  initialData?: InstitutionDto | null;
 }
 
-export function InstitutionForm({ onSubmit, onCancel, isLoading }: InstitutionFormProps) {
+export function InstitutionForm({ onSubmit, onCancel, isLoading, initialData }: InstitutionFormProps) {
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<InstitutionFormData>({
     resolver: zodResolver(institutionSchema),
     defaultValues: {
-      name: '',
-      type: 'BANK',
+      name: initialData?.name || '',
+      type: (initialData?.type as any) || 'BANK',
     },
   });
 
   const type = watch('type');
 
   return (
-    <form id="institution-form" onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
+    <FormLayout id="institutionform-form" onSubmit={handleSubmit(onSubmit)} gap="lg">
       
       {/* ─── SECCIÓN: DETALLES DE LA INSTITUCIÓN ──────────────────────────────── */}
       <div className="col-span-12 space-y-5">
@@ -44,12 +46,13 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading }: InstitutionFo
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Label htmlFor="name">Nombre de la Institución</Label>
+            <Label htmlFor="name" required>Nombre de la Institución</Label>
             <Input
               id="name"
               placeholder="Ej: Banco Pichincha, Deuna..."
               disabled={isLoading}
               error={errors.name?.message}
+              required
               {...register('name')}
             />
           </div>
@@ -68,6 +71,8 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading }: InstitutionFo
                 { label: 'Otro', value: 'OTHER' },
               ]}
               error={errors.type?.message}
+              required
+              placeholder="Seleccionar tipo..."
             />
           </div>
         </div>
@@ -77,10 +82,10 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading }: InstitutionFo
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>
-        <Button type="submit" form="institution-form" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined}>
+        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="institutionform-form">
           {isLoading ? 'Guardando...' : 'Guardar Institución'}
         </Button>
       </PageContainer.Footer>
-    </form>
+    </FormLayout>
   );
 }

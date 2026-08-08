@@ -1,3 +1,4 @@
+import React from 'react';
 import { Table, TableHeader, TableRow, TableBody, TableCell, Icon, Button, Badge } from '@mymoney/ui';
 import type { Category } from '@entities/category';
 import { useTableState, DataTableToolbar, SortableHeader, TablePagination } from '@mymoney/ui';
@@ -15,7 +16,22 @@ const FILTERS = [
 ];
 
 export function CategoriesTable({ categories, onEdit, onDelete }: CategoriesTableProps) {
-  const safeCategories = Array.isArray(categories) ? categories : [];
+  // Flatten categories and subcategories
+  const flatCategories = React.useMemo(() => {
+    if (!Array.isArray(categories)) return [];
+    const flattened: (Category & { isChild?: boolean })[] = [];
+    
+    categories.forEach(parent => {
+      flattened.push({ ...parent, isChild: false, parentName: parent.name, parentType: parent.type } as any);
+      if (parent.subcategories && parent.subcategories.length > 0) {
+        parent.subcategories.forEach(child => {
+          flattened.push({ ...child, isChild: true, parentName: parent.name, parentType: parent.type } as any);
+        });
+      }
+    });
+    
+    return flattened;
+  }, [categories]);
   
   const {
     search,
@@ -29,12 +45,32 @@ export function CategoriesTable({ categories, onEdit, onDelete }: CategoriesTabl
     totalPages,
     totalFiltered,
     paginated,
-  } = useTableState<Category>({
-    data: safeCategories,
+  } = useTableState<Category & { isChild?: boolean }>({
+    data: flatCategories,
     pageSize: 10,
-    searchFields: ['name'],
+    searchFields: [(c: any) => c.name, (c: any) => c.isChild && c.parentName ? c.parentName : ''],
     filterField: (c, f) => c.type === f,
-    defaultSort: { column: 'name', direction: 'asc' },
+    sortFn: (a: any, b: any, column: string, direction: 'asc' | 'desc' | null) => {
+      if (!direction) return 0;
+      const dirMult = direction === 'asc' ? 1 : -1;
+      
+      const getVal = (item: any) => {
+        if (column === 'name') {
+           const rootName = item.isChild ? item.parentName : item.name;
+           const childName = item.isChild ? item.name : '';
+           return `${rootName}\0${childName}`;
+        }
+        if (column === 'type') {
+           const rootType = item.isChild ? item.parentType : item.type;
+           const rootName = item.isChild ? item.parentName : item.name;
+           const childName = item.isChild ? item.name : '';
+           return `${rootType}\0${rootName}\0${childName}`;
+        }
+        return String(item[column] ?? '');
+      };
+
+      return getVal(a).localeCompare(getVal(b)) * dirMult;
+    }
   });
 
   return (
@@ -85,12 +121,12 @@ export function CategoriesTable({ categories, onEdit, onDelete }: CategoriesTabl
               paginated.map((category) => (
                 <TableRow key={category.id} className="hover:bg-surface-hover transition-colors">
                   <TableCell>
-                    <div className="flex items-center gap-3">
+                    <div className={`flex items-center gap-3 ${category.isChild ? 'ml-8 relative before:content-[""] before:absolute before:w-4 before:h-px before:bg-border-subtle before:-left-5 before:top-1/2' : ''}`}>
                       <div 
-                        className="w-8 h-8 rounded-full flex items-center justify-center"
+                        className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
                         style={{ backgroundColor: category.color || '#E5E7EB' }}
                       >
-                        <Icon name={(category.icon as React.ComponentProps<typeof Icon>['name']) || 'tag'} size="sm" className="text-white mix-blend-difference" />
+                        <Icon name={(category.icon as React.ComponentProps<typeof Icon>['name']) || 'tag'} size="sm" className="text-white" />
                       </div>
                       <span className="font-medium text-text-primary">{category.name}</span>
                     </div>
@@ -110,9 +146,11 @@ export function CategoriesTable({ categories, onEdit, onDelete }: CategoriesTabl
                     )}
                   </TableCell>
                   <TableCell className="text-right flex items-center justify-end gap-1">
-                      <Button variant="secondary" size="icon" aria-label="Editar" onClick={() => onEdit(category)}>
-                        <Icon name="pencil" size="sm" />
-                      </Button>
+                      {!category.is_system && (
+                        <Button variant="secondary" size="icon" aria-label="Editar" onClick={() => onEdit(category)}>
+                          <Icon name="pencil" size="sm" />
+                        </Button>
+                      )}
                       {!category.is_system && (
                         <Button variant="secondary" size="icon" className="text-error-500 hover:text-error-600 hover:bg-error-50 dark:hover:bg-error-950" aria-label="Eliminar" onClick={() => onDelete(category)}>
                           <Icon name="trash" size="sm" />

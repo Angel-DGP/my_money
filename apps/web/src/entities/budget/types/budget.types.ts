@@ -1,7 +1,7 @@
 export interface BudgetDto {
   id: string;
   category_id: string;
-  period: 'monthly' | 'yearly';
+  period: 'WEEKLY' | 'MONTHLY' | 'YEARLY';
   amount: { value: string; currency: string };
   executed_amount: { value: string; currency: string };
   remaining_amount: { value: string; currency: string };
@@ -9,7 +9,7 @@ export interface BudgetDto {
   execution_percentage: number;
   is_over_budget: boolean;
   alert_threshold: number;
-  status: 'active' | 'completed' | 'cancelled';
+  status: 'ACTIVE' | 'EXPIRED' | 'INACTIVE';
   start_date: string;
   end_date: string;
   soft_limit?: { value: string; currency: string };
@@ -27,7 +27,7 @@ export interface BudgetDto {
 
 export interface CreateBudgetDto {
   category_id: string;
-  period: 'monthly' | 'yearly';
+  period: 'WEEKLY' | 'MONTHLY' | 'YEARLY';
   amount: string;
   currency: string;
   start_date: string;

@@ -25,7 +25,7 @@ export function AccountFormFields({ form, isEdit, isLoading }: AccountFormFields
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
           <div className="col-span-12 space-y-2">
-            <Label htmlFor="name">Nombre de la cuenta</Label>
+            <Label htmlFor="name" required>Nombre de la cuenta</Label>
             <Input 
               id="name" 
               placeholder="Ej: Ahorros Banreservas" 
@@ -43,6 +43,7 @@ export function AccountFormFields({ form, isEdit, isLoading }: AccountFormFields
               disabled={isEdit || isLoading}
               required
               {...register('type')}
+              placeholder="Seleccionar tipo..."
             >
               <option value="CHECKING">Corriente</option>
               <option value="SAVINGS">Ahorros</option>
@@ -60,8 +61,9 @@ export function AccountFormFields({ form, isEdit, isLoading }: AccountFormFields
               searchable
               disabled={isLoading}
               {...register('institution_id')}
+              placeholder="Seleccionar institución..."
             >
-              <option value="">Ninguna...</option>
+              <option value="none">Ninguna</option>
               {institutions?.map((i: any) => (
                 <option key={i.id} value={i.id}>{i.name}</option>
               ))}
@@ -95,7 +97,7 @@ export function AccountFormFields({ form, isEdit, isLoading }: AccountFormFields
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
             <div className="col-span-12 md:col-span-6 space-y-2">
-              <Label htmlFor="initial_balance">Balance Inicial</Label>
+              <Label htmlFor="initial_balance" required>Balance Inicial</Label>
               <MoneyInput
                 id="initial_balance"
                 name="initial_balance"

@@ -9,6 +9,7 @@ import { UpdateTransactionUseCase } from '../application/use-cases/update-transa
 import { DeleteTransactionUseCase } from '../application/use-cases/delete-transaction.use-case';
 import { ListTransactionsUseCase } from '../application/use-cases/list-transactions.use-case';
 import { CreateTransferUseCase } from '../application/use-cases/create-transfer.use-case';
+import { GetTransferPairUseCase } from '../application/use-cases/get-transfer-pair.use-case';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
@@ -19,7 +20,8 @@ export class TransactionsController {
     private readonly updateTransactionUseCase: UpdateTransactionUseCase,
     private readonly deleteTransactionUseCase: DeleteTransactionUseCase,
     private readonly listTransactionsUseCase: ListTransactionsUseCase,
-    private readonly createTransferUseCase: CreateTransferUseCase
+    private readonly createTransferUseCase: CreateTransferUseCase,
+    private readonly getTransferPairUseCase: GetTransferPairUseCase
   ) {}
 
   @Get()
@@ -61,6 +63,15 @@ export class TransactionsController {
   ): Promise<ApiResponse<TransactionDto[]>> {
     const userId = req.user.id;
     return this.createTransferUseCase.execute(userId, dto);
+  }
+
+  @Get('transfers/:pairId')
+  async getTransferPair(
+    @Request() req: AuthenticatedRequest,
+    @Param('pairId') pairId: string
+  ): Promise<ApiResponse<TransactionDto[]>> {
+    const userId = req.user.id;
+    return this.getTransferPairUseCase.execute(pairId, userId);
   }
 
   @Patch(':id')

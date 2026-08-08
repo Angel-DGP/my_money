@@ -44,6 +44,24 @@ export class UpdateCategoryUseCase {
       category.updateIconAndColor(icon || null, color || null, userId);
     }
 
+    const newParentId = dto.parent_id === '' ? null : dto.parent_id;
+    if (newParentId !== undefined && newParentId !== category.parentId) {
+      if (newParentId !== null) {
+        const parent = await this.categoryRepository.findById(newParentId, userId);
+        if (!parent) {
+          throw new ValidationException('CAT_005', 'Parent category not found.', 'parent_id');
+        }
+        if (parent.isSubcategory()) {
+          throw CategoryException.maxTwoLevelsAllowed();
+        }
+        // Force type to match parent
+        if (category.type !== parent.type) {
+           throw new ValidationException('CAT_007', 'Subcategory type must match parent category type.', 'type');
+        }
+      }
+      category.updateParent(newParentId, userId);
+    }
+
     await this.categoryRepository.save(category);
 
     if (category.isSubcategory()) {

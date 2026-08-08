@@ -10,8 +10,8 @@ interface BudgetsTableProps {
 
 const FILTERS = [
   { label: 'Todos', value: 'all' },
-  { label: 'Mensual', value: 'monthly' },
-  { label: 'Anual', value: 'yearly' },
+  { label: 'Mensual', value: 'MONTHLY' },
+  { label: 'Anual', value: 'YEARLY' },
 ];
 
 export function BudgetsTable({ budgets, onEdit, onDelete, categories }: BudgetsTableProps) {
@@ -24,7 +24,7 @@ export function BudgetsTable({ budgets, onEdit, onDelete, categories }: BudgetsT
       cell: (budget) => (
         <>
           {categories[budget.category_id] || 'Desconocida'}
-          {budget.status === 'completed' && <Badge variant="success" className="ml-2">Completado</Badge>}
+          {budget.status === 'EXPIRED' && <Badge variant="neutral" className="ml-2">Expirado</Badge>}
         </>
       ),
     },
@@ -63,7 +63,7 @@ export function BudgetsTable({ budgets, onEdit, onDelete, categories }: BudgetsT
       key: 'period',
       header: 'Periodo',
       cell: (budget) => (
-        <span className="capitalize text-text-secondary">{budget.period === 'monthly' ? 'Mensual' : 'Anual'}</span>
+        <span className="capitalize text-text-secondary">{budget.period === 'MONTHLY' ? 'Mensual' : budget.period === 'YEARLY' ? 'Anual' : 'Semanal'}</span>
       ),
     },
     {

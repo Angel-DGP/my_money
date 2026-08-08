@@ -10,7 +10,7 @@ export function NewProductServicePage() {
   const handleSubmit = (data: unknown) => {
     createProduct.mutate(data, {
       onSuccess: () => {
-        navigate('/catalogs');
+        navigate('/catalogs/products');
       }
     });
   };
@@ -20,12 +20,12 @@ export function NewProductServicePage() {
       <PageContainer.Header
         title="Nuevo Producto o Servicio"
         description="Registra un comercio frecuente para tus transacciones."
-        backTo={() => navigate(-1)}
+        backTo={() => navigate('/catalogs/products')}
       />
       <PageContainer.Body variant="transparent" className="py-6">
         <ProductServiceForm
           onSubmit={handleSubmit}
-          onCancel={() => navigate('/catalogs')}
+          onCancel={() => navigate('/catalogs/products')}
           isLoading={createProduct.isPending}
         />
       </PageContainer.Body>

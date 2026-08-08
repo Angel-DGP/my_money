@@ -10,7 +10,7 @@ export function NewInstitutionPage() {
   const handleSubmit = (data: unknown) => {
     createInstitution.mutate(data, {
       onSuccess: () => {
-        navigate('/catalogs');
+        navigate('/catalogs/institutions');
       }
     });
   };
@@ -25,7 +25,7 @@ export function NewInstitutionPage() {
       <PageContainer.Body variant="transparent" className="py-6">
         <InstitutionForm
           onSubmit={handleSubmit}
-          onCancel={() => navigate('/catalogs')}
+          onCancel={() => navigate('/catalogs/institutions')}
           isLoading={createInstitution.isPending}
         />
       </PageContainer.Body>

@@ -2,6 +2,7 @@ import React from 'react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Icon, type IconName } from '../Icon';
+import { useFormLayoutContext } from '../../layout/FormLayout/FormLayout';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -31,10 +32,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       leftIcon,
       rightIcon,
       children,
+      form,
       ...props
     },
     ref
   ) => {
+    const formLayoutContext = useFormLayoutContext();
+    const targetForm = form || (type === 'submit' ? formLayoutContext?.formId : undefined);
     const baseStyles =
       'inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background';
 
@@ -72,6 +76,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         type={type}
+        form={targetForm}
         disabled={disabled || loading}
         className={cn(
           baseStyles,

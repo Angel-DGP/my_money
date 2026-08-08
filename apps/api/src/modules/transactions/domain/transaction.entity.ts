@@ -32,6 +32,8 @@ export interface TransactionProps {
   updatedBy: string | null;
   deletedAt: Date | null;
   deletedBy: string | null;
+  account?: { id: string; name: string; icon: string | null } | null;
+  category?: { id: string; name: string; icon: string | null } | null;
 }
 
 export class Transaction {
@@ -66,6 +68,8 @@ export class Transaction {
   get updatedBy(): string | null { return this.props.updatedBy; }
   get deletedAt(): Date | null { return this.props.deletedAt; }
   get deletedBy(): string | null { return this.props.deletedBy; }
+  get account() { return this.props.account; }
+  get category() { return this.props.category; }
 
   get isDeleted(): boolean {
     return this.props.deletedAt !== null;
@@ -258,6 +262,21 @@ export class Transaction {
     this.props.isThirdParty = isThirdParty;
     this.props.thirdPartyOwner = owner;
     this.props.thirdPartyNote = note;
+    this.props.updatedAt = new Date();
+    this.props.updatedBy = updatedBy;
+  }
+
+  public updateMetadata(
+    paymentMethod: string | null,
+    cardId: string | null,
+    subscriptionId: string | null,
+    productId: string | null,
+    updatedBy: string
+  ): void {
+    this.props.paymentMethod = paymentMethod;
+    this.props.cardId = cardId;
+    this.props.subscriptionId = subscriptionId;
+    this.props.productId = productId;
     this.props.updatedAt = new Date();
     this.props.updatedBy = updatedBy;
   }

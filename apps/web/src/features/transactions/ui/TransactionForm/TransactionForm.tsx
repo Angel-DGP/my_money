@@ -8,7 +8,7 @@ export function TransactionForm({ initialData }: TransactionFormProps) {
   const { form, isEdit, isPending, onSubmit, handleDelete, navigate } = useTransactionForm(initialData);
 
   return (
-    <FormLayout onSubmit={onSubmit}>
+    <FormLayout id="transactionform-form" onSubmit={onSubmit}>
       <TransactionFormFields form={form} isEdit={isEdit} />
 
       <PageContainer.Footer className="col-span-12">
@@ -26,7 +26,7 @@ export function TransactionForm({ initialData }: TransactionFormProps) {
         <Button type="button" variant="ghost" onClick={() => navigate('/transactions')}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={isPending}>
+        <Button type="submit" disabled={isPending} form="transactionform-form">
           {isEdit ? 'Actualizar' : 'Guardar'}
         </Button>
       </PageContainer.Footer>

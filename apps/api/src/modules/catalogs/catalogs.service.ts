@@ -22,6 +22,19 @@ export class CatalogsService {
     });
   }
 
+  async updateInstitution(userId: string, id: string, data: { name?: string; type?: string }) {
+    return this.prisma.institution.update({
+      where: { id, user_id: userId },
+      data,
+    });
+  }
+
+  async deleteInstitution(userId: string, id: string) {
+    return this.prisma.institution.delete({
+      where: { id, user_id: userId },
+    });
+  }
+
   // --- Card Brands ---
   async getCardBrands(userId: string) {
     return this.prisma.cardBrand.findMany({
@@ -39,6 +52,19 @@ export class CatalogsService {
     });
   }
 
+  async updateCardBrand(userId: string, id: string, data: { name: string }) {
+    return this.prisma.cardBrand.update({
+      where: { id, user_id: userId },
+      data,
+    });
+  }
+
+  async deleteCardBrand(userId: string, id: string) {
+    return this.prisma.cardBrand.delete({
+      where: { id, user_id: userId },
+    });
+  }
+
   // --- Card Types ---
   async getCardTypes(userId: string) {
     return this.prisma.cardType.findMany({
@@ -53,6 +79,19 @@ export class CatalogsService {
         ...data,
         user_id: userId,
       },
+    });
+  }
+
+  async updateCardType(userId: string, id: string, data: { name: string }) {
+    return this.prisma.cardType.update({
+      where: { id, user_id: userId },
+      data,
+    });
+  }
+
+  async deleteCardType(userId: string, id: string) {
+    return this.prisma.cardType.delete({
+      where: { id, user_id: userId },
     });
   }
 
@@ -74,6 +113,19 @@ export class CatalogsService {
     });
   }
 
+  async updateCard(userId: string, id: string, data: { institution_id?: string; name?: string; brand_id?: string; type_id?: string; last_four?: string }) {
+    return this.prisma.card.update({
+      where: { id, user_id: userId },
+      data,
+    });
+  }
+
+  async deleteCard(userId: string, id: string) {
+    return this.prisma.card.delete({
+      where: { id, user_id: userId },
+    });
+  }
+
   // --- Subscriptions ---
   async getSubscriptions(userId: string) {
     return this.prisma.subscription.findMany({
@@ -84,12 +136,30 @@ export class CatalogsService {
   }
 
   async createSubscription(userId: string, data: { category_id: string; card_id?: string; name: string; amount: number; currency: string; billing_cycle: string; next_billing_date: string; url?: string }) {
+    const { is_active, ...cleanData } = data as any;
     return this.prisma.subscription.create({
       data: {
-        ...data,
+        ...cleanData,
         user_id: userId,
-        next_billing_date: new Date(data.next_billing_date),
+        next_billing_date: new Date(cleanData.next_billing_date),
       },
+    });
+  }
+
+  async updateSubscription(userId: string, id: string, data: any) {
+    const { is_active, ...cleanData } = data;
+    if (cleanData.next_billing_date) {
+      cleanData.next_billing_date = new Date(cleanData.next_billing_date);
+    }
+    return this.prisma.subscription.update({
+      where: { id, user_id: userId },
+      data: cleanData,
+    });
+  }
+
+  async deleteSubscription(userId: string, id: string) {
+    return this.prisma.subscription.delete({
+      where: { id, user_id: userId },
     });
   }
 
@@ -102,12 +172,28 @@ export class CatalogsService {
     });
   }
 
-  async createProductService(userId: string, data: { category_id: string; name: string }) {
+  async createProductService(userId: string, data: any) {
+    const { name, category_id } = data;
     return this.prisma.productService.create({
       data: {
-        ...data,
+        name,
+        category_id,
         user_id: userId,
       },
+    });
+  }
+
+  async updateProductService(userId: string, id: string, data: any) {
+    const { name, category_id } = data;
+    return this.prisma.productService.update({
+      where: { id, user_id: userId },
+      data: { name, category_id },
+    });
+  }
+
+  async deleteProductService(userId: string, id: string) {
+    return this.prisma.productService.delete({
+      where: { id, user_id: userId },
     });
   }
 }

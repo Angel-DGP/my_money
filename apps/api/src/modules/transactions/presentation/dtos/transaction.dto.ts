@@ -20,6 +20,10 @@ export class TransactionDto {
   card_id!: string | null;
   subscription_id!: string | null;
   product_id!: string | null;
+  transfer_pair_id!: string | null;
+  account!: { id: string; name: string; icon: string | null } | null;
+  category!: { id: string; name: string; icon: string | null } | null;
+
   static fromDomain(entity: Transaction): TransactionDto {
     return {
       id: entity.id,
@@ -39,6 +43,9 @@ export class TransactionDto {
       card_id: entity.cardId,
       subscription_id: entity.subscriptionId,
       product_id: entity.productId,
+      transfer_pair_id: entity.transferPairId,
+      account: entity.account ? { id: entity.account.id, name: entity.account.name, icon: entity.account.icon } : null,
+      category: entity.category ? { id: entity.category.id, name: entity.category.name, icon: entity.category.icon } : null,
     };
   }
 }

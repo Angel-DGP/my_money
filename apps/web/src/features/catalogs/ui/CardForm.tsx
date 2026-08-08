@@ -1,8 +1,9 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Button, Input, Select, PageContainer, Icon, Label } from '@mymoney/ui';
+import { Button, Input, Select, PageContainer, Icon, Label, FormLayout } from '@mymoney/ui';
 import { useInstitutions, useCardBrands, useCardTypes } from '../api/useCatalogs';
+import type { CardDto } from '../../../shared/api/dto/catalogs.dto';
 
 const cardSchema = z.object({
   institution_id: z.string().min(1, 'Selecciona una institución'),
@@ -18,9 +19,10 @@ interface CardFormProps {
   onSubmit: (data: CardFormData) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  initialData?: CardDto | null;
 }
 
-export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
+export function CardForm({ onSubmit, onCancel, isLoading, initialData }: CardFormProps) {
   const { data: institutions } = useInstitutions();
   const { data: brands } = useCardBrands();
   const { data: types } = useCardTypes();
@@ -28,11 +30,11 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<CardFormData>({
     resolver: zodResolver(cardSchema),
     defaultValues: {
-      institution_id: '',
-      brand_id: '',
-      type_id: '',
-      name: '',
-      last_four: '',
+      institution_id: initialData?.institution_id || '',
+      brand_id: initialData?.brand_id || '',
+      type_id: initialData?.type_id || '',
+      name: initialData?.name || '',
+      last_four: initialData?.last_four || '',
     },
   });
 
@@ -44,7 +46,7 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
   console.log("Watched Values:", { institution_id, type_id, brand_id });
 
   return (
-    <form id="card-form" onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
+    <FormLayout id="cardform-form" onSubmit={handleSubmit(onSubmit)} gap="lg">
       
       {/* ─── SECCIÓN: ASIGNACIÓN BANCARIA ────────────────────────────────────── */}
       <div className="col-span-12 space-y-5">
@@ -69,8 +71,9 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
               error={errors.institution_id?.message}
               searchable
               disabled={isLoading}
+              required
+              placeholder="Seleccionar institución"
             >
-              <option value="">Seleccionar...</option>
               {institutions?.map(i => (
                 <option key={i.id} value={i.id}>{i.name}</option>
               ))}
@@ -78,12 +81,13 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
           </div>
 
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Label htmlFor="name">Alias de la Tarjeta</Label>
+            <Label htmlFor="name" required>Alias de la Tarjeta</Label>
             <Input
               id="name"
               placeholder="Ej: Tarjeta Principal, Mi Visa..."
               disabled={isLoading}
               error={errors.name?.message}
+              required
               {...register('name')}
             />
           </div>
@@ -112,8 +116,9 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
               onValueChange={(val) => setValue('brand_id', val, { shouldValidate: true })}
               error={errors.brand_id?.message}
               disabled={isLoading}
+              required
+              placeholder="Seleccionar marca"
             >
-              <option value="">Seleccionar...</option>
               {brands?.map(b => (
                 <option key={b.id} value={b.id}>{b.name}</option>
               ))}
@@ -129,8 +134,9 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
               onValueChange={(val) => setValue('type_id', val, { shouldValidate: true })}
               error={errors.type_id?.message}
               disabled={isLoading}
+              required
+              placeholder="Seleccionar tipo"
             >
-              <option value="">Seleccionar...</option>
               {types?.map(t => (
                 <option key={t.id} value={t.id}>{t.name}</option>
               ))}
@@ -138,13 +144,14 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="last_four">Últimos 4 dígitos</Label>
+            <Label htmlFor="last_four" required>Últimos 4 dígitos</Label>
             <Input
               id="last_four"
               placeholder="1234"
               maxLength={4}
               disabled={isLoading}
               error={errors.last_four?.message}
+              required
               {...register('last_four')}
             />
           </div>
@@ -155,10 +162,10 @@ export function CardForm({ onSubmit, onCancel, isLoading }: CardFormProps) {
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>
-        <Button type="submit" form="card-form" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined}>
+        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="cardform-form">
           {isLoading ? 'Guardando...' : 'Guardar Tarjeta'}
         </Button>
       </PageContainer.Footer>
-    </form>
+    </FormLayout>
   );
 }

@@ -15,7 +15,7 @@ export function NewSubscriptionPage() {
     };
     createSubscription.mutate(payload, {
       onSuccess: () => {
-        navigate('/catalogs');
+        navigate('/catalogs/subscriptions');
       }
     });
   };
@@ -25,12 +25,12 @@ export function NewSubscriptionPage() {
       <PageContainer.Header
         title="Nueva Suscripción"
         description="Controla tus gastos recurrentes y alertas de pago."
-        backTo={() => navigate(-1)}
+        backTo={() => navigate('/catalogs/subscriptions')}
       />
       <PageContainer.Body variant="transparent" className="py-6">
         <SubscriptionForm
           onSubmit={handleSubmit}
-          onCancel={() => navigate('/catalogs')}
+          onCancel={() => navigate('/catalogs/subscriptions')}
           isLoading={createSubscription.isPending}
         />
       </PageContainer.Body>

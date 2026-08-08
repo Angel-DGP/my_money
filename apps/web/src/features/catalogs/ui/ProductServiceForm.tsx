@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Button, Input, Select, PageContainer, Icon, Label } from '@mymoney/ui';
+import { Button, Input, Select, PageContainer, Icon, Label, FormLayout } from '@mymoney/ui';
 import { useCategoriesQuery } from '@entities/category';
 
 const productSchema = z.object({
@@ -13,27 +13,28 @@ const productSchema = z.object({
 type ProductFormData = z.infer<typeof productSchema>;
 
 interface ProductServiceFormProps {
+  initialData?: any;
   onSubmit: (data: ProductFormData) => void;
   onCancel: () => void;
   isLoading?: boolean;
 }
 
-export function ProductServiceForm({ onSubmit, onCancel, isLoading }: ProductServiceFormProps) {
+export function ProductServiceForm({ initialData, onSubmit, onCancel, isLoading }: ProductServiceFormProps) {
   const { data: categories } = useCategoriesQuery();
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      name: '',
-      category_id: '',
-      description: '',
+      name: initialData?.name || '',
+      category_id: initialData?.category_id || '',
+      description: initialData?.description || '',
     },
   });
 
   const category_id = watch('category_id');
 
   return (
-    <form id="product-form" onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
+    <FormLayout id="productserviceform-form" onSubmit={handleSubmit(onSubmit)} className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
       
       {/* ─── SECCIÓN: INFORMACIÓN DEL COMERCIO/PRODUCTO ────────────────────── */}
       <div className="col-span-12 space-y-5">
@@ -49,12 +50,13 @@ export function ProductServiceForm({ onSubmit, onCancel, isLoading }: ProductSer
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Label htmlFor="name">Nombre del Comercio/Producto</Label>
+            <Label htmlFor="name" required>Nombre del Comercio/Producto</Label>
             <Input
               id="name"
               placeholder="Ej: Supermaxi, Amazon, Apple..."
               disabled={isLoading}
               error={errors.name?.message}
+              required
               {...register('name')}
             />
           </div>
@@ -69,8 +71,9 @@ export function ProductServiceForm({ onSubmit, onCancel, isLoading }: ProductSer
               error={errors.category_id?.message}
               searchable
               disabled={isLoading}
+              required
+              placeholder="Seleccionar categoría..."
             >
-              <option value="">Seleccionar categoría...</option>
               {categories?.filter(c => c.type === 'EXPENSE').map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
@@ -94,10 +97,10 @@ export function ProductServiceForm({ onSubmit, onCancel, isLoading }: ProductSer
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
           Cancelar
         </Button>
-        <Button type="submit" form="product-form" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined}>
+        <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="productserviceform-form">
           {isLoading ? 'Guardando...' : 'Guardar Comercio'}
         </Button>
       </PageContainer.Footer>
-    </form>
+    </FormLayout>
   );
 }

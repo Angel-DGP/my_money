@@ -1,5 +1,6 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { useSessionStore } from '@entities/session';
+import { useGlobalErrorStore } from '../../store/global-error.store';
 import { API_CONFIG } from '../config';
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
@@ -55,9 +56,31 @@ function handleSessionExpired(): void {
 
 export const errorInterceptor = async (error: AxiosError): Promise<never> => {
   const originalRequest = error.config as RetryConfig | undefined;
+  
+  const { showError } = useGlobalErrorStore.getState();
 
-  // Solo actuar en errores 401
-  if ((error as { response?: { status?: number; data?: { message?: string } } }).response?.status !== 401) {
+  // Network Error (No response from server)
+  if (!error.response) {
+    showError('Error de conexión', 'No se pudo conectar con el servidor. Verifica tu conexión a internet o intenta más tarde.');
+    return Promise.reject(error);
+  }
+
+  const status = error.response.status;
+  const data = error.response.data as any;
+
+  // Server Error (5xx)
+  if (status >= 500) {
+    showError('Error del servidor', 'Ocurrió un problema inesperado en nuestros servidores. Intenta más tarde.');
+  }
+
+  // Validation Error (400)
+  if (status === 400 && data?.message) {
+    const msg = Array.isArray(data.message) ? data.message.join('. ') : data.message;
+    showError('Error de validación', msg || 'Revisa la información proporcionada.');
+  }
+
+  // Solo actuar con refresh token en errores 401
+  if (status !== 401) {
     return Promise.reject(error);
   }
 

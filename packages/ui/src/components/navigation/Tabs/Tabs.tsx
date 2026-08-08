@@ -90,7 +90,7 @@ export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
         role="tablist"
         aria-orientation={orientation}
         className={cn(
-          'inline-flex items-center justify-center rounded-lg bg-surface p-1 text-text-secondary',
+          'inline-flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800/80 p-1 text-text-secondary',
           orientation === 'horizontal' ? 'h-10' : 'flex-col h-auto w-max',
           className
         )}

@@ -1,4 +1,4 @@
-import { Input, Label, Select, Icon } from '@mymoney/ui';
+import { Input, Select, Icon } from '@mymoney/ui';
 import { useAccountsQuery, type Account } from '@entities/account';
 import { useCategoriesQuery, type Category } from '@entities/category';
 import { useCards, useSubscriptions, useProductServices } from '../../../catalogs/api/useCatalogs';
@@ -77,38 +77,41 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="amount">Monto</Label>
             <Input 
               id="amount" 
+              label="Monto"
+              required
               type="number" 
               step="0.01" 
               min="0"
               placeholder="0.00"
               leftIcon="dollar-sign"
+              error={errors.amount?.message as string}
               {...register('amount', { valueAsNumber: true })} 
             />
-            {errors.amount && <p className="text-error-500 text-xs">{errors.amount.message}</p>}
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="date">Fecha</Label>
             <Input 
               id="date" 
+              label="Fecha"
+              required
               type="date"
               leftIcon="calendar"
+              error={errors.date?.message as string}
               {...register('date')} 
             />
-            {errors.date && <p className="text-error-500 text-xs">{errors.date.message}</p>}
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="description">Descripción</Label>
             <Input 
               id="description" 
+              label="Descripción"
+              required
               placeholder="Ej. Compra semanal" 
+              error={errors.description?.message as string}
               {...register('description')} 
             />
-            {errors.description && <p className="text-error-500 text-xs">{errors.description.message}</p>}
           </div>
         </div>
       </div>
@@ -129,18 +132,16 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
           {selectedType !== 'TRANSFER' ? (
             <>
               <div className="col-span-12 md:col-span-6 space-y-2">
-                <Select id="account_id" label="Cuenta" required {...register('account_id')}>
-                  <option value="" disabled>Selecciona una cuenta</option>
+                <Select id="account_id" label="Cuenta" required error={errors.account_id?.message as string} {...register('account_id')} placeholder="Seleccionar cuenta...">
                   {accounts.map((acc: Account) => (
                     <option key={acc.id} value={acc.id}>{acc.name}</option>
                   ))}
                 </Select>
-                {errors.account_id && <p className="text-error-500 text-xs">{errors.account_id.message}</p>}
               </div>
 
               <div className="col-span-12 md:col-span-6 space-y-2">
-                <Select id="category_id" label="Categoría (Opcional)" {...register('category_id')}>
-                  <option value="">Sin categoría</option>
+                <Select id="category_id" label="Categoría (Opcional)" error={errors.category_id?.message as string} {...register('category_id')} placeholder="Seleccionar categoría...">
+                  <option value="none">Ninguna</option>
                   {filteredCategories.map((cat: Category) => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
@@ -150,23 +151,19 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
           ) : (
             <>
               <div className="col-span-12 md:col-span-6 space-y-2">
-                <Select id="from_account_id" label="Cuenta Origen" required {...register('from_account_id')}>
-                  <option value="" disabled>Selecciona cuenta origen</option>
+                <Select id="from_account_id" label="Cuenta Origen" required error={errors.from_account_id?.message as string} {...register('from_account_id')} placeholder="Seleccionar cuenta origen...">
                   {accounts.map((acc: Account) => (
                     <option key={acc.id} value={acc.id}>{acc.name}</option>
                   ))}
                 </Select>
-                {errors.from_account_id && <p className="text-error-500 text-xs">{errors.from_account_id.message}</p>}
               </div>
 
               <div className="col-span-12 md:col-span-6 space-y-2">
-                <Select id="to_account_id" label="Cuenta Destino" required {...register('to_account_id')}>
-                  <option value="" disabled>Selecciona cuenta destino</option>
+                <Select id="to_account_id" label="Cuenta Destino" required error={errors.to_account_id?.message as string} {...register('to_account_id')} placeholder="Seleccionar cuenta destino...">
                   {accounts.map((acc: Account) => (
                     <option key={acc.id} value={acc.id}>{acc.name}</option>
                   ))}
                 </Select>
-                {errors.to_account_id && <p className="text-error-500 text-xs">{errors.to_account_id.message}</p>}
               </div>
             </>
           )}
@@ -189,8 +186,8 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-surface-2/40 p-5 rounded-xl border border-border-subtle">
             
             <div className="col-span-12 md:col-span-6 space-y-2">
-              <Select id="payment_method" label="Método de Pago" {...register('payment_method')}>
-                <option value="">Efectivo / Transferencia</option>
+              <Select id="payment_method" label="Método de Pago" error={errors.payment_method?.message as string} {...register('payment_method')} placeholder="Seleccionar método...">
+                <option value="none">Ninguno (Efectivo / Transferencia)</option>
                 <option value="CARD">Tarjeta</option>
                 <option value="CASH">Efectivo Físico</option>
                 <option value="APP">App Bancaria</option>
@@ -198,8 +195,8 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
             </div>
             
             <div className="col-span-12 md:col-span-6 space-y-2">
-              <Select id="card_id" label="Tarjeta Usada" {...register('card_id')}>
-                <option value="">Ninguna</option>
+              <Select id="card_id" label="Tarjeta Usada" error={errors.card_id?.message as string} {...register('card_id')} placeholder="Seleccionar tarjeta...">
+                <option value="none">Ninguna</option>
                 {cards.map((c: { id: string; name: string; last_four?: string }) => (
                   <option key={c.id} value={c.id}>{c.name} (*{c.last_four})</option>
                 ))}
@@ -207,8 +204,8 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
             </div>
 
             <div className="col-span-12 md:col-span-6 space-y-2">
-              <Select id="subscription_id" label="Suscripción Relacionada" {...register('subscription_id')}>
-                <option value="">No es una suscripción</option>
+              <Select id="subscription_id" label="Suscripción Relacionada" error={errors.subscription_id?.message as string} {...register('subscription_id')} placeholder="Seleccionar suscripción...">
+                <option value="none">Ninguna</option>
                 {subscriptions.map((s: { id: string; name: string; amount: string | number }) => (
                   <option key={s.id} value={s.id}>{s.name} ({s.amount})</option>
                 ))}
@@ -216,19 +213,25 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
             </div>
 
             <div className="col-span-12 md:col-span-6 space-y-2">
-              <Select id="product_id" label="Comercio / Producto" {...register('product_id')}>
-                <option value="">No aplica</option>
-                {products.map((p: { id: string; name: string }) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
+              <Select id="product_id" label="Comercio / Producto" error={errors.product_id?.message as string} {...register('product_id')} placeholder="Seleccionar producto...">
+                <option value="none">Ninguno</option>
+                {products.map((p: any) => {
+                  const catName = p.category?.name || 'Sin Categoría';
+                  return (
+                    <option key={p.id} value={p.id}>
+                      {catName} - {p.name}
+                    </option>
+                  );
+                })}
               </Select>
             </div>
 
             <div className="col-span-12 space-y-2 pt-2">
-              <Label htmlFor="note">Notas Generales</Label>
               <Input 
                 id="note" 
+                label="Notas Generales"
                 placeholder="Añade algún comentario o detalle..." 
+                error={errors.note?.message as string}
                 {...register('note')} 
               />
             </div>
@@ -238,10 +241,11 @@ export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsPro
 
       {selectedType === 'TRANSFER' && (
         <div className="col-span-12 space-y-2">
-          <Label htmlFor="note">Notas (Opcional)</Label>
           <Input 
             id="note" 
+            label="Notas (Opcional)"
             placeholder="Motivo de la transferencia..." 
+            error={errors.note?.message as string}
             {...register('note')} 
           />
         </div>

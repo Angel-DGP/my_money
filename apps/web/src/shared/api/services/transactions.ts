@@ -17,6 +17,11 @@ export const TransactionsService = {
     return response.data;
   },
 
+  async getTransferPair(pairId: string): Promise<Transaction[]> {
+    const response = await apiClient.get<Transaction[]>(`/transactions/transfers/${pairId}`);
+    return response.data;
+  },
+
   async create(data: CreateTransactionDto): Promise<Transaction> {
     const response = await apiClient.post<Transaction >('/transactions', data);
     return response.data;

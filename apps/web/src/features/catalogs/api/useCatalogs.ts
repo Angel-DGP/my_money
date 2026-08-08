@@ -18,6 +18,26 @@ export const useCreateInstitution = () => {
   });
 };
 
+export const useUpdateInstitution = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: unknown }) => CatalogsService.updateInstitution(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['institutions'] });
+    },
+  });
+};
+
+export const useDeleteInstitution = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: CatalogsService.deleteInstitution,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['institutions'] });
+    },
+  });
+};
+
 export const useCardBrands = () => {
   return useQuery({
     queryKey: ['card-brands'],
@@ -29,6 +49,26 @@ export const useCreateCardBrand = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: CatalogsService.createCardBrand,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['card-brands'] });
+    },
+  });
+};
+
+export const useUpdateCardBrand = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: unknown }) => CatalogsService.updateCardBrand(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['card-brands'] });
+    },
+  });
+};
+
+export const useDeleteCardBrand = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: CatalogsService.deleteCardBrand,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['card-brands'] });
     },
@@ -52,6 +92,26 @@ export const useCreateCardType = () => {
   });
 };
 
+export const useUpdateCardType = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: unknown }) => CatalogsService.updateCardType(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['card-types'] });
+    },
+  });
+};
+
+export const useDeleteCardType = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: CatalogsService.deleteCardType,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['card-types'] });
+    },
+  });
+};
+
 export const useCards = () => {
   return useQuery({
     queryKey: ['cards'],
@@ -63,6 +123,26 @@ export const useCreateCard = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: CatalogsService.createCard,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cards'] });
+    },
+  });
+};
+
+export const useUpdateCard = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: unknown }) => CatalogsService.updateCard(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cards'] });
+    },
+  });
+};
+
+export const useDeleteCard = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: CatalogsService.deleteCard,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cards'] });
     },
@@ -86,6 +166,26 @@ export const useCreateSubscription = () => {
   });
 };
 
+export const useUpdateSubscription = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: unknown }) => CatalogsService.updateSubscription(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
+    },
+  });
+};
+
+export const useDeleteSubscription = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: CatalogsService.deleteSubscription,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
+    },
+  });
+};
+
 export const useProductServices = () => {
   return useQuery({
     queryKey: ['product-services'],
@@ -97,6 +197,26 @@ export const useCreateProductService = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: CatalogsService.createProductService,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['product-services'] });
+    },
+  });
+};
+
+export const useUpdateProductService = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: unknown }) => CatalogsService.updateProductService(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['product-services'] });
+    },
+  });
+};
+
+export const useDeleteProductService = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: CatalogsService.deleteProductService,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['product-services'] });
     },

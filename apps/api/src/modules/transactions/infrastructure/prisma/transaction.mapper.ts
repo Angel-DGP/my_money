@@ -28,6 +28,8 @@ export interface RawTransaction {
   updated_by: string | null;
   deleted_at: Date | null;
   deleted_by: string | null;
+  account?: { id: string; name: string; icon: string | null } | null;
+  category?: { id: string; name: string; icon: string | null } | null;
 }
 
 export class TransactionMapper {
@@ -56,6 +58,8 @@ export class TransactionMapper {
       updatedBy: raw.updated_by as string,
       deletedAt: raw.deleted_at as Date,
       deletedBy: raw.deleted_by as string,
+      account: raw.account ? { id: raw.account.id, name: raw.account.name, icon: raw.account.icon } : null,
+      category: raw.category ? { id: raw.category.id, name: raw.category.name, icon: raw.category.icon } : null,
     });
   }
 

@@ -13,7 +13,17 @@ const NAV_ITEMS = [
   { path: '/budgets', label: 'Presupuestos', icon: 'pie-chart' as const },
   { path: '/goals', label: 'Metas', icon: 'target' as const },
   { path: '/automations', label: 'Automatizaciones', icon: 'repeat' as const },
-  { path: '/catalogs', label: 'Catálogos', icon: 'layers' as const },
+  { 
+    path: '/catalogs', 
+    label: 'Catálogos', 
+    icon: 'layers' as const,
+    subItems: [
+      { path: '/catalogs/institutions', label: 'Bancos e Instituciones' },
+      { path: '/catalogs/cards', label: 'Mis Tarjetas' },
+      { path: '/catalogs/subscriptions', label: 'Suscripciones' },
+      { path: '/catalogs/products', label: 'Compras Frecuentes' },
+    ]
+  },
   { path: '/ui-kit', label: 'Interfaz (UI Kit)', icon: 'palette' as const },
 ];
 
@@ -72,26 +82,57 @@ export function MainLayout() {
         
         {/* Nav Items */}
         <div className="flex-1 overflow-y-auto custom-scrollbar py-4 px-3 flex flex-col gap-1">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={closeMobileMenu}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors",
-                isActive(item.path)
-                  ? "bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400"
-                  : "text-text-secondary hover:text-text-primary hover:bg-surface"
-              )}
-            >
-              <Icon 
-                name={item.icon} 
-                size="sm" 
-                className={cn(isActive(item.path) ? "text-primary-600 dark:text-primary-400" : "text-text-secondary")} 
-              />
-              {item.label}
-            </Link>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const isItemActive = isActive(item.path);
+            
+            return (
+              <div key={item.path} className="flex flex-col gap-1">
+                <Link
+                  to={item.path}
+                  onClick={!item.subItems ? closeMobileMenu : undefined}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors w-full",
+                    isItemActive
+                      ? "bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400"
+                      : "text-text-secondary hover:text-text-primary hover:bg-surface"
+                  )}
+                >
+                  <Icon 
+                    name={item.icon as any} 
+                    size="sm" 
+                    className={cn(isItemActive ? "text-primary-600 dark:text-primary-400" : "text-text-secondary")} 
+                  />
+                  <span className="flex-1 text-left">{item.label}</span>
+                  {item.subItems && (
+                    <Icon name={isItemActive ? 'chevron-down' : 'chevron-right'} size="sm" className="opacity-50" />
+                  )}
+                </Link>
+
+                {item.subItems && isItemActive && (
+                  <div className="flex flex-col gap-1 pl-9 pr-2 py-1 animate-in slide-in-from-top-2 duration-200">
+                    {item.subItems.map((subItem) => {
+                      const isSubActive = location.pathname === subItem.path || location.pathname.startsWith(`${subItem.path}/`);
+                      return (
+                        <Link
+                          key={subItem.path}
+                          to={subItem.path}
+                          onClick={closeMobileMenu}
+                          className={cn(
+                            "px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                            isSubActive
+                              ? "bg-primary-50/50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400"
+                              : "text-text-secondary hover:text-text-primary hover:bg-surface"
+                          )}
+                        >
+                          {subItem.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
         
         {/* Sidebar Footer: Settings + Logout (Icon buttons only) */}

@@ -1,5 +1,15 @@
-import React from 'react';
+import React, { createContext, useContext, useId } from 'react';
 import { cn } from '../../../utils/cn';
+
+export interface FormLayoutContextValue {
+  formId: string;
+}
+
+export const FormLayoutContext = createContext<FormLayoutContextValue | null>(null);
+
+export function useFormLayoutContext() {
+  return useContext(FormLayoutContext);
+}
 
 export interface FormLayoutProps extends React.FormHTMLAttributes<HTMLFormElement> {
   children: React.ReactNode;
@@ -13,26 +23,24 @@ const gapMap = {
   lg: 'gap-6',
 };
 
-/**
- * FormLayout
- *
- * Contenedor de formulario que organiza los campos en un grid responsivo.
- * El scroll de la página lo gestiona PageContainer.Body (overflow-y-auto).
- * El footer (PageContainerFooter) se renderiza via portal fuera del scroll,
- * por lo que puede colocarse directamente como hijo de FormLayout sin problemas.
- */
 export const FormLayout = React.forwardRef<HTMLFormElement, FormLayoutProps>(
-  ({ children, className, gap = 'default', ...props }, ref) => {
+  ({ children, className, gap = 'default', id: providedId, ...props }, ref) => {
+    const generatedId = useId();
+    const formId = providedId || generatedId;
+
     return (
-      <form
-        ref={ref}
-        className={cn('flex flex-col', className)}
-        {...props}
-      >
-        <div className={cn('grid grid-cols-1 md:grid-cols-12 content-start pb-6', gapMap[gap])}>
-          {children}
-        </div>
-      </form>
+      <FormLayoutContext.Provider value={{ formId }}>
+        <form
+          ref={ref}
+          id={formId}
+          className={cn('flex flex-col', className)}
+          {...props}
+        >
+          <div className={cn('grid grid-cols-1 md:grid-cols-12 content-start pb-6', gapMap[gap])}>
+            {children}
+          </div>
+        </form>
+      </FormLayoutContext.Provider>
     );
   }
 );

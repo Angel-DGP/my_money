@@ -2,7 +2,7 @@ import React from 'react';
 import { Search, X, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { cn } from '../../../utils/cn';
 import { Select } from '../../core/Select';
-import { Table, TableHeader, TableBody, TableRow, TableCell } from '../../layout/Table';
+import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '../../layout/Table';
 import { useTableState, type UseTableStateOptions, type SortState } from '../../../hooks/useTableState';
 
 // ─── Toolbar ────────────────────────────────────────────────────────────────
@@ -252,19 +252,17 @@ export function DataTable<T>({
           <TableHeader>
             <TableRow>
               {columns.map((col) => (
-                <TableCell key={col.key} asChild align={col.align} className={col.className}>
-                  <th>
-                    {col.sortable ? (
-                      <SortableHeader column={col.key} sort={sort} onToggle={toggleSort}>
-                        {col.header}
-                      </SortableHeader>
-                    ) : (
-                      <span className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                        {col.header}
-                      </span>
-                    )}
-                  </th>
-                </TableCell>
+                <TableHead key={col.key} align={col.align} className={col.className}>
+                  {col.sortable ? (
+                    <SortableHeader column={col.key} sort={sort} onToggle={toggleSort}>
+                      {col.header}
+                    </SortableHeader>
+                  ) : (
+                    <span className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                      {col.header}
+                    </span>
+                  )}
+                </TableHead>
               ))}
             </TableRow>
           </TableHeader>

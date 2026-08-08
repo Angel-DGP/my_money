@@ -44,6 +44,9 @@ export class CategoryDto {
   @ApiProperty({ required: false })
   color?: string;
 
+  @ApiProperty({ required: false })
+  parent_id?: string;
+
   @ApiProperty({ type: [SubcategoryDto], required: false })
   subcategories?: SubcategoryDto[];
 }
@@ -91,4 +94,9 @@ export class UpdateCategoryDto {
   @IsOptional()
   @IsString()
   color?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  parent_id?: string;
 }

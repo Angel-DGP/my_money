@@ -42,7 +42,7 @@ export interface ReconstituteCategoryProps {
 export class Category {
   readonly id: string;
   readonly userId: string | null;
-  readonly parentId: string | null;
+  private _parentId: string | null;
   readonly isSystem: boolean;
   private _name: string;
   private _type: CategoryType;
@@ -60,7 +60,7 @@ export class Category {
   private constructor(props: ReconstituteCategoryProps) {
     this.id = props.id;
     this.userId = props.userId;
-    this.parentId = props.parentId;
+    this._parentId = props.parentId;
     this.isSystem = props.isSystem;
     this._name = props.name;
     this._type = props.type;
@@ -76,6 +76,10 @@ export class Category {
   }
 
   // --- GETTERS ---
+
+  get parentId(): string | null {
+    return this._parentId;
+  }
 
   get name(): string {
     return this._name;
@@ -166,6 +170,15 @@ export class Category {
       throw CategoryException.systemCategoryImmutable();
     }
     this._name = name;
+    this._updatedAt = new Date();
+    this._updatedBy = updatedBy;
+  }
+
+  updateParent(parentId: string | null, updatedBy: string): void {
+    if (this.isSystem) {
+      throw CategoryException.systemCategoryImmutable();
+    }
+    this._parentId = parentId;
     this._updatedAt = new Date();
     this._updatedBy = updatedBy;
   }
