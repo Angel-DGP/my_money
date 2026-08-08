@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, TableHeader, TableRow, TableBody, TableCell, Icon, Button, Badge } from '@mymoney/ui';
+import { Table, TableHeader, TableRow, TableBody, TableCell, TableHead, Icon, Button, Badge } from '@mymoney/ui';
 import type { Category } from '@entities/category';
 import { useTableState, DataTableToolbar, SortableHeader, TablePagination } from '@mymoney/ui';
 
@@ -89,26 +89,26 @@ export function CategoriesTable({ categories, onView, onEdit, onDelete }: Catego
         <Table>
           <TableHeader>
             <TableRow>
-              <TableCell asChild>
-                <th>
-                  <SortableHeader column="name" sort={sort} onToggle={toggleSort}>
-                    Nombre
-                  </SortableHeader>
-                </th>
-              </TableCell>
-              <TableCell asChild>
-                <th>
-                  <SortableHeader column="type" sort={sort} onToggle={toggleSort}>
-                    Tipo
-                  </SortableHeader>
-                </th>
-              </TableCell>
-              <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                <th>Sistema</th>
-              </TableCell>
-              <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider sticky right-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[-4px_0_12px_rgba(0,0,0,0.05)]">
-                <th>Acciones</th>
-              </TableCell>
+              <TableHead>
+                <SortableHeader column="name" sort={sort} onToggle={toggleSort}>
+                  Nombre
+                </SortableHeader>
+              </TableHead>
+              <TableHead>
+                <SortableHeader column="type" sort={sort} onToggle={toggleSort}>
+                  Tipo
+                </SortableHeader>
+              </TableHead>
+              <TableHead>
+                <span className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                  Sistema
+                </span>
+              </TableHead>
+              <TableHead align="center" className="sticky right-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[-4px_0_12px_rgba(0,0,0,0.05)] text-center">
+                <span className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                  Acciones
+                </span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -147,7 +147,7 @@ export function CategoriesTable({ categories, onView, onEdit, onDelete }: Catego
                     )}
                   </TableCell>
                   <TableCell className="sticky right-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover">
-                    <div className="flex items-center justify-end gap-1">
+                    <div className="flex items-center justify-center gap-1">
                       <button type="button" onClick={(e) => { e.stopPropagation(); onView(category); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
                         <Icon name="eye" size="sm" />
                       </button>

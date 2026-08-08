@@ -85,7 +85,7 @@ export function GoalsTable({ goals, onView, onEdit, onDelete, onAddProgress }: G
       align: 'right',
       sticky: 'right',
       cell: (goal) => (
-        <div className="flex justify-end gap-1">
+        <div className="flex justify-center gap-1">
           <button type="button" aria-label="Aportar" disabled={goal.status === 'completed'} onClick={(e) => { e.stopPropagation(); onAddProgress(goal); }} className="p-1.5 text-text-muted hover:text-success-500 hover:bg-success-50 dark:hover:bg-success-900/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <Icon name="piggy-bank" size="sm" />
           </button>

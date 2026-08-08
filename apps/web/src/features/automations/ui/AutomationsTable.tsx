@@ -1,4 +1,4 @@
-import { Table, TableHeader, TableBody, TableRow, TableCell, Badge, Icon, Checkbox } from '@mymoney/ui';
+import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead, Badge, Icon, Checkbox } from '@mymoney/ui';
 import type { AutoRuleDto } from '@entities/automation';
 import { TriggerType, ActionType } from '@entities/automation';
 import { useTableState, DataTableToolbar, SortableHeader, TablePagination } from '@mymoney/ui';
@@ -69,25 +69,31 @@ export function AutomationsTable({ rules, onEdit, onDelete, onToggleActive }: Au
         <Table>
           <TableHeader>
             <TableRow>
-              <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                <th>Estado</th>
-              </TableCell>
-              <TableCell asChild>
-                <th>
-                  <SortableHeader column="name" sort={sort} onToggle={toggleSort}>
-                    Nombre / Descripción
-                  </SortableHeader>
-                </th>
-              </TableCell>
-              <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                <th>Desencadenante</th>
-              </TableCell>
-              <TableCell asChild className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
-                <th>Acción</th>
-              </TableCell>
-              <TableCell asChild align="right" className="font-semibold text-text-secondary text-xs uppercase tracking-wider sticky right-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[-4px_0_12px_rgba(0,0,0,0.05)]">
-                <th>Opciones</th>
-              </TableCell>
+              <TableHead>
+                <span className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                  Estado
+                </span>
+              </TableHead>
+              <TableHead>
+                <SortableHeader column="name" sort={sort} onToggle={toggleSort}>
+                  Nombre / Descripción
+                </SortableHeader>
+              </TableHead>
+              <TableHead>
+                <span className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                  Desencadenante
+                </span>
+              </TableHead>
+              <TableHead>
+                <span className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                  Acción
+                </span>
+              </TableHead>
+              <TableHead align="center" className="sticky right-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[-4px_0_12px_rgba(0,0,0,0.05)] text-center">
+                <span className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                  Acciones
+                </span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -126,7 +132,7 @@ export function AutomationsTable({ rules, onEdit, onDelete, onToggleActive }: Au
                     </Badge>
                   </TableCell>
                   <TableCell className="sticky right-0 bg-surface z-10 w-[140px] min-w-[140px] max-w-[140px] shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover">
-                    <div className="flex items-center justify-end gap-1">
+                    <div className="flex items-center justify-center gap-1">
                       <button type="button" aria-label="Editar" onClick={(e) => { e.stopPropagation(); onEdit(rule); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
                         <Icon name="edit" size="sm" />
                       </button>
