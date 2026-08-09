@@ -5,6 +5,7 @@ import { GetInsightsUseCase } from '../application/use-cases/get-insights.use-ca
 import { InsightsService } from '../application/services/insights.service';
 import { InsightDto } from '../application/dtos/insight.dto';
 import { ApiResponse } from '@mymoney/shared';
+import { FinancialHealthScoreDto } from '../application/dtos/health-score.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('insights')
@@ -25,7 +26,7 @@ export class InsightsController {
   @Get('health-score')
   async getHealthScore(
     @Request() req: AuthenticatedRequest,
-  ): Promise<ApiResponse<any>> {
+  ): Promise<ApiResponse<FinancialHealthScoreDto>> {
     const data = await this.insightsService.getHealthScore(req.user.id);
     return { data };
   }

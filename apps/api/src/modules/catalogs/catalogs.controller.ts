@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Req } from '@nestjs/common';
-import { CatalogsService } from './catalogs.service';
+import { CatalogsService, CreateProductServiceDto, UpdateSubscriptionDto } from './catalogs.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
 
@@ -40,10 +40,7 @@ interface CreateSubscriptionDto {
   card_id?: string;
 }
 
-interface CreateProductServiceDto {
-  name: string;
-  category_id: string;
-}
+
 
 // ─── Controller ──────────────────────────────────────────────────────────────
 
@@ -146,7 +143,7 @@ export class CatalogsController {
   }
 
   @Put('subscriptions/:id')
-  updateSubscription(@Req() req: AuthenticatedRequest, @Param('id') id: string, @Body() data: any) {
+  updateSubscription(@Req() req: AuthenticatedRequest, @Param('id') id: string, @Body() data: UpdateSubscriptionDto) {
     return this.catalogsService.updateSubscription(req.user.id, id, data);
   }
 
@@ -161,12 +158,12 @@ export class CatalogsController {
   }
 
   @Post('product-services')
-  createProductService(@Req() req: AuthenticatedRequest, @Body() data: any) {
+  createProductService(@Req() req: AuthenticatedRequest, @Body() data: CreateProductServiceDto) {
     return this.catalogsService.createProductService(req.user.id, data);
   }
 
   @Put('product-services/:id')
-  updateProductService(@Req() req: AuthenticatedRequest, @Param('id') id: string, @Body() data: any) {
+  updateProductService(@Req() req: AuthenticatedRequest, @Param('id') id: string, @Body() data: Partial<CreateProductServiceDto>) {
     return this.catalogsService.updateProductService(req.user.id, id, data);
   }
 

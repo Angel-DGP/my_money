@@ -1,4 +1,3 @@
-import { DomainEvent } from '@mymoney/shared';
 import { Goal } from './goal.entity';
 import { GoalStatus } from './goal-status.enum';
 import { GoalException } from './exceptions/goal.exceptions';

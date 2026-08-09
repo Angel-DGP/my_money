@@ -1,6 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
+export interface CreateProductServiceDto {
+  name: string;
+  category_id: string;
+}
+
+export interface UpdateSubscriptionDto {
+  category_id?: string;
+  card_id?: string;
+  name?: string;
+  amount?: number;
+  currency?: string;
+  billing_cycle?: string;
+  next_billing_date?: string;
+  url?: string;
+}
+
 @Injectable()
 export class CatalogsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -136,24 +152,45 @@ export class CatalogsService {
   }
 
   async createSubscription(userId: string, data: { category_id: string; card_id?: string; name: string; amount: number; currency: string; billing_cycle: string; next_billing_date: string; url?: string }) {
-    const { is_active, ...cleanData } = data as any;
     return this.prisma.subscription.create({
       data: {
-        ...cleanData,
+        category_id: data.category_id,
+        card_id: data.card_id,
+        name: data.name,
+        amount: data.amount,
+        currency: data.currency,
+        billing_cycle: data.billing_cycle,
+        next_billing_date: new Date(data.next_billing_date),
+        url: data.url,
         user_id: userId,
-        next_billing_date: new Date(cleanData.next_billing_date),
       },
     });
   }
 
-  async updateSubscription(userId: string, id: string, data: any) {
-    const { is_active, ...cleanData } = data;
-    if (cleanData.next_billing_date) {
-      cleanData.next_billing_date = new Date(cleanData.next_billing_date);
-    }
+  async updateSubscription(userId: string, id: string, data: UpdateSubscriptionDto) {
+    const updateData: {
+      category_id?: string;
+      card_id?: string | null;
+      name?: string;
+      amount?: number;
+      currency?: string;
+      billing_cycle?: string;
+      next_billing_date?: Date;
+      url?: string | null;
+    } = {};
+
+    if (data.category_id !== undefined) updateData.category_id = data.category_id;
+    if (data.card_id !== undefined) updateData.card_id = data.card_id;
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.amount !== undefined) updateData.amount = data.amount;
+    if (data.currency !== undefined) updateData.currency = data.currency;
+    if (data.billing_cycle !== undefined) updateData.billing_cycle = data.billing_cycle;
+    if (data.next_billing_date !== undefined) updateData.next_billing_date = new Date(data.next_billing_date);
+    if (data.url !== undefined) updateData.url = data.url;
+
     return this.prisma.subscription.update({
       where: { id, user_id: userId },
-      data: cleanData,
+      data: updateData,
     });
   }
 
@@ -172,7 +209,7 @@ export class CatalogsService {
     });
   }
 
-  async createProductService(userId: string, data: any) {
+  async createProductService(userId: string, data: CreateProductServiceDto) {
     const { name, category_id } = data;
     return this.prisma.productService.create({
       data: {
@@ -183,11 +220,14 @@ export class CatalogsService {
     });
   }
 
-  async updateProductService(userId: string, id: string, data: any) {
+  async updateProductService(userId: string, id: string, data: Partial<CreateProductServiceDto>) {
     const { name, category_id } = data;
     return this.prisma.productService.update({
       where: { id, user_id: userId },
-      data: { name, category_id },
+      data: {
+        name,
+        category_id,
+      },
     });
   }
 

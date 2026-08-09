@@ -61,7 +61,7 @@ export function EditBudgetPage() {
               initialData={b}
               isView={isView}
               categories={categoryOptions}
-              onSubmit={handleSubmit as any}
+              onSubmit={handleSubmit as unknown as (data: import('@features/budgets').BudgetFormData) => void}
               onCancel={() => navigate('/budgets')}
               isLoading={updateBudget.isPending}
             />

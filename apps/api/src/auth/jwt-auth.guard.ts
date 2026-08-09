@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  handleRequest<TUser = unknown>(err: Error | null, user: TUser, _info: Error | string | undefined): TUser {
+  handleRequest<TUser = unknown>(err: Error | null, user: TUser): TUser {
     if (err || !user) {
       throw err || new UnauthorizedException('Access token missing or invalid');
     }

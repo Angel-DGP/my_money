@@ -83,9 +83,10 @@ export function CashFlowHistoryChart({ data, className }: CashFlowHistoryChartPr
                   borderRadius: '8px',
                   boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
                 }}
-                formatter={(value: any, _name: any, props: any) => 
-                  formatCurrency(Number(value), props?.payload?.currency || 'USD')
-                }
+                formatter={(value: unknown, _name: unknown, props: unknown) => {
+                  const p = props as { payload?: { currency?: string } };
+                  return formatCurrency(Number(value || 0), p?.payload?.currency || 'USD');
+                }}
               />
               <Legend 
                 wrapperStyle={{ paddingTop: '20px' }} 

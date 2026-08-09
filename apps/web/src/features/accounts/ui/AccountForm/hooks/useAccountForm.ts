@@ -11,7 +11,7 @@ export function useAccountForm(initialData?: Account | null, onSubmitCallback?: 
     resolver: zodResolver(accountSchema),
     defaultValues: {
       name: initialData?.name || '',
-      type: (initialData?.type as any) || 'CHECKING',
+      type: (initialData?.type as AccountFormData['type']) || 'CHECKING',
       currency: initialData?.currency || 'USD',
       initial_balance: initialData?.current_balance.value || '0.00',
       institution_id: initialData?.institution_id || (initialData ? 'none' : ''),

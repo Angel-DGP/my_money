@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { budgetSchema } from './BudgetForm.schema';
 import type { BudgetDto } from '@entities/budget';
 
+import type { UseFormReturn } from 'react-hook-form';
+
 export type BudgetFormData = z.infer<typeof budgetSchema>;
 
 export interface CategoryOption {
@@ -13,13 +15,13 @@ export interface BudgetFormProps {
   initialData?: BudgetDto | null;
   isView?: boolean;
   categories: CategoryOption[];
-  onSubmit: (data: any) => void;
+  onSubmit: (data: BudgetFormData) => void;
   onCancel: () => void;
   isLoading?: boolean | undefined;
 }
 
 export interface BudgetFormFieldsProps {
-  form: any;
+  form: UseFormReturn<BudgetFormData>;
   categories: CategoryOption[];
   isEdit: boolean;
   isView?: boolean;

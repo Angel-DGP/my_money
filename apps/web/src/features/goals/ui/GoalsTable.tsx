@@ -1,4 +1,4 @@
-import { Badge, Icon, GoalProgress, DataTable, type ColumnDef } from '@mymoney/ui';
+import { Badge, Icon, IconName, GoalProgress, DataTable, type ColumnDef } from '@mymoney/ui';
 import type { GoalDto } from '@entities/goal';
 
 interface GoalsTableProps {
@@ -25,7 +25,7 @@ export function GoalsTable({ goals, onView, onEdit, onDelete, onAddProgress }: G
         <div className="flex items-center gap-2">
           {goal.icon && (
             <span className="p-1.5 rounded-full flex shrink-0" style={{ backgroundColor: goal.color ? `${goal.color}20` : '#e2e8f0', color: goal.color || 'inherit' }}>
-              <Icon name={goal.icon as any} size="sm" />
+              <Icon name={goal.icon as IconName} size="sm" />
             </span>
           )}
           <div className="min-w-0">
@@ -118,24 +118,21 @@ export function GoalsTable({ goals, onView, onEdit, onDelete, onAddProgress }: G
       }}
       defaultSort={{ column: 'name', direction: 'asc' }}
       sortFn={(a, b, col, dir) => {
-        let valA: any = '';
-        let valB: any = '';
-
         if (col === 'name') {
-          valA = a.name;
-          valB = b.name;
+          const valA = a.name;
+          const valB = b.name;
+          const cmp = valA.localeCompare(valB);
+          return dir === 'asc' ? cmp : -cmp;
         } else if (col === 'progress_percentage') {
-          valA = a.progress_percentage;
-          valB = b.progress_percentage;
+          const valA = a.progress_percentage;
+          const valB = b.progress_percentage;
           return dir === 'asc' ? valA - valB : valB - valA;
         } else if (col === 'target_date') {
-          valA = a.target_date ? new Date(a.target_date).getTime() : 0;
-          valB = b.target_date ? new Date(b.target_date).getTime() : 0;
+          const valA = a.target_date ? new Date(a.target_date).getTime() : 0;
+          const valB = b.target_date ? new Date(b.target_date).getTime() : 0;
           return dir === 'asc' ? valA - valB : valB - valA;
         }
-
-        const cmp = String(valA).localeCompare(String(valB));
-        return dir === 'asc' ? cmp : -cmp;
+        return 0;
       }}
       onRowClick={onView}
       emptyMessage="No se encontraron metas"

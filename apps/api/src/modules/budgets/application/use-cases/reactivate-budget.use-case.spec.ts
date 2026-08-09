@@ -1,8 +1,7 @@
-import { DomainEvent } from '@mymoney/shared';
 import { ReactivateBudgetUseCase } from './reactivate-budget.use-case';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { BudgetStatus, BudgetPeriod } from '../../domain/budget.entity';
-import { Money, Currency } from '@mymoney/shared';
+import { Money } from '@mymoney/shared';
 
 describe('ReactivateBudgetUseCase', () => {
   let useCase: ReactivateBudgetUseCase;

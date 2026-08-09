@@ -1,7 +1,6 @@
-import { DomainEvent } from '@mymoney/shared';
 import { GetBudgetsUseCase } from './get-budgets.use-case';
 import { BudgetPeriod, BudgetStatus} from '../../domain/budget.entity';
-import { Money, Currency } from '@mymoney/shared';
+import { Money } from '@mymoney/shared';
 
 describe('GetBudgetsUseCase', () => {
   let useCase: GetBudgetsUseCase;

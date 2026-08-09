@@ -14,7 +14,7 @@ const subscriptionSchema = z.object({
   card_id: z.string().optional().nullable(),
 });
 
-type SubscriptionFormData = z.infer<typeof subscriptionSchema>;
+export type SubscriptionFormData = z.infer<typeof subscriptionSchema>;
 
 interface SubscriptionFormProps {
   initialData?: Partial<SubscriptionFormData>;

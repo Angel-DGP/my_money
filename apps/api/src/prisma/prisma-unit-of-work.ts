@@ -11,7 +11,7 @@ export class PrismaUnitOfWork implements IUnitOfWork {
   constructor(private readonly prisma: PrismaService) {}
 
   async execute<T>(work: () => Promise<T>): Promise<T> {
-    return this.prisma.$transaction(async (tx: any) => {
+    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       return prismaTransactionStorage.run(tx, () => {
         return work();
       });

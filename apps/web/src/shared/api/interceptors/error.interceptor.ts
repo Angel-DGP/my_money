@@ -66,7 +66,7 @@ export const errorInterceptor = async (error: AxiosError): Promise<never> => {
   }
 
   const status = error.response.status;
-  const data = error.response.data as any;
+  const data = error.response.data as { message?: string | string[] } | null | undefined;
 
   // Server Error (5xx)
   if (status >= 500) {

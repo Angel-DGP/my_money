@@ -1,4 +1,4 @@
-import { Badge, Icon, Amount, DataTable, type ColumnDef } from '@mymoney/ui';
+import { Badge, Icon, IconName, Amount, DataTable, type ColumnDef } from '@mymoney/ui';
 import type { Transaction } from '@entities/transaction';
 
 interface TransactionsTableProps {
@@ -49,7 +49,7 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
       cell: (t) => (
         <div className="flex items-center gap-2">
           <div className="w-5 h-5 rounded-full flex items-center justify-center bg-surface-hover">
-            <Icon name={(t.account?.icon as any) || 'wallet'} size="xs" className="text-text-secondary" />
+            <Icon name={(t.account?.icon as IconName) || 'wallet'} size="xs" className="text-text-secondary" />
           </div>
           <span className="text-sm text-text-secondary">{t.account?.name || '---'}</span>
         </div>
@@ -61,7 +61,7 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
       cell: (t) => (
         t.category ? (
           <Badge variant="neutral" className="gap-1">
-            {t.category.icon && <Icon name={t.category.icon as any} size="xs" />}
+            {t.category.icon && <Icon name={t.category.icon as IconName} size="xs" />}
             {t.category.name}
           </Badge>
         ) : (

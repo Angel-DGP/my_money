@@ -9,7 +9,7 @@ export function EditProductPage() {
   const { data: products } = useProductServices();
   const updateProduct = useUpdateProductService();
 
-  const product = products?.find((p: any) => p.id === id);
+  const product = products?.find((p) => p.id === id);
 
   if (!product) return null;
 

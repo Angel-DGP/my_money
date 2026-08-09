@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@features/auth';
-import { Button, Icon, cn } from '@mymoney/ui';
+import { Button, Icon, IconName, cn } from '@mymoney/ui';
 import { GlobalSearchWidget } from '@widgets/global-search';
 import { NotificationBell } from '@widgets/notification';
 
@@ -104,7 +104,7 @@ export function MainLayout() {
                     )}
                   >
                     <Icon 
-                      name={item.icon as any} 
+                      name={item.icon as IconName} 
                       size="sm" 
                       className={cn(isItemActive ? "text-primary-600 dark:text-primary-400" : "text-text-secondary")} 
                     />
@@ -123,7 +123,7 @@ export function MainLayout() {
                     )}
                   >
                     <Icon 
-                      name={item.icon as any} 
+                      name={item.icon as IconName} 
                       size="sm" 
                       className={cn(isItemActive ? "text-primary-600 dark:text-primary-400" : "text-text-secondary")} 
                     />

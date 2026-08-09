@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '@mymoney/ui';
 import { useCreateSubscription } from '../../features/catalogs/api/useCatalogs';
-import { SubscriptionForm } from '../../features/catalogs/ui/SubscriptionForm';
+import { SubscriptionForm, SubscriptionFormData } from '../../features/catalogs/ui/SubscriptionForm';
 
 export function NewSubscriptionPage() {
   const navigate = useNavigate();
   const createSubscription = useCreateSubscription();
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: SubscriptionFormData) => {
     // Basic conversion for currency / amounts if needed, for now pass through
     const payload = {
       ...data,

@@ -218,7 +218,7 @@ export function TransactionFormFields({ form, isEdit, isView }: TransactionFormF
             <div className="col-span-12 md:col-span-6 space-y-2">
               <Select id="product_id" label="Comercio / Producto" disabled={isView} error={errors.product_id?.message as string} {...register('product_id')} placeholder="Seleccionar producto...">
                 <option value="none">Ninguno</option>
-                {products.map((p: any) => {
+                {products.map((p) => {
                   const catName = p.category?.name || 'Sin Categoría';
                   return (
                     <option key={p.id} value={p.id}>

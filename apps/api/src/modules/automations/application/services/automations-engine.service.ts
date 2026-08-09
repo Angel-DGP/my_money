@@ -55,10 +55,10 @@ export class AutomationsEngineService {
         // complex check
         if (condition.$eq !== undefined && payloadValue !== condition.$eq) return false;
         if (condition.$ne !== undefined && payloadValue === condition.$ne) return false;
-        if (condition.$gt !== undefined && (payloadValue as any) <= condition.$gt) return false;
-        if (condition.$gte !== undefined && (payloadValue as any) < condition.$gte) return false;
-        if (condition.$lt !== undefined && (payloadValue as any) >= condition.$lt) return false;
-        if (condition.$lte !== undefined && (payloadValue as any) > condition.$lte) return false;
+        if (condition.$gt !== undefined && (payloadValue as number) <= (condition.$gt as number)) return false;
+        if (condition.$gte !== undefined && (payloadValue as number) < (condition.$gte as number)) return false;
+        if (condition.$lt !== undefined && (payloadValue as number) >= (condition.$lt as number)) return false;
+        if (condition.$lte !== undefined && (payloadValue as number) > (condition.$lte as number)) return false;
         if (condition.$in !== undefined && Array.isArray(condition.$in) && !condition.$in.includes(payloadValue)) return false;
       }
       return true;
@@ -68,7 +68,7 @@ export class AutomationsEngineService {
     }
   }
 
-  private async executeAction(rule: AutoRule, payload: TransactionEventPayload) {
+  private async executeAction(rule: AutoRule, _payload: TransactionEventPayload) {
     this.logger.log(`Executing action ${rule.actionType} for rule ${rule.id}`);
     
     switch (rule.actionType) {

@@ -4,7 +4,7 @@ import { goalSchema } from '../GoalForm.schema';
 import type { GoalFormData } from '../GoalForm.types';
 import type { CreateGoalDto, GoalDto } from '@entities/goal';
 
-export function useGoalForm(initialData: GoalDto | null | undefined, onSubmitCallback: (data: any) => void) {
+export function useGoalForm(initialData: GoalDto | null | undefined, onSubmitCallback: (data: CreateGoalDto) => void) {
   const form = useForm<GoalFormData>({
     resolver: zodResolver(goalSchema),
     defaultValues: {

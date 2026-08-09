@@ -34,8 +34,8 @@ export class PrismaTransactionRepository implements ITransactionRepository {
     const data = TransactionMapper.toPersistence(entity);
     await this.prisma.transaction.upsert({
       where: { id: entity.id },
-      create: data as any,
-      update: data as any,
+      create: data as Prisma.TransactionUncheckedCreateInput,
+      update: data as unknown as Prisma.TransactionUncheckedUpdateInput,
     });
   }
 
@@ -76,7 +76,7 @@ export class PrismaTransactionRepository implements ITransactionRepository {
         category: true,
       },
     });
-    return raw.map((r: any) => TransactionMapper.toDomain(r as unknown as RawTransaction));
+    return raw.map(r => TransactionMapper.toDomain(r as unknown as RawTransaction));
   }
 
   async findMany(userId: string, filters: Record<string, unknown>, skip: number, take: number): Promise<[Transaction[], number]> {
@@ -113,6 +113,6 @@ export class PrismaTransactionRepository implements ITransactionRepository {
       this.prisma.transaction.count({ where }),
     ]);
 
-    return [raw.map((r: any) => TransactionMapper.toDomain(r as unknown as RawTransaction)), count];
+    return [raw.map(r => TransactionMapper.toDomain(r as unknown as RawTransaction)), count];
   }
 }

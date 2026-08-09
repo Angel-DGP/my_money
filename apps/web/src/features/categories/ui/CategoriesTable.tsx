@@ -16,17 +16,19 @@ const FILTERS = [
   { label: 'Ingreso', value: 'INCOME' },
 ];
 
+type FlatCategory = Category & { isChild?: boolean; parentName?: string; parentType?: string };
+
 export function CategoriesTable({ categories, onView, onEdit, onDelete }: CategoriesTableProps) {
   // Flatten categories and subcategories
   const flatCategories = React.useMemo(() => {
     if (!Array.isArray(categories)) return [];
-    const flattened: (Category & { isChild?: boolean })[] = [];
+    const flattened: FlatCategory[] = [];
     
     categories.forEach(parent => {
-      flattened.push({ ...parent, isChild: false, parentName: parent.name, parentType: parent.type } as any);
+      flattened.push({ ...parent, isChild: false, parentName: parent.name, parentType: parent.type });
       if (parent.subcategories && parent.subcategories.length > 0) {
         parent.subcategories.forEach(child => {
-          flattened.push({ ...child, isChild: true, parentName: parent.name, parentType: parent.type } as any);
+          flattened.push({ ...child, isChild: true, parentName: parent.name, parentType: parent.type });
         });
       }
     });
@@ -46,16 +48,16 @@ export function CategoriesTable({ categories, onView, onEdit, onDelete }: Catego
     totalPages,
     totalFiltered,
     paginated,
-  } = useTableState<Category & { isChild?: boolean }>({
+  } = useTableState<FlatCategory>({
     data: flatCategories,
     pageSize: 10,
-    searchFields: [(c: any) => c.name, (c: any) => c.isChild && c.parentName ? c.parentName : ''],
+    searchFields: [c => c.name, c => c.isChild && c.parentName ? c.parentName : ''],
     filterField: (c, f) => c.type === f,
-    sortFn: (a: any, b: any, column: string, direction: 'asc' | 'desc' | null) => {
+    sortFn: (a: FlatCategory, b: FlatCategory, column: string, direction: 'asc' | 'desc' | null) => {
       if (!direction) return 0;
       const dirMult = direction === 'asc' ? 1 : -1;
       
-      const getVal = (item: any) => {
+      const getVal = (item: FlatCategory) => {
         if (column === 'name') {
            const rootName = item.isChild ? item.parentName : item.name;
            const childName = item.isChild ? item.name : '';
@@ -67,7 +69,7 @@ export function CategoriesTable({ categories, onView, onEdit, onDelete }: Catego
            const childName = item.isChild ? item.name : '';
            return `${rootType}\0${rootName}\0${childName}`;
         }
-        return String(item[column] ?? '');
+        return String((item as unknown as Record<string, unknown>)[column] ?? '');
       };
 
       return getVal(a).localeCompare(getVal(b)) * dirMult;

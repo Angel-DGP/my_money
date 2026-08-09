@@ -13,7 +13,7 @@ const productSchema = z.object({
 type ProductFormData = z.infer<typeof productSchema>;
 
 interface ProductServiceFormProps {
-  initialData?: any;
+  initialData?: Partial<ProductFormData> | null;
   onSubmit: (data: ProductFormData) => void;
   onCancel: () => void;
   isLoading?: boolean;

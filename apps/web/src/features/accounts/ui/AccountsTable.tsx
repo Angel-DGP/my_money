@@ -1,4 +1,4 @@
-import { DataTable, Icon, Badge, Amount, type ColumnDef } from '@mymoney/ui';
+import { DataTable, Icon, IconName, Badge, Amount, type ColumnDef } from '@mymoney/ui';
 import type { Account } from '@entities/account';
 
 interface AccountsTableProps {
@@ -29,7 +29,7 @@ export function AccountsTable({ accounts, onView, onEdit, onDelete }: AccountsTa
             className="w-8 h-8 rounded-full flex items-center justify-center"
             style={{ backgroundColor: account.color || '#E5E7EB' }}
           >
-            <Icon name={(account.icon as any) || 'wallet'} size="sm" className="text-white mix-blend-difference" />
+            <Icon name={(account.icon as IconName) || 'wallet'} size="sm" className="text-white mix-blend-difference" />
           </div>
           <span className="font-medium text-text-primary">{account.name}</span>
         </div>
@@ -85,8 +85,8 @@ export function AccountsTable({ accounts, onView, onEdit, onDelete }: AccountsTa
           const valB = parseFloat(b.current_balance.value);
           return dir === 'asc' ? valA - valB : valB - valA;
         }
-        const aVal = (a as any)[col];
-        const bVal = (b as any)[col];
+        const aVal = (a as unknown as Record<string, unknown>)[col];
+        const bVal = (b as unknown as Record<string, unknown>)[col];
         const cmp = String(aVal ?? '').localeCompare(String(bVal ?? ''));
         return dir === 'asc' ? cmp : -cmp;
       }}

@@ -44,7 +44,7 @@ export function NewBudgetPage() {
       <PageContainer.Body variant="transparent" className="py-6">
         <BudgetForm
           categories={categoryOptions}
-          onSubmit={handleSubmit as any}
+          onSubmit={handleSubmit as unknown as (data: import('@features/budgets').BudgetFormData) => void}
           onCancel={() => navigate('/budgets')}
           isLoading={createBudget.isPending}
         />

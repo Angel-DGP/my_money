@@ -99,20 +99,17 @@ export function BudgetsTable({ budgets, onView, onEdit, onDelete, categories }: 
       filterField={(b, f) => b.period === f}
       defaultSort={{ column: 'category_name', direction: 'asc' }}
       sortFn={(a, b, col, dir) => {
-        let valA: any = '';
-        let valB: any = '';
-        
         if (col === 'category_name') {
-          valA = categories[a.category_id] || '';
-          valB = categories[b.category_id] || '';
+          const valA = categories[a.category_id] || '';
+          const valB = categories[b.category_id] || '';
+          const cmp = valA.localeCompare(valB);
+          return dir === 'asc' ? cmp : -cmp;
         } else if (col === 'execution_percentage') {
-          valA = a.execution_percentage;
-          valB = b.execution_percentage;
+          const valA = a.execution_percentage;
+          const valB = b.execution_percentage;
           return dir === 'asc' ? valA - valB : valB - valA;
         }
-
-        const cmp = String(valA).localeCompare(String(valB));
-        return dir === 'asc' ? cmp : -cmp;
+        return 0;
       }}
       onRowClick={onView}
       emptyMessage="No se encontraron presupuestos"

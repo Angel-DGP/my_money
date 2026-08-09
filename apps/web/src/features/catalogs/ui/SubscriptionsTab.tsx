@@ -99,24 +99,21 @@ export function SubscriptionsTab() {
                 searchPlaceholder="Buscar suscripción..."
                 defaultSort={{ column: 'name', direction: 'asc' }}
                 sortFn={(a, b, col, dir) => {
-                  let valA: any = '';
-                  let valB: any = '';
-
                   if (col === 'name') {
-                    valA = a.name;
-                    valB = b.name;
+                    const valA = a.name;
+                    const valB = b.name;
+                    const cmp = valA.localeCompare(valB);
+                    return dir === 'asc' ? cmp : -cmp;
                   } else if (col === 'amount') {
-                    valA = Number(a.amount);
-                    valB = Number(b.amount);
+                    const valA = Number(a.amount);
+                    const valB = Number(b.amount);
                     return dir === 'asc' ? valA - valB : valB - valA;
                   } else if (col === 'next_billing_date') {
-                    valA = new Date(a.next_billing_date).getTime();
-                    valB = new Date(b.next_billing_date).getTime();
+                    const valA = new Date(a.next_billing_date).getTime();
+                    const valB = new Date(b.next_billing_date).getTime();
                     return dir === 'asc' ? valA - valB : valB - valA;
                   }
-
-                  const cmp = String(valA).localeCompare(String(valB));
-                  return dir === 'asc' ? cmp : -cmp;
+                  return 0;
                 }}
                 onRowClick={(sub) => navigate(`/catalogs/subscriptions/${sub.id}/edit`, { state: { isView: true } })}
                 emptyMessage="No tienes suscripciones registradas."

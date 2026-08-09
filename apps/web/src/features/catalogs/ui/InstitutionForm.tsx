@@ -24,7 +24,7 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading, initialData, is
     resolver: zodResolver(institutionSchema),
     defaultValues: {
       name: initialData?.name || '',
-      type: (initialData?.type as any) || 'BANK',
+      type: (initialData?.type as InstitutionFormData['type']) || 'BANK',
     },
   });
 

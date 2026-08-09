@@ -1,6 +1,5 @@
-import { DomainEvent } from '@mymoney/shared';
 import { UpdateBudgetUseCase } from './update-budget.use-case';
-import { Money, Currency } from '@mymoney/shared';
+import { Money } from '@mymoney/shared';
 import { NotFoundException } from '@nestjs/common';
 import { BudgetStatus, BudgetPeriod } from '../../domain/budget.entity';
 

@@ -83,7 +83,7 @@ export function SpendingByCategoryChart({ data, className }: SpendingByCategoryC
                   borderRadius: '8px',
                   boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
                 }}
-                formatter={(value: any) => formatCurrency(Number(value), chartData[0]?.currency || 'USD')}
+                formatter={(value: unknown) => formatCurrency(Number(value || 0), chartData[0]?.currency || 'USD')}
               />
               <Legend 
                 layout="vertical" 

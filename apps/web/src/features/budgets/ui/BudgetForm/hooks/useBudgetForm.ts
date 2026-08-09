@@ -63,6 +63,6 @@ export function useBudgetForm(initialData?: BudgetDto | null, onSubmitCallback?:
   return {
     form,
     isEdit,
-    onSubmit: form.handleSubmit(onSubmit as any),
+    onSubmit: form.handleSubmit(onSubmit),
   };
 }

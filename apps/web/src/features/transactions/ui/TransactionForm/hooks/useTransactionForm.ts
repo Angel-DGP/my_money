@@ -22,7 +22,7 @@ export function useTransactionForm(initialData?: Transaction) {
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       type: (initialData?.type as 'INCOME' | 'EXPENSE' | 'TRANSFER') || 'EXPENSE',
-      amount: initialData ? parseFloat(initialData.amount.value) : ('' as any),
+      amount: initialData ? parseFloat(initialData.amount.value) : ('' as unknown as number),
       description: initialData?.description || '',
       note: initialData?.third_party_note || '',
       date: initialData?.date ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],

@@ -1,4 +1,3 @@
-import { DomainEvent } from '@mymoney/shared';
 import { DeactivateBudgetUseCase } from './deactivate-budget.use-case';
 import { BudgetNotActiveException } from '../../domain/exceptions/budget.exceptions';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';

@@ -64,7 +64,7 @@ export function AccountFormFields({ form, isEdit, isView, isLoading }: AccountFo
               placeholder="Seleccionar institución..."
             >
               <option value="none">Ninguna</option>
-              {institutions?.map((i: any) => (
+              {institutions?.map((i) => (
                 <option key={i.id} value={i.id}>{i.name}</option>
               ))}
             </Select>

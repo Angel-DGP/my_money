@@ -22,14 +22,14 @@ export class AuthService {
 
     // For demo MVP: if password is 'demo' and db has 'demo', we allow it
     if (user.password_hash === 'demo' && pass === 'demo') {
-      const { password_hash, ...result } = user;
+      const { password_hash: _password_hash, ...result } = user;
       return result;
     }
 
     // Real password check
     const isMatch = await bcrypt.compare(pass, user.password_hash);
     if (isMatch) {
-      const { password_hash, ...result } = user;
+      const { password_hash: _password_hash, ...result } = user;
       return result;
     }
     return null;

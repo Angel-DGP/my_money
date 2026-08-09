@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { prismaTransactionStorage } from '../../../prisma/prisma-unit-of-work';
-import { Money } from '@mymoney/shared';
+import { Money, Currency } from '@mymoney/shared';
 import { IGoalRepository } from '../domain/goal.repository.interface';
 import { Goal } from '../domain/goal.entity';
 import { GoalStatus } from '../domain/goal-status.enum';
@@ -10,8 +10,8 @@ interface RawGoal {
   id: string;
   user_id: string;
   name: string;
-  target_amount: any;
-  current_amount: any;
+  target_amount: unknown;
+  current_amount: unknown;
   currency: string;
   target_date: Date | null;
   status: string;
@@ -96,8 +96,8 @@ export class PrismaGoalRepository implements IGoalRepository {
       id: record.id,
       userId: record.user_id,
       name: record.name,
-      targetAmount: Money.of(record.target_amount.toString(), record.currency as any),
-      currentAmount: Money.of(record.current_amount.toString(), record.currency as any),
+      targetAmount: Money.of(String(record.target_amount), record.currency as Currency),
+      currentAmount: Money.of(String(record.current_amount), record.currency as Currency),
       targetDate: record.target_date,
       status: record.status as GoalStatus,
       description: record.description,

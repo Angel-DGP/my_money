@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { MonthlyFlowResponseDto } from '../dtos/monthly-flow.dto';
+import { Transaction } from '@mymoney/db';
 
 @Injectable()
 export class GetMonthlyFlowUseCase {
@@ -32,7 +33,7 @@ export class GetMonthlyFlowUseCase {
       })
     ]);
 
-    const aggregateFlow = (transactions: Array<any>, monthLabel: string) => {
+    const aggregateFlow = (transactions: Transaction[], monthLabel: string) => {
       const flowByCurrency: Record<string, { income: number, expense: number }> = {};
       
       for (const tx of transactions) {

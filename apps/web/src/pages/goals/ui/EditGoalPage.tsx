@@ -57,7 +57,7 @@ export function EditGoalPage() {
             <GoalForm
               initialData={g}
               isView={isView}
-              onSubmit={handleSubmit as any}
+              onSubmit={handleSubmit as unknown as (data: import('@features/goals').GoalFormData) => void}
               onCancel={() => navigate('/goals')}
               isLoading={updateGoal.isPending}
             />
