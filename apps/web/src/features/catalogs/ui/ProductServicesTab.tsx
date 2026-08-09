@@ -36,13 +36,13 @@ export function ProductServicesTab() {
       sticky: 'right',
       cell: (prod) => (
         <div className="flex items-center justify-center gap-1">
-          <button type="button" onClick={() => navigate(`/catalogs/products/${prod.id}/edit`, { state: { isView: true } })} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+          <button type="button" onClick={(e) => { e.stopPropagation(); navigate(`/catalogs/products/${prod.id}/edit`, { state: { isView: true } }); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
             <Icon name="eye" size="sm" />
           </button>
-          <button type="button" onClick={() => navigate(`/catalogs/products/${prod.id}/edit`)} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+          <button type="button" onClick={(e) => { e.stopPropagation(); navigate(`/catalogs/products/${prod.id}/edit`); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
             <Icon name="edit" size="sm" />
           </button>
-          <button type="button" onClick={() => setProductToDelete(prod.id)} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
+          <button type="button" onClick={(e) => { e.stopPropagation(); setProductToDelete(prod.id); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
             <Icon name="trash" size="sm" />
           </button>
         </div>
