@@ -4,7 +4,7 @@ import { useCategoriesQuery, type Category } from '@entities/category';
 import { useCards, useSubscriptions, useProductServices } from '../../../catalogs/api/useCatalogs';
 import type { TransactionFormFieldsProps } from './TransactionForm.types';
 
-export function TransactionFormFields({ form, isEdit }: TransactionFormFieldsProps) {
+export function TransactionFormFields({ form, isEdit, isView }: TransactionFormFieldsProps) {
   const { register, watch, setValue, formState: { errors } } = form;
   
   const { data: accounts = [] } = useAccountsQuery();
