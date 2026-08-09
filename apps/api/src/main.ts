@@ -14,8 +14,12 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
   
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : ['http://localhost:5173'];
+
   app.enableCors({
-    origin: ['http://localhost:5173'], // Vite default port
+    origin: allowedOrigins,
     credentials: true,
   });
 
