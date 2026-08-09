@@ -15,7 +15,7 @@ export function EditCardTypePage() {
     if (!id) return;
     updateType.mutate({ id, data }, {
       onSuccess: () => {
-        navigate('/catalogs');
+        navigate('/catalogs/cards');
       }
     });
   };
@@ -23,7 +23,7 @@ export function EditCardTypePage() {
   if (isLoading) {
     return (
       <PageContainer>
-        <PageContainer.Header title="Cargando..." backTo={() => navigate('/catalogs')} />
+        <PageContainer.Header title="Cargando..." backTo={() => navigate('/catalogs/cards')} />
       </PageContainer>
     );
   }
@@ -31,7 +31,7 @@ export function EditCardTypePage() {
   if (!typeToEdit) {
     return (
       <PageContainer>
-        <PageContainer.Header title="Tipo no encontrado" backTo={() => navigate('/catalogs')} />
+        <PageContainer.Header title="Tipo no encontrado" backTo={() => navigate('/catalogs/cards')} />
       </PageContainer>
     );
   }
@@ -41,13 +41,13 @@ export function EditCardTypePage() {
       <PageContainer.Header
         title="Editar Tipo de Tarjeta"
         description="Modifica el nombre del tipo de tarjeta."
-        backTo={() => navigate('/catalogs')}
+        backTo={() => navigate('/catalogs/cards')}
       />
       <PageContainer.Body variant="transparent" className="py-6">
         <CardTypeForm
           initialData={typeToEdit}
           onSubmit={handleSubmit}
-          onCancel={() => navigate('/catalogs')}
+          onCancel={() => navigate('/catalogs/cards')}
           isLoading={updateType.isPending}
         />
       </PageContainer.Body>

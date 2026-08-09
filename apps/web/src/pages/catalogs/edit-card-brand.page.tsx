@@ -15,7 +15,7 @@ export function EditCardBrandPage() {
     if (!id) return;
     updateBrand.mutate({ id, data }, {
       onSuccess: () => {
-        navigate('/catalogs');
+        navigate('/catalogs/cards');
       }
     });
   };
@@ -23,7 +23,7 @@ export function EditCardBrandPage() {
   if (isLoading) {
     return (
       <PageContainer>
-        <PageContainer.Header title="Cargando..." backTo={() => navigate('/catalogs')} />
+        <PageContainer.Header title="Cargando..." backTo={() => navigate('/catalogs/cards')} />
       </PageContainer>
     );
   }
@@ -31,7 +31,7 @@ export function EditCardBrandPage() {
   if (!brandToEdit) {
     return (
       <PageContainer>
-        <PageContainer.Header title="Marca no encontrada" backTo={() => navigate('/catalogs')} />
+        <PageContainer.Header title="Marca no encontrada" backTo={() => navigate('/catalogs/cards')} />
       </PageContainer>
     );
   }
@@ -41,13 +41,13 @@ export function EditCardBrandPage() {
       <PageContainer.Header
         title="Editar Marca de Tarjeta"
         description="Modifica el nombre de la red o marca de tarjeta."
-        backTo={() => navigate('/catalogs')}
+        backTo={() => navigate('/catalogs/cards')}
       />
       <PageContainer.Body variant="transparent" className="py-6">
         <CardBrandForm
           initialData={brandToEdit}
           onSubmit={handleSubmit}
-          onCancel={() => navigate('/catalogs')}
+          onCancel={() => navigate('/catalogs/cards')}
           isLoading={updateBrand.isPending}
         />
       </PageContainer.Body>
