@@ -37,15 +37,13 @@ export function DashboardPage() {
         description="Este es el resumen inteligente de tus finanzas"
       />
       <PageContainer.Body variant="transparent">
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-6">
+        {/* Row 1: Quick Actions */}
         <QuickActionsWidget />
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        {/* Left Column - 8 cols */}
-        <div className="xl:col-span-8 space-y-6">
-          
-          {/* Top Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Row 2: Stats (2/3) + Financial Health (1/3) */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             <StatCard
               title="Saldo Disponible"
               value={formatCurrency(availableBalance, currency)}
@@ -59,25 +57,36 @@ export function DashboardPage() {
               icon={currentMonthIncome > currentMonthExpense ? 'arrow-up-right' : 'arrow-down-left'}
             />
           </div>
-
-          {/* Charts */}
-          {monthlyFlow && <MonthlyFlowChart data={monthlyFlow} />}
-
-          {/* Legacy components below charts */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <AccountsSummaryWidget />
-            <RecentTransactionsWidget />
+          <div className="xl:col-span-4">
+            {healthScore && <FinancialHealthWidget data={healthScore} />}
           </div>
         </div>
 
-        {/* Right Column - 4 cols */}
-        <div className="xl:col-span-4 space-y-6">
-          {healthScore && <FinancialHealthWidget data={healthScore} />}
-          <UpcomingSubscriptionsWidget />
-          {insights && <InsightsWidget insights={insights} className="min-h-[300px]" />}
-          <ActiveBudgetsWidget />
-          <ActiveGoalsWidget />
+        {/* Row 3: Monthly Flow Chart (2/3) + Insights (1/3) */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <div className="xl:col-span-8">
+            {monthlyFlow && <MonthlyFlowChart data={monthlyFlow} />}
+          </div>
+          <div className="xl:col-span-4 flex flex-col">
+            {insights && <InsightsWidget insights={insights} className="flex-1 min-h-[300px]" />}
+          </div>
         </div>
+
+        {/* Row 4: Summary Cards (1/3 each) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <AccountsSummaryWidget />
+          <UpcomingSubscriptionsWidget />
+          <ActiveBudgetsWidget />
+        </div>
+
+        {/* Row 5: Lists (2/3 Transactions + 1/3 Goals) */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <div className="xl:col-span-8">
+            <RecentTransactionsWidget />
+          </div>
+          <div className="xl:col-span-4">
+            <ActiveGoalsWidget />
+          </div>
         </div>
       </div>
       </PageContainer.Body>

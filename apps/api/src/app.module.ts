@@ -17,6 +17,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { InsightsModule } from './modules/insights/insights.module';
 import { AutomationsModule } from './modules/automations/automations.module';
 import { CatalogsModule } from './modules/catalogs/catalogs.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { CatalogsModule } from './modules/catalogs/catalogs.module';
     InsightsModule,
     AutomationsModule,
     CatalogsModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

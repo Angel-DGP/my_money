@@ -12,6 +12,7 @@ import { TransactionsPage, NewTransactionPage, EditTransactionPage } from '@page
 import { BudgetsPage, NewBudgetPage, EditBudgetPage } from '@pages/budgets';
 import { GoalsPage, NewGoalPage, EditGoalPage } from '@pages/goals';
 import { DashboardPage } from '@pages/dashboard';
+import { AnalyticsPage } from '@pages/analytics';
 import { AutomationsPage, CreateAutomationPage, EditAutomationPage } from '@pages/automations';
 import { UIKitPage } from '@pages/ui-kit';
 import { SettingsPage } from '@pages/settings';
@@ -122,6 +123,10 @@ export const routes: RouteObject[] = [
               {
                 path: '/goals/:id/edit',
                 element: <EditGoalPage />,
+              },
+              {
+                path: '/analytics',
+                element: <AnalyticsPage />,
               },
               {
                 path: '/automations',
