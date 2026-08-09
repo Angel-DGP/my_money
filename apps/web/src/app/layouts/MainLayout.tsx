@@ -24,8 +24,7 @@ const NAV_ITEMS = [
       { path: '/catalogs/subscriptions', label: 'Suscripciones' },
       { path: '/catalogs/products', label: 'Compras Frecuentes' },
     ]
-  },
-  { path: '/ui-kit', label: 'Interfaz (UI Kit)', icon: 'palette' as const },
+  }
 ];
 
 export function MainLayout() {
@@ -33,6 +32,7 @@ export function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
   const handleLogout = () => {
     logout();
@@ -44,6 +44,10 @@ export function MainLayout() {
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
     return location.pathname.startsWith(path);
+  };
+
+  const toggleExpand = (path: string) => {
+    setExpandedItems(prev => ({ ...prev, [path]: !prev[path] }));
   };
 
   return (
@@ -85,31 +89,49 @@ export function MainLayout() {
         <div className="flex-1 overflow-y-auto custom-scrollbar py-4 px-3 flex flex-col gap-1">
           {NAV_ITEMS.map((item) => {
             const isItemActive = isActive(item.path);
+            const isExpanded = isItemActive || expandedItems[item.path];
             
             return (
               <div key={item.path} className="flex flex-col gap-1">
-                <Link
-                  to={item.path}
-                  onClick={!item.subItems ? closeMobileMenu : undefined}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors w-full",
-                    isItemActive
-                      ? "bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400"
-                      : "text-text-secondary hover:text-text-primary hover:bg-surface"
-                  )}
-                >
-                  <Icon 
-                    name={item.icon as any} 
-                    size="sm" 
-                    className={cn(isItemActive ? "text-primary-600 dark:text-primary-400" : "text-text-secondary")} 
-                  />
-                  <span className="flex-1 text-left">{item.label}</span>
-                  {item.subItems && (
-                    <Icon name={isItemActive ? 'chevron-down' : 'chevron-right'} size="sm" className="opacity-50" />
-                  )}
-                </Link>
+                {item.subItems ? (
+                  <button
+                    onClick={() => toggleExpand(item.path)}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors w-full",
+                      isItemActive
+                        ? "bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400"
+                        : "text-text-secondary hover:text-text-primary hover:bg-surface"
+                    )}
+                  >
+                    <Icon 
+                      name={item.icon as any} 
+                      size="sm" 
+                      className={cn(isItemActive ? "text-primary-600 dark:text-primary-400" : "text-text-secondary")} 
+                    />
+                    <span className="flex-1 text-left">{item.label}</span>
+                    <Icon name={isExpanded ? 'chevron-down' : 'chevron-right'} size="sm" className="opacity-50 transition-transform" />
+                  </button>
+                ) : (
+                  <Link
+                    to={item.path}
+                    onClick={closeMobileMenu}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors w-full",
+                      isItemActive
+                        ? "bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400"
+                        : "text-text-secondary hover:text-text-primary hover:bg-surface"
+                    )}
+                  >
+                    <Icon 
+                      name={item.icon as any} 
+                      size="sm" 
+                      className={cn(isItemActive ? "text-primary-600 dark:text-primary-400" : "text-text-secondary")} 
+                    />
+                    <span className="flex-1 text-left">{item.label}</span>
+                  </Link>
+                )}
 
-                {item.subItems && isItemActive && (
+                {item.subItems && isExpanded && (
                   <div className="flex flex-col gap-1 pl-9 pr-2 py-1 animate-in slide-in-from-top-2 duration-200">
                     {item.subItems.map((subItem) => {
                       const isSubActive = location.pathname === subItem.path || location.pathname.startsWith(`${subItem.path}/`);
