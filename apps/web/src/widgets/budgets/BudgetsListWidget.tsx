@@ -27,7 +27,7 @@ export function BudgetsListWidget() {
     return acc;
   }, {} as Record<string, string>);
 
-  const categoryOptions = categoriesList.map((c) => ({ id: c.id, name: c.name }));
+
 
   const handleOpenCreate = () => {
     navigate('/budgets/new');

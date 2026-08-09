@@ -11,7 +11,7 @@ export function TransactionForm({ initialData, isView }: TransactionFormProps) {
 
   return (
     <FormLayout id="transactionform-form" onSubmit={onSubmit}>
-      <TransactionFormFields form={form} isEdit={isEdit} isView={isView} />
+      <TransactionFormFields form={form} isEdit={isEdit} isView={!!isView} />
 
       <PageContainer.Footer className="col-span-12">
         {isEdit && !isView && (

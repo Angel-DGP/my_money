@@ -8,7 +8,7 @@ export function AccountForm({ initialData, isView, onSubmit: onSubmitCallback, o
 
   return (
     <FormLayout id="accountform-form" onSubmit={onSubmit}>
-      <AccountFormFields form={form} isEdit={isEdit} isView={isView} isLoading={isLoading} />
+      <AccountFormFields form={form} isEdit={isEdit} isView={!!isView} isLoading={isLoading} />
 
       <PageContainer.Footer className="col-span-12">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>

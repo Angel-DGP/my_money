@@ -1,4 +1,4 @@
-import { Badge, Button, Icon, BudgetProgress, DataTable, type ColumnDef } from '@mymoney/ui';
+import { Badge, Icon, BudgetProgress, DataTable, type ColumnDef } from '@mymoney/ui';
 import type { BudgetDto } from '@entities/budget';
 
 interface BudgetsTableProps {

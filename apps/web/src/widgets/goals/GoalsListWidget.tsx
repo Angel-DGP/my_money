@@ -6,7 +6,7 @@ import {
   useDeleteGoal, 
   useAddGoalProgress 
 } from '@entities/goal';
-import type { GoalDto, CreateGoalDto, AddGoalProgressDto } from '@entities/goal';
+import type { GoalDto, AddGoalProgressDto } from '@entities/goal';
 import { GoalsTable } from '@features/goals';
 import { AddProgressForm } from '@features/goals';
 import { QueryState } from '@shared/ui/QueryState';

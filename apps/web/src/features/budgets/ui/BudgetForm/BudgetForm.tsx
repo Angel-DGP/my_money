@@ -8,7 +8,7 @@ export function BudgetForm({ initialData, isView, categories, onSubmit: onSubmit
 
   return (
     <FormLayout id="budgetform-form" onSubmit={onSubmit}>
-      <BudgetFormFields form={form} categories={categories} isEdit={isEdit} isView={isView} isLoading={isLoading} />
+      <BudgetFormFields form={form} categories={categories} isEdit={isEdit} isView={!!isView} isLoading={isLoading} />
 
       <PageContainer.Footer className="col-span-12">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>

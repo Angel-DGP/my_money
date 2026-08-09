@@ -2,14 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast, PageContainer } from '@mymoney/ui';
 import { GoalForm } from '@features/goals';
 import { useCreateGoal } from '@entities/goal';
-import type { CreateGoalDto } from '@entities/goal';
+import type { CreateGoalDto, UpdateGoalDto } from '@entities/goal';
 
 export function NewGoalPage() {
   const navigate = useNavigate();
   const createGoal = useCreateGoal();
 
-  const handleSubmit = (data: CreateGoalDto) => {
-    createGoal.mutate(data, {
+  const handleSubmit = (data: CreateGoalDto | UpdateGoalDto) => {
+    createGoal.mutate(data as CreateGoalDto, {
       onSuccess: () => {
         toast({
           title: 'Meta creada',

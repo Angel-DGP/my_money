@@ -124,7 +124,7 @@ export function CategoryForm({ initialData, isView, onSubmit, onCancel, isLoadin
           </div>
         </div>
         <div className="w-full">
-          <IconPicker value={icon} onChange={setIcon} disabled={isView} />
+          <IconPicker value={icon} onChange={setIcon} disabled={!!isView} />
         </div>
       </div>
 

@@ -6,13 +6,14 @@ export interface IconPickerProps {
   value: IconName;
   onChange: (value: IconName) => void;
   className?: string;
+  disabled?: boolean;
 }
 
 const iconsList = Object.keys(iconRegistry) as IconName[];
 
-export function IconPicker({ value, onChange, className }: IconPickerProps) {
+export function IconPicker({ value, onChange, className, disabled = false }: IconPickerProps) {
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn("w-full", disabled && "opacity-60 pointer-events-none", className)}>
       <Command className="w-full h-[280px] rounded-xl border border-border-subtle bg-surface shadow-sm overflow-hidden">
         <CommandInput placeholder="Buscar icono..." className="h-10 text-sm border-none ring-0 outline-none" />
         <CommandList className="max-h-[240px] overflow-y-auto p-2 scrollbar-thin">

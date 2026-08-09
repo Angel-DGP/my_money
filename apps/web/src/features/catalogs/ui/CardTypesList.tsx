@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useCardTypes, useDeleteCardType } from '../api/useCatalogs';
-import { Button, Icon, DataTable, type ColumnDef, AlertDialog } from '@mymoney/ui';
+import { Icon, DataTable, type ColumnDef, AlertDialog } from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
 import { useNavigate } from 'react-router-dom';
 import type { CardTypeDto } from '../../../shared/api/dto/catalogs.dto';

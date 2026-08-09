@@ -8,7 +8,7 @@ export function GoalForm({ initialData, isView, onSubmit: onSubmitCallback, onCa
 
   return (
     <FormLayout id="goalform-form" onSubmit={onSubmit}>
-      <GoalFormFields form={form} isView={isView} isLoading={isLoading} />
+      <GoalFormFields form={form} isView={!!isView} isLoading={isLoading} />
 
       <PageContainer.Footer className="col-span-12">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>

@@ -42,3 +42,5 @@ export interface AddGoalProgressDto {
   amount: number;
   currency: string;
 }
+
+export interface UpdateGoalDto extends Partial<CreateGoalDto> {}
