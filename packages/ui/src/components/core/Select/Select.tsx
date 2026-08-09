@@ -66,7 +66,12 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             tabIndex={-1}
             aria-hidden="true"
           >
-            {children}
+            <option value="" disabled hidden>Seleccionar...</option>
+            {select.options.map(opt => (
+              <option key={opt.value} value={opt.value} disabled={opt.disabled}>
+                {typeof opt.label === 'string' || typeof opt.label === 'number' ? opt.label : opt.value}
+              </option>
+            ))}
           </select>
 
           <div className="relative">
