@@ -4,7 +4,7 @@ import { GoalForm } from '@features/goals';
 import { useUpdateGoal, useGoalsQuery } from '@entities/goal';
 import { QueryState } from '@shared/ui/QueryState';
 
-import type { UpdateGoalDto } from '@entities/goal';
+import type { CreateGoalDto, UpdateGoalDto } from '@entities/goal';
 
 export function EditGoalPage() {
   const { id } = useParams<{ id: string }>();
@@ -17,9 +17,9 @@ export function EditGoalPage() {
 
   const goal = goals?.find(g => g.id === id);
 
-  const handleSubmit = (data: UpdateGoalDto) => {
+  const handleSubmit = (data: CreateGoalDto | UpdateGoalDto) => {
     if (!id) return;
-    updateGoal.mutate({ id, data }, {
+    updateGoal.mutate({ id, data: data as UpdateGoalDto }, {
       onSuccess: () => {
         toast({
           title: 'Meta actualizada',
@@ -57,7 +57,7 @@ export function EditGoalPage() {
             <GoalForm
               initialData={g}
               isView={isView}
-              onSubmit={handleSubmit as unknown as (data: import('@features/goals').GoalFormData) => void}
+              onSubmit={handleSubmit}
               onCancel={() => navigate('/goals')}
               isLoading={updateGoal.isPending}
             />

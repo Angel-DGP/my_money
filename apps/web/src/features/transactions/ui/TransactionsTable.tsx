@@ -1,4 +1,4 @@
-import { Badge, Icon, IconName, Amount, DataTable, type ColumnDef } from '@mymoney/ui';
+import { Badge, Icon, type IconName, Amount, DataTable, type ColumnDef } from '@mymoney/ui';
 import type { Transaction } from '@entities/transaction';
 
 interface TransactionsTableProps {

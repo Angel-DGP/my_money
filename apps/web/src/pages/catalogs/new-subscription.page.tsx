@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '@mymoney/ui';
 import { useCreateSubscription } from '../../features/catalogs/api/useCatalogs';
-import { SubscriptionForm, SubscriptionFormData } from '../../features/catalogs/ui/SubscriptionForm';
+import { SubscriptionForm, type SubscriptionFormData } from '../../features/catalogs/ui/SubscriptionForm';
 
 export function NewSubscriptionPage() {
   const navigate = useNavigate();

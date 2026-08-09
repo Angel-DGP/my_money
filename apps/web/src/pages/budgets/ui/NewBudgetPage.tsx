@@ -4,7 +4,7 @@ import { BudgetForm } from '@features/budgets';
 import { useCreateBudget } from '@entities/budget';
 import { useCategoriesQuery } from '@entities/category';
 
-import type { CreateBudgetDto } from '@entities/budget';
+import type { CreateBudgetDto, UpdateBudgetDto } from '@entities/budget';
 
 export function NewBudgetPage() {
   const navigate = useNavigate();
@@ -13,8 +13,8 @@ export function NewBudgetPage() {
 
   const categoryOptions = categories.map((c) => ({ id: c.id, name: c.name }));
 
-  const handleSubmit = (data: CreateBudgetDto) => {
-    createBudget.mutate(data, {
+  const handleSubmit = (data: CreateBudgetDto | UpdateBudgetDto) => {
+    createBudget.mutate(data as CreateBudgetDto, {
       onSuccess: () => {
         toast({
           title: 'Presupuesto creado',
@@ -44,7 +44,7 @@ export function NewBudgetPage() {
       <PageContainer.Body variant="transparent" className="py-6">
         <BudgetForm
           categories={categoryOptions}
-          onSubmit={handleSubmit as unknown as (data: import('@features/budgets').BudgetFormData) => void}
+          onSubmit={handleSubmit}
           onCancel={() => navigate('/budgets')}
           isLoading={createBudget.isPending}
         />

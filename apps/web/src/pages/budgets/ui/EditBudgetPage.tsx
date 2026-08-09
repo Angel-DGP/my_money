@@ -5,7 +5,7 @@ import { useUpdateBudget, useBudgetsQuery } from '@entities/budget';
 import { useCategoriesQuery } from '@entities/category';
 import { QueryState } from '@shared/ui/QueryState';
 
-import type { UpdateBudgetDto } from '@entities/budget';
+import type { CreateBudgetDto, UpdateBudgetDto } from '@entities/budget';
 
 export function EditBudgetPage() {
   const { id } = useParams<{ id: string }>();
@@ -20,9 +20,9 @@ export function EditBudgetPage() {
   const budget = budgets?.find(b => b.id === id);
   const categoryOptions = categories.map((c) => ({ id: c.id, name: c.name }));
 
-  const handleSubmit = (data: UpdateBudgetDto) => {
+  const handleSubmit = (data: CreateBudgetDto | UpdateBudgetDto) => {
     if (!id) return;
-    updateBudget.mutate({ id, data }, {
+    updateBudget.mutate({ id, data: data as UpdateBudgetDto }, {
       onSuccess: () => {
         toast({
           title: 'Presupuesto actualizado',
@@ -61,7 +61,7 @@ export function EditBudgetPage() {
               initialData={b}
               isView={isView}
               categories={categoryOptions}
-              onSubmit={handleSubmit as unknown as (data: import('@features/budgets').BudgetFormData) => void}
+              onSubmit={handleSubmit}
               onCancel={() => navigate('/budgets')}
               isLoading={updateBudget.isPending}
             />

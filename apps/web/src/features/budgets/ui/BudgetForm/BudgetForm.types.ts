@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { budgetSchema } from './BudgetForm.schema';
-import type { BudgetDto } from '@entities/budget';
+import type { BudgetDto, CreateBudgetDto, UpdateBudgetDto } from '@entities/budget';
 
 import type { UseFormReturn } from 'react-hook-form';
 
@@ -15,7 +15,7 @@ export interface BudgetFormProps {
   initialData?: BudgetDto | null;
   isView?: boolean;
   categories: CategoryOption[];
-  onSubmit: (data: BudgetFormData) => void;
+  onSubmit: (data: CreateBudgetDto | UpdateBudgetDto) => void;
   onCancel: () => void;
   isLoading?: boolean | undefined;
 }

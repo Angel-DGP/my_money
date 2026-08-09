@@ -1,4 +1,4 @@
-import { Badge, Icon, IconName, GoalProgress, DataTable, type ColumnDef } from '@mymoney/ui';
+import { Badge, Icon, type IconName, GoalProgress, DataTable, type ColumnDef } from '@mymoney/ui';
 import type { GoalDto } from '@entities/goal';
 
 interface GoalsTableProps {

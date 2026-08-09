@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@features/auth';
-import { Button, Icon, IconName, cn } from '@mymoney/ui';
+import { Button, Icon, type IconName, cn } from '@mymoney/ui';
 import { GlobalSearchWidget } from '@widgets/global-search';
 import { NotificationBell } from '@widgets/notification';
 

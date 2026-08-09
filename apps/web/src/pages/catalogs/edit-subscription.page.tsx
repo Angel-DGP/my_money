@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageContainer } from '@mymoney/ui';
-import { SubscriptionForm, SubscriptionFormData } from '../../features/catalogs/ui/SubscriptionForm';
+import { SubscriptionForm, type SubscriptionFormData } from '../../features/catalogs/ui/SubscriptionForm';
 import { useSubscriptions, useUpdateSubscription } from '../../features/catalogs/api/useCatalogs';
 
 export function EditSubscriptionPage() {
@@ -57,8 +57,8 @@ export function EditSubscriptionPage() {
   const initialData: SubscriptionFormData = {
     name: subscription.name,
     amount: Number(subscription.amount),
-    category_id: subscription.category_id,
-    next_billing_date: subscription.next_billing_date ? new Date(subscription.next_billing_date).toISOString().split('T')[0] : '',
+    category_id: subscription.category_id || '',
+    next_billing_date: subscription.next_billing_date ? (new Date(subscription.next_billing_date).toISOString().split('T')[0] || '') : '',
     billing_cycle: subscription.billing_cycle as 'MONTHLY' | 'YEARLY',
     card_id: subscription.card_id,
   };
