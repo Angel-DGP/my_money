@@ -74,7 +74,7 @@ export const RegisterPage = () => {
           </div>
           
           <FormLayout className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-1.5">
+            <div className="col-span-12 space-y-1.5">
               <Label htmlFor="name">Nombre completo</Label>
               <Input 
                 id="name" 
@@ -86,7 +86,7 @@ export const RegisterPage = () => {
               />
             </div>
 
-            <div className="space-y-1.5">
+            <div className="col-span-12 space-y-1.5">
               <Label htmlFor="email">Correo Electrónico</Label>
               <Input 
                 id="email" 
@@ -98,7 +98,7 @@ export const RegisterPage = () => {
               />
             </div>
             
-            <div className="space-y-1.5">
+            <div className="col-span-12 space-y-1.5">
               <Label htmlFor="password">Contraseña</Label>
               <Input 
                 id="password" 
@@ -110,7 +110,7 @@ export const RegisterPage = () => {
               />
             </div>
 
-            <div className="space-y-1.5">
+            <div className="col-span-12 space-y-1.5">
               <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
               <Input 
                 id="confirmPassword" 
@@ -122,9 +122,11 @@ export const RegisterPage = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full mt-2" loading={isRegistering}>
-              Registrarse
-            </Button>
+            <div className="col-span-12 mt-2">
+              <Button type="submit" className="w-full" loading={isRegistering}>
+                Registrarse
+              </Button>
+            </div>
           </FormLayout>
 
           <div className="mt-8 text-center text-sm text-text-secondary">
