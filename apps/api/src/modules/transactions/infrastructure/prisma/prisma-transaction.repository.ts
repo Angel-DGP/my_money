@@ -76,7 +76,7 @@ export class PrismaTransactionRepository implements ITransactionRepository {
         category: true,
       },
     });
-    return raw.map(r => TransactionMapper.toDomain(r as unknown as RawTransaction));
+    return raw.map((r: any) => TransactionMapper.toDomain(r as unknown as RawTransaction));
   }
 
   async findMany(userId: string, filters: Record<string, unknown>, skip: number, take: number): Promise<[Transaction[], number]> {
@@ -113,6 +113,6 @@ export class PrismaTransactionRepository implements ITransactionRepository {
       this.prisma.transaction.count({ where }),
     ]);
 
-    return [raw.map(r => TransactionMapper.toDomain(r as unknown as RawTransaction)), count];
+    return [raw.map((r: any) => TransactionMapper.toDomain(r as unknown as RawTransaction)), count];
   }
 }

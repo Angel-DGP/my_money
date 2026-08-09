@@ -136,8 +136,8 @@ export class InsightsService {
     });
     let goalsProgress = 0;
     if (goals.length > 0) {
-      const totalTarget = goals.reduce((acc, g) => acc + Number(g.target_amount), 0);
-      const totalCurrent = goals.reduce((acc, g) => acc + Number(g.current_amount), 0);
+      const totalTarget = goals.reduce((acc: number, g: any) => acc + Number(g.target_amount), 0);
+      const totalCurrent = goals.reduce((acc: number, g: any) => acc + Number(g.current_amount), 0);
       const progress = totalTarget > 0 ? (totalCurrent / totalTarget) : 0;
       goalsProgress = 25 * Math.min(progress, 1);
     } else {
