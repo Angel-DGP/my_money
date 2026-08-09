@@ -66,7 +66,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             tabIndex={-1}
             aria-hidden="true"
           >
-            <option value="" disabled hidden>Seleccionar...</option>
+            <option value="" disabled hidden>{props.placeholder || 'Seleccionar...'}</option>
             {select.options.map(opt => (
               <option key={opt.value} value={opt.value} disabled={opt.disabled}>
                 {typeof opt.label === 'string' || typeof opt.label === 'number' ? opt.label : opt.value}
