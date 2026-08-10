@@ -24,9 +24,13 @@ export function EditSubscriptionPage() {
       toast({ title: "Suscripción actualizada", variant: "success" });
       navigate("/catalogs/subscriptions");
     } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "No se pudo actualizar la suscripción";
       toast({
         title: "Error",
-        description: error.message || "No se pudo actualizar la suscripción",
+        description: errorMessage,
         variant: "error",
       });
     }

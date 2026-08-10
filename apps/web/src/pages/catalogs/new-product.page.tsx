@@ -3,7 +3,6 @@ import { PageContainer, toast } from "@mymoney/ui";
 import { useCreateProductService } from "../../features/catalogs/api/useCatalogs";
 import { ProductServiceForm } from "../../features/catalogs/ui/ProductServiceForm";
 import type { ProductFormData } from "../../features/catalogs/ui/ProductServiceForm";
-import type { ProductFormData } from "../../features/catalogs/ui/ProductServiceForm";
 
 export function NewProductServicePage() {
   const navigate = useNavigate();

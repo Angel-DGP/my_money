@@ -1,14 +1,21 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Button, Input, PageContainer, Icon, Label, FormLayout } from '@mymoney/ui';
-import type { CardBrandDto } from '../../../shared/api/dto/catalogs.dto';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Button,
+  Input,
+  PageContainer,
+  Icon,
+  Label,
+  FormLayout,
+} from "@mymoney/ui";
+import type { CardBrandDto } from "../../../shared/api/dto/catalogs.dto";
 
 const cardBrandSchema = z.object({
-  name: z.string().min(2, 'El nombre es requerido'),
+  name: z.string().min(2, "El nombre es requerido"),
 });
 
-type CardBrandFormData = z.infer<typeof cardBrandSchema>;
+export type CardBrandFormData = z.infer<typeof cardBrandSchema>;
 
 interface CardBrandFormProps {
   onSubmit: (data: CardBrandFormData) => void;
@@ -18,11 +25,21 @@ interface CardBrandFormProps {
   isView?: boolean;
 }
 
-export function CardBrandForm({ onSubmit, onCancel, isLoading, initialData, isView }: CardBrandFormProps) {
-  const { register, handleSubmit, formState: { errors } } = useForm<CardBrandFormData>({
+export function CardBrandForm({
+  onSubmit,
+  onCancel,
+  isLoading,
+  initialData,
+  isView,
+}: CardBrandFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CardBrandFormData>({
     resolver: zodResolver(cardBrandSchema),
     defaultValues: {
-      name: initialData?.name || '',
+      name: initialData?.name || "",
     },
   });
 
@@ -35,32 +52,49 @@ export function CardBrandForm({ onSubmit, onCancel, isLoading, initialData, isVi
             Detalles de la Marca
           </h3>
           <p className="text-sm text-text-secondary mt-1">
-            Define la red o marca de la tarjeta (ej. Visa, Mastercard, American Express).
+            Define la red o marca de la tarjeta (ej. Visa, Mastercard, American
+            Express).
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Label htmlFor="name" required>Nombre de la Marca</Label>
+            <Label htmlFor="name" required>
+              Nombre de la Marca
+            </Label>
             <Input
               id="name"
               placeholder="Ej: Visa, Mastercard..."
               disabled={isView || isLoading}
               error={errors.name?.message}
               required
-              {...register('name')}
+              {...register("name")}
             />
           </div>
         </div>
       </div>
 
       <PageContainer.Footer className="col-span-12">
-        <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
-          {isView ? 'Volver' : 'Cancelar'}
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={onCancel}
+          disabled={isLoading}
+        >
+          {isView ? "Volver" : "Cancelar"}
         </Button>
         {!isView && (
-          <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="cardbrand-form">
-            {isLoading ? 'Guardando...' : initialData ? 'Actualizar Marca' : 'Guardar Marca'}
+          <Button
+            type="submit"
+            disabled={isLoading}
+            leftIcon={isLoading ? "loader-2" : undefined}
+            form="cardbrand-form"
+          >
+            {isLoading
+              ? "Guardando..."
+              : initialData
+                ? "Actualizar Marca"
+                : "Guardar Marca"}
           </Button>
         )}
       </PageContainer.Footer>

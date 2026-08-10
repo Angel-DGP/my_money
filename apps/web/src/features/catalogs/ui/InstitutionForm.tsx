@@ -1,15 +1,23 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Button, Input, Select, PageContainer, Icon, Label, FormLayout } from '@mymoney/ui';
-import type { InstitutionDto } from '../../../shared/api/dto/catalogs.dto';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Button,
+  Input,
+  Select,
+  PageContainer,
+  Icon,
+  Label,
+  FormLayout,
+} from "@mymoney/ui";
+import type { InstitutionDto } from "../../../shared/api/dto/catalogs.dto";
 
 const institutionSchema = z.object({
-  name: z.string().min(2, 'El nombre es requerido'),
-  type: z.enum(['BANK', 'WALLET', 'COOP', 'OTHER']),
+  name: z.string().min(2, "El nombre es requerido"),
+  type: z.enum(["BANK", "WALLET", "COOP", "OTHER"]),
 });
 
-type InstitutionFormData = z.infer<typeof institutionSchema>;
+export type InstitutionFormData = z.infer<typeof institutionSchema>;
 
 interface InstitutionFormProps {
   onSubmit: (data: InstitutionFormData) => void;
@@ -19,25 +27,44 @@ interface InstitutionFormProps {
   isView?: boolean;
 }
 
-export function InstitutionForm({ onSubmit, onCancel, isLoading, initialData, isView }: InstitutionFormProps) {
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<InstitutionFormData>({
+export function InstitutionForm({
+  onSubmit,
+  onCancel,
+  isLoading,
+  initialData,
+  isView,
+}: InstitutionFormProps) {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<InstitutionFormData>({
     resolver: zodResolver(institutionSchema),
     defaultValues: {
-      name: initialData?.name || '',
-      type: (initialData?.type as InstitutionFormData['type']) || 'BANK',
+      name: initialData?.name || "",
+      type: (initialData?.type as InstitutionFormData["type"]) || "BANK",
     },
   });
 
-  const type = watch('type');
+  const type = watch("type");
 
   return (
-    <FormLayout id="institutionform-form" onSubmit={handleSubmit(onSubmit)} gap="lg">
-      
+    <FormLayout
+      id="institutionform-form"
+      onSubmit={handleSubmit(onSubmit)}
+      gap="lg"
+    >
       {/* ─── SECCIÓN: DETALLES DE LA INSTITUCIÓN ──────────────────────────────── */}
       <div className="col-span-12 space-y-5">
         <div className="border-b border-border-subtle pb-3">
           <h3 className="text-lg font-semibold text-text-primary flex items-center gap-2">
-            <Icon name="layout-dashboard" size="sm" className="text-brand-500" />
+            <Icon
+              name="layout-dashboard"
+              size="sm"
+              className="text-brand-500"
+            />
             Detalles de la Institución
           </h3>
           <p className="text-sm text-text-secondary mt-1">
@@ -47,29 +74,35 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading, initialData, is
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Label htmlFor="name" required>Nombre de la Institución</Label>
+            <Label htmlFor="name" required>
+              Nombre de la Institución
+            </Label>
             <Input
               id="name"
               placeholder="Ej: Banco Pichincha, Deuna..."
               disabled={isView || isLoading}
               error={errors.name?.message}
               required
-              {...register('name')}
+              {...register("name")}
             />
           </div>
-          
+
           <div className="col-span-12 md:col-span-6 space-y-2">
             <Select
               id="type"
               label="Tipo de Entidad"
               value={type}
               disabled={isView || isLoading}
-              onValueChange={(val) => setValue('type', val as 'BANK' | 'WALLET' | 'COOP' | 'OTHER', { shouldValidate: true })}
+              onValueChange={(val) =>
+                setValue("type", val as "BANK" | "WALLET" | "COOP" | "OTHER", {
+                  shouldValidate: true,
+                })
+              }
               options={[
-                { label: 'Banco', value: 'BANK' },
-                { label: 'Billetera Digital', value: 'WALLET' },
-                { label: 'Cooperativa', value: 'COOP' },
-                { label: 'Otro', value: 'OTHER' },
+                { label: "Banco", value: "BANK" },
+                { label: "Billetera Digital", value: "WALLET" },
+                { label: "Cooperativa", value: "COOP" },
+                { label: "Otro", value: "OTHER" },
               ]}
               error={errors.type?.message}
               required
@@ -80,12 +113,26 @@ export function InstitutionForm({ onSubmit, onCancel, isLoading, initialData, is
       </div>
 
       <PageContainer.Footer className="col-span-12">
-        <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>
-          {isView ? 'Volver' : 'Cancelar'}
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={onCancel}
+          disabled={isLoading}
+        >
+          {isView ? "Volver" : "Cancelar"}
         </Button>
         {!isView && (
-          <Button type="submit" disabled={isLoading} leftIcon={isLoading ? 'loader-2' : undefined} form="institutionform-form">
-            {isLoading ? 'Guardando...' : initialData ? 'Actualizar Institución' : 'Guardar Institución'}
+          <Button
+            type="submit"
+            disabled={isLoading}
+            leftIcon={isLoading ? "loader-2" : undefined}
+            form="institutionform-form"
+          >
+            {isLoading
+              ? "Guardando..."
+              : initialData
+                ? "Actualizar Institución"
+                : "Guardar Institución"}
           </Button>
         )}
       </PageContainer.Footer>
