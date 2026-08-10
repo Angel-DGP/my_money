@@ -8,6 +8,12 @@ import {
   CannotEditTransferTransactionException
 } from './exceptions/transaction.exceptions';
 
+export interface TransactionInstallmentProps {
+  totalInstallments: number;
+  interestRate: number | null;
+  graceMonths: number;
+}
+
 export interface TransactionProps {
   id: string;
   userId: string;
@@ -26,6 +32,7 @@ export interface TransactionProps {
   cardId: string | null;
   subscriptionId: string | null;
   productId: string | null;
+  installment: TransactionInstallmentProps | null;
   createdAt: Date;
   createdBy: string | null;
   updatedAt: Date;
@@ -62,6 +69,7 @@ export class Transaction {
   get cardId(): string | null { return this.props.cardId; }
   get subscriptionId(): string | null { return this.props.subscriptionId; }
   get productId(): string | null { return this.props.productId; }
+  get installment(): TransactionInstallmentProps | null { return this.props.installment; }
   get createdAt(): Date { return this.props.createdAt; }
   get createdBy(): string | null { return this.props.createdBy; }
   get updatedAt(): Date { return this.props.updatedAt; }
@@ -135,6 +143,7 @@ export class Transaction {
       updatedBy: props.userId,
       deletedAt: null,
       deletedBy: null,
+      installment: props.installment ?? null,
     });
 
     transaction.addDomainEvent(new TransactionCreatedEvent({

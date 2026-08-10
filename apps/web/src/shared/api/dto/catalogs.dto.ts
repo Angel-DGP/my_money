@@ -11,22 +11,19 @@ export interface CardBrandDto {
   created_at: string;
 }
 
-export interface CardTypeDto {
-  id: string;
-  name: string;
-  created_at: string;
-}
 
 export interface CardDto {
   id: string;
   institution_id: string;
   name: string;
   brand_id: string;
-  type_id: string;
+  type: string;
   last_four: string;
+  base_interest_rate?: string | null;
+  billing_day?: number | null;
+  payment_day?: number | null;
   institution?: InstitutionDto;
   brand?: CardBrandDto;
-  type?: CardTypeDto;
   created_at: string;
 }
 

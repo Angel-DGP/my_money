@@ -24,6 +24,7 @@ export class PrismaTransactionRepository implements ITransactionRepository {
       include: {
         account: true,
         category: true,
+        installment: true,
       },
     });
     if (!raw) return null;
@@ -74,6 +75,7 @@ export class PrismaTransactionRepository implements ITransactionRepository {
       include: {
         account: true,
         category: true,
+        installment: true,
       },
     });
     return raw.map(r => TransactionMapper.toDomain(r as unknown as RawTransaction));
@@ -104,6 +106,7 @@ export class PrismaTransactionRepository implements ITransactionRepository {
         include: {
           account: true,
           category: true,
+          installment: true,
         },
         orderBy: [
           { date: 'desc' },

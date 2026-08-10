@@ -5,8 +5,6 @@ export { NewCardPage } from './new-card.page';
 export { EditCardPage } from './edit-card.page';
 export { NewCardBrandPage } from './new-card-brand.page';
 export { EditCardBrandPage } from './edit-card-brand.page';
-export { NewCardTypePage } from './new-card-type.page';
-export { EditCardTypePage } from './edit-card-type.page';
 export { NewSubscriptionPage } from './new-subscription.page';
 export { EditSubscriptionPage } from './edit-subscription.page';
 export { NewProductServicePage } from './new-product.page';

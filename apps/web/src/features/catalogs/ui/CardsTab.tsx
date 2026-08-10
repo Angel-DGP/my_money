@@ -3,9 +3,9 @@ import { useCards, useDeleteCard } from '../api/useCatalogs';
 import { Button, Tabs, TabsList, TabsTrigger, TabsContent, Icon, DataTable, type ColumnDef, PageContainer, AlertDialog } from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
 import { Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CardBrandsList } from './CardBrandsList';
-import { CardTypesList } from './CardTypesList';
+
 import type { CardDto } from '../../../shared/api/dto/catalogs.dto';
 
 const FILTERS = [
@@ -18,7 +18,8 @@ export function CardsTab() {
   const { data: cards, isLoading, isError, error, refetch } = useCards();
   const deleteCard = useDeleteCard();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('cards');
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'cards');
   const [cardToDelete, setCardToDelete] = useState<CardDto | null>(null);
 
   const columns: ColumnDef<CardDto>[] = [
@@ -45,9 +46,9 @@ export function CardsTab() {
       cell: (c) => `**** ${c.last_four}`,
     },
     {
-      key: 'type.name',
+      key: 'type',
       header: 'Tipo',
-      cell: (c) => c.type?.name,
+      cell: (c) => c.type === 'CREDIT' ? 'Crédito' : c.type === 'DEBIT' ? 'Débito' : 'Prepago',
     },
     {
       key: 'actions',
@@ -87,11 +88,7 @@ export function CardsTab() {
                 <Plus className="w-4 h-4 mr-2" /> Nueva Marca
               </Button>
             )}
-            {activeTab === 'types' && (
-              <Button onClick={() => navigate('/catalogs/card-types/new')} className="hidden sm:flex">
-                <Plus className="w-4 h-4 mr-2" /> Nuevo Tipo
-              </Button>
-            )}
+
           </>
         }
       />
@@ -101,7 +98,6 @@ export function CardsTab() {
         <TabsList className="w-max mx-auto sm:mx-0 mb-4">
           <TabsTrigger value="cards">Tarjetas</TabsTrigger>
           <TabsTrigger value="brands">Redes (Marcas)</TabsTrigger>
-          <TabsTrigger value="types">Tipos</TabsTrigger>
         </TabsList>
 
         <TabsContent value="cards" className="pt-2">
@@ -128,9 +124,8 @@ export function CardsTab() {
                 searchPlaceholder="Buscar tarjeta, banco o red..."
                 filters={FILTERS}
                 filterField={(c, f) => {
-                  const typeName = c.type?.name?.toLowerCase() || '';
-                  if (f === 'CREDIT') return typeName.includes('crédito') || typeName.includes('credito') || typeName.includes('credit');
-                  if (f === 'DEBIT') return typeName.includes('débito') || typeName.includes('debito') || typeName.includes('debit');
+                  if (f === 'CREDIT') return c.type === 'CREDIT';
+                  if (f === 'DEBIT') return c.type === 'DEBIT';
                   return true;
                 }}
                 defaultSort={{ column: 'name', direction: 'asc' }}
@@ -170,14 +165,7 @@ export function CardsTab() {
           <CardBrandsList />
         </TabsContent>
 
-        <TabsContent value="types">
-          <div className="flex sm:hidden justify-end mb-4">
-            <Button onClick={() => navigate('/catalogs/card-types/new')} className="w-full">
-              <Plus className="w-4 h-4 mr-2" /> Nuevo Tipo
-            </Button>
-          </div>
-          <CardTypesList />
-        </TabsContent>
+
         </Tabs>
       </div>
       </PageContainer.Body>

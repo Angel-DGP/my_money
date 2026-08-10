@@ -75,42 +75,7 @@ export const useDeleteCardBrand = () => {
   });
 };
 
-export const useCardTypes = () => {
-  return useQuery({
-    queryKey: ['card-types'],
-    queryFn: CatalogsService.getCardTypes,
-  });
-};
 
-export const useCreateCardType = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: CatalogsService.createCardType,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['card-types'] });
-    },
-  });
-};
-
-export const useUpdateCardType = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: unknown }) => CatalogsService.updateCardType(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['card-types'] });
-    },
-  });
-};
-
-export const useDeleteCardType = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: CatalogsService.deleteCardType,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['card-types'] });
-    },
-  });
-};
 
 export const useCards = () => {
   return useQuery({

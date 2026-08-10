@@ -34,6 +34,7 @@ export function useTransactionForm(initialData?: Transaction) {
       card_id: initialData?.card_id || (initialData ? 'none' : ''),
       subscription_id: initialData?.subscription_id || (initialData ? 'none' : ''),
       product_id: initialData?.product_id || (initialData ? 'none' : ''),
+      installment: undefined,
     } as TransactionFormData
   });
 
@@ -92,6 +93,7 @@ export function useTransactionForm(initialData?: Transaction) {
             ...(data.card_id && data.card_id !== 'none' ? { card_id: data.card_id } : {}),
             ...(data.subscription_id && data.subscription_id !== 'none' ? { subscription_id: data.subscription_id } : {}),
             ...(data.product_id && data.product_id !== 'none' ? { product_id: data.product_id } : {}),
+            ...(data.installment && data.installment.total_installments ? { installment: data.installment } : {}),
           } as CreateTransactionDto);
         }
       }

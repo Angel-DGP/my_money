@@ -22,6 +22,7 @@ export interface RawTransaction {
   card_id: string | null;
   subscription_id: string | null;
   product_id: string | null;
+  installment?: { total_installments: number; interest_rate: Prisma.Decimal | null; grace_months: number } | null;
   created_at: Date;
   created_by: string | null;
   updated_at: Date;
@@ -52,6 +53,11 @@ export class TransactionMapper {
       cardId: raw.card_id as string,
       subscriptionId: raw.subscription_id as string,
       productId: raw.product_id as string,
+      installment: raw.installment ? {
+        totalInstallments: raw.installment.total_installments,
+        interestRate: raw.installment.interest_rate ? Number(raw.installment.interest_rate) : null,
+        graceMonths: raw.installment.grace_months
+      } : null,
       createdAt: raw.created_at,
       createdBy: raw.created_by as string,
       updatedAt: raw.updated_at,
@@ -83,6 +89,13 @@ export class TransactionMapper {
       card_id: entity.cardId,
       subscription_id: entity.subscriptionId,
       product_id: entity.productId,
+      installment: entity.installment ? {
+        create: {
+          total_installments: entity.installment.totalInstallments,
+          interest_rate: entity.installment.interestRate,
+          grace_months: entity.installment.graceMonths
+        }
+      } : undefined,
       created_at: entity.createdAt,
       created_by: entity.createdBy,
       updated_at: entity.updatedAt,

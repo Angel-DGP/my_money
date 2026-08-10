@@ -58,6 +58,7 @@ export class CreateTransferUseCase {
       cardId: null,
       subscriptionId: null,
       productId: null,
+      installment: null,
     });
 
     const toTransaction = Transaction.create({
@@ -77,6 +78,7 @@ export class CreateTransferUseCase {
       cardId: null,
       subscriptionId: null,
       productId: null,
+      installment: null,
     });
 
     const fromDelta = BalanceDelta.decrease(amount);

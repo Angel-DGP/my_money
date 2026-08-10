@@ -2,15 +2,18 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button, Input, Select, PageContainer, Icon, Label, FormLayout } from '@mymoney/ui';
-import { useInstitutions, useCardBrands, useCardTypes } from '../api/useCatalogs';
+import { useInstitutions, useCardBrands } from '../api/useCatalogs';
 import type { CardDto } from '../../../shared/api/dto/catalogs.dto';
 
 const cardSchema = z.object({
   institution_id: z.string().min(1, 'Selecciona una institución'),
   name: z.string().min(2, 'El alias es requerido'),
   brand_id: z.string().min(1, 'La red es requerida'),
-  type_id: z.string().min(1, 'El tipo es requerido'),
+  type: z.enum(['CREDIT', 'DEBIT', 'PREPAID'], { errorMap: () => ({ message: 'El tipo es requerido' }) }),
   last_four: z.string().length(4, 'Deben ser exactamente 4 dígitos').regex(/^\d+$/, 'Solo números'),
+  base_interest_rate: z.string().optional(),
+  billing_day: z.coerce.number().min(1).max(31).optional().or(z.literal('')),
+  payment_day: z.coerce.number().min(1).max(31).optional().or(z.literal('')),
 });
 
 type CardFormData = z.infer<typeof cardSchema>;
@@ -26,25 +29,27 @@ interface CardFormProps {
 export function CardForm({ onSubmit, onCancel, isLoading, initialData, isView }: CardFormProps) {
   const { data: institutions } = useInstitutions();
   const { data: brands } = useCardBrands();
-  const { data: types } = useCardTypes();
   
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<CardFormData>({
     resolver: zodResolver(cardSchema),
     defaultValues: {
       institution_id: initialData?.institution_id || '',
       brand_id: initialData?.brand_id || '',
-      type_id: initialData?.type_id || '',
+      type: (initialData?.type as 'CREDIT' | 'DEBIT' | 'PREPAID') || 'CREDIT',
       name: initialData?.name || '',
       last_four: initialData?.last_four || '',
+      base_interest_rate: initialData?.base_interest_rate || '',
+      billing_day: initialData?.billing_day || '',
+      payment_day: initialData?.payment_day || '',
     },
   });
 
-  const type_id = watch('type_id');
+  const type = watch('type');
   const institution_id = watch('institution_id');
   const brand_id = watch('brand_id');
 
   console.log("Form Errors:", errors);
-  console.log("Watched Values:", { institution_id, type_id, brand_id });
+  console.log("Watched Values:", { institution_id, type, brand_id });
 
   return (
     <FormLayout id="cardform-form" onSubmit={handleSubmit(onSubmit)} gap="lg">
@@ -128,19 +133,19 @@ export function CardForm({ onSubmit, onCancel, isLoading, initialData, isView }:
 
           <div className="col-span-12 md:col-span-4 space-y-2">
             <Select
-              id="type_id"
-              name="type_id"
+              id="type"
+              name="type"
               label="Tipo de Tarjeta"
-              value={type_id || ''}
-              onValueChange={(val) => setValue('type_id', val, { shouldValidate: true })}
-              error={errors.type_id?.message}
+              value={type || ''}
+              onValueChange={(val) => setValue('type', val as 'CREDIT' | 'DEBIT' | 'PREPAID', { shouldValidate: true })}
+              error={errors.type?.message}
               disabled={isView || isLoading}
               required
               placeholder="Seleccionar tipo"
             >
-              {types?.map(t => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
+              <option value="CREDIT">Crédito</option>
+              <option value="DEBIT">Débito</option>
+              <option value="PREPAID">Prepago</option>
             </Select>
           </div>
 
@@ -158,6 +163,63 @@ export function CardForm({ onSubmit, onCancel, isLoading, initialData, isView }:
           </div>
         </div>
       </div>
+
+      {type === 'CREDIT' && (
+        <div className="col-span-12 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+          <div className="border-b border-border-subtle pb-3">
+            <h3 className="text-lg font-semibold text-text-primary flex items-center gap-2">
+              <Icon name="percent" size="sm" className="text-brand-500" />
+              Condiciones de Crédito
+            </h3>
+            <p className="text-sm text-text-secondary mt-1">
+              Configura las tasas e información de corte para tus diferidos.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+            <div className="col-span-12 md:col-span-4 space-y-2">
+              <Label htmlFor="base_interest_rate">Tasa de Interés Base (%)</Label>
+              <Input
+                id="base_interest_rate"
+                type="number"
+                step="0.01"
+                placeholder="16.5"
+                disabled={isView || isLoading}
+                error={errors.base_interest_rate?.message}
+                {...register('base_interest_rate')}
+              />
+            </div>
+            
+            <div className="col-span-12 md:col-span-4 space-y-2">
+              <Label htmlFor="billing_day">Día de Corte</Label>
+              <Input
+                id="billing_day"
+                type="number"
+                placeholder="15"
+                min={1}
+                max={31}
+                disabled={isView || isLoading}
+                error={errors.billing_day?.message}
+                {...register('billing_day')}
+              />
+            </div>
+
+            <div className="col-span-12 md:col-span-4 space-y-2">
+              <Label htmlFor="payment_day">Día de Pago</Label>
+              <Input
+                id="payment_day"
+                type="number"
+                placeholder="5"
+                min={1}
+                max={31}
+                disabled={isView || isLoading}
+                error={errors.payment_day?.message}
+                {...register('payment_day')}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <PageContainer.Footer className="col-span-12">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={isLoading}>

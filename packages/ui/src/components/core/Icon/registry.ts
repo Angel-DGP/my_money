@@ -94,6 +94,7 @@ import {
   Camera,
   Book,
   Map,
+  Percent,
 } from 'lucide-react';
 
 export const iconRegistry = {
@@ -193,6 +194,7 @@ export const iconRegistry = {
   camera: Camera,
   book: Book,
   map: Map,
+  percent: Percent,
 } as const;
 
 export type IconName = keyof typeof iconRegistry;

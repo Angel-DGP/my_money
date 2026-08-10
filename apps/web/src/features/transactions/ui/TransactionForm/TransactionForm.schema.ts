@@ -18,6 +18,12 @@ export const transactionSchema = z.object({
   card_id: z.string().optional(),
   subscription_id: z.string().optional(),
   product_id: z.string().optional(),
+  
+  installment: z.object({
+    total_installments: z.coerce.number().min(2, 'Debe ser al menos 2 meses'),
+    interest_rate: z.string().optional(),
+    grace_months: z.coerce.number().min(0).optional(),
+  }).optional(),
 }).superRefine((data, ctx) => {
   if (data.type === 'TRANSFER') {
     if (!data.from_account_id) {

@@ -1,5 +1,5 @@
 import { apiClient } from '../client';
-import type { InstitutionDto, CardDto, CardBrandDto, CardTypeDto, SubscriptionDto, ProductServiceDto } from '../dto/catalogs.dto';
+import type { InstitutionDto, CardDto, CardBrandDto, SubscriptionDto, ProductServiceDto } from '../dto/catalogs.dto';
 
 export const CatalogsService = {
   // --- Institutions ---
@@ -34,23 +34,6 @@ export const CatalogsService = {
   },
   async deleteCardBrand(id: string): Promise<void> {
     await apiClient.delete(`/catalogs/card-brands/${id}`);
-  },
-
-  // --- Card Types ---
-  async getCardTypes(): Promise<CardTypeDto[]> {
-    const response = await apiClient.get<CardTypeDto[]>('/catalogs/card-types');
-    return response.data;
-  },
-  async createCardType(data: unknown): Promise<CardTypeDto> {
-    const response = await apiClient.post<CardTypeDto>('/catalogs/card-types', data);
-    return response.data;
-  },
-  async updateCardType(id: string, data: unknown): Promise<CardTypeDto> {
-    const response = await apiClient.put<CardTypeDto>(`/catalogs/card-types/${id}`, data);
-    return response.data;
-  },
-  async deleteCardType(id: string): Promise<void> {
-    await apiClient.delete(`/catalogs/card-types/${id}`);
   },
 
   // --- Cards ---

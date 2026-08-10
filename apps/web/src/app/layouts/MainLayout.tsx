@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { path: '/transactions', label: 'Transacciones', icon: 'arrow-left-right' as const },
   { path: '/budgets', label: 'Presupuestos', icon: 'pie-chart' as const },
   { path: '/goals', label: 'Metas', icon: 'target' as const },
+  { path: '/projections', label: 'Proyecciones', icon: 'trending-up' as const },
   { path: '/analytics', label: 'Analíticas', icon: 'bar-chart-2' as const },
   { path: '/automations', label: 'Automatizaciones', icon: 'repeat' as const },
   { 

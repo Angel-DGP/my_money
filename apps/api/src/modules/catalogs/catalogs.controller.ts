@@ -16,18 +16,17 @@ interface CreateCardBrandDto {
   logo_url?: string;
 }
 
-interface CreateCardTypeDto {
-  name: string;
-}
+
 
 interface CreateCardDto {
   name: string;
   last_four: string;
   institution_id: string;
   brand_id: string;
-  type_id: string;
-  expiry_month?: number;
-  expiry_year?: number;
+  type: string;
+  base_interest_rate?: string | null;
+  billing_day?: number | null;
+  payment_day?: number | null;
 }
 
 interface CreateSubscriptionDto {
@@ -90,26 +89,6 @@ export class CatalogsController {
     return this.catalogsService.deleteCardBrand(req.user.id, id);
   }
 
-  // --- Card Types ---
-  @Get('card-types')
-  getCardTypes(@Req() req: AuthenticatedRequest) {
-    return this.catalogsService.getCardTypes(req.user.id);
-  }
-
-  @Post('card-types')
-  createCardType(@Req() req: AuthenticatedRequest, @Body() data: CreateCardTypeDto) {
-    return this.catalogsService.createCardType(req.user.id, data);
-  }
-
-  @Put('card-types/:id')
-  updateCardType(@Req() req: AuthenticatedRequest, @Param('id') id: string, @Body() data: CreateCardTypeDto) {
-    return this.catalogsService.updateCardType(req.user.id, id, data);
-  }
-
-  @Delete('card-types/:id')
-  deleteCardType(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
-    return this.catalogsService.deleteCardType(req.user.id, id);
-  }
 
   // --- Cards ---
   @Get('cards')

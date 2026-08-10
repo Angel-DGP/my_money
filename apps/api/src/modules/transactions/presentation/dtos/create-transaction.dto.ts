@@ -1,5 +1,20 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, IsNumberString, Matches, IsBoolean } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, IsNumberString, Matches, IsBoolean, ValidateNested, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 import { TransactionType } from '../../domain/transaction-type.enum';
+
+export class TransactionInstallmentDto {
+  @IsNumber()
+  @IsNotEmpty()
+  total_installments!: number;
+
+  @IsNumberString()
+  @IsOptional()
+  interest_rate?: string;
+
+  @IsNumber()
+  @IsOptional()
+  grace_months?: number;
+}
 
 export class CreateTransactionDto {
   @IsUUID()
@@ -54,6 +69,11 @@ export class CreateTransactionDto {
   @IsUUID()
   @IsOptional()
   product_id?: string;
+
+  @ValidateNested()
+  @Type(() => TransactionInstallmentDto)
+  @IsOptional()
+  installment?: TransactionInstallmentDto;
 }
 
 export class UpdateTransactionDto {
@@ -101,6 +121,11 @@ export class UpdateTransactionDto {
   @IsUUID()
   @IsOptional()
   product_id?: string;
+
+  @ValidateNested()
+  @Type(() => TransactionInstallmentDto)
+  @IsOptional()
+  installment?: TransactionInstallmentDto;
 }
 
 

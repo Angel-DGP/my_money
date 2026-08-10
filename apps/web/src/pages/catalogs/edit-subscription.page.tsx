@@ -1,7 +1,13 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import { PageContainer } from '@mymoney/ui';
-import { SubscriptionForm, type SubscriptionFormData } from '../../features/catalogs/ui/SubscriptionForm';
-import { useSubscriptions, useUpdateSubscription } from '../../features/catalogs/api/useCatalogs';
+import { useNavigate, useParams } from "react-router-dom";
+import { PageContainer, toast } from "@mymoney/ui";
+import {
+  SubscriptionForm,
+  type SubscriptionFormData,
+} from "../../features/catalogs/ui/SubscriptionForm";
+import {
+  useSubscriptions,
+  useUpdateSubscription,
+} from "../../features/catalogs/api/useCatalogs";
 
 export function EditSubscriptionPage() {
   const { id } = useParams();
@@ -15,20 +21,28 @@ export function EditSubscriptionPage() {
     if (!id) return;
     try {
       await updateSubscription.mutateAsync({ id, data });
-      navigate('/catalogs/subscriptions');
+      toast({ title: "Suscripción actualizada", variant: "success" });
+      navigate("/catalogs/subscriptions");
     } catch (error) {
-      console.error(error);
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo actualizar la suscripción",
+        variant: "error",
+      });
     }
   };
 
   const handleCancel = () => {
-    navigate('/catalogs/subscriptions');
+    navigate("/catalogs/subscriptions");
   };
 
   if (isLoadingSubs) {
     return (
       <PageContainer>
-        <PageContainer.Header title="Editar Suscripción" description="Cargando..." />
+        <PageContainer.Header
+          title="Editar Suscripción"
+          description="Cargando..."
+        />
         <PageContainer.Body>
           <div className="flex items-center justify-center p-12 text-text-secondary">
             Cargando suscripción...
@@ -41,11 +55,17 @@ export function EditSubscriptionPage() {
   if (!subscription) {
     return (
       <PageContainer>
-        <PageContainer.Header title="Editar Suscripción" description="Suscripción no encontrada." />
+        <PageContainer.Header
+          title="Editar Suscripción"
+          description="Suscripción no encontrada."
+        />
         <PageContainer.Body>
           <div className="flex flex-col items-center justify-center p-12 text-text-secondary gap-4">
             <p>La suscripción que intentas editar no existe o fue eliminada.</p>
-            <button onClick={handleCancel} className="text-primary-500 hover:underline">
+            <button
+              onClick={handleCancel}
+              className="text-primary-500 hover:underline"
+            >
               Volver a suscripciones
             </button>
           </div>
@@ -57,9 +77,12 @@ export function EditSubscriptionPage() {
   const initialData: SubscriptionFormData = {
     name: subscription.name,
     amount: Number(subscription.amount),
-    category_id: subscription.category_id || '',
-    next_billing_date: subscription.next_billing_date ? (new Date(subscription.next_billing_date).toISOString().split('T')[0] || '') : '',
-    billing_cycle: subscription.billing_cycle as 'MONTHLY' | 'YEARLY',
+    category_id: subscription.category_id || "",
+    next_billing_date: subscription.next_billing_date
+      ? new Date(subscription.next_billing_date).toISOString().split("T")[0] ||
+        ""
+      : "",
+    billing_cycle: subscription.billing_cycle as "MONTHLY" | "YEARLY",
     card_id: subscription.card_id,
   };
 

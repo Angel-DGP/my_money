@@ -18,6 +18,7 @@ import { InsightsModule } from './modules/insights/insights.module';
 import { AutomationsModule } from './modules/automations/automations.module';
 import { CatalogsModule } from './modules/catalogs/catalogs.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { CashflowModule } from './modules/cashflow/cashflow.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
     AutomationsModule,
     CatalogsModule,
     AnalyticsModule,
+    CashflowModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -13,6 +13,9 @@ import { BudgetsPage, NewBudgetPage, EditBudgetPage } from '@pages/budgets';
 import { GoalsPage, NewGoalPage, EditGoalPage } from '@pages/goals';
 import { DashboardPage } from '@pages/dashboard';
 import { AnalyticsPage } from '@pages/analytics';
+import { ProjectionsPage } from '@pages/cashflow/projections.page';
+import { ProjectionDetailPage } from '@pages/cashflow/projection-detail.page';
+import { NewSalaryPage } from '@pages/cashflow/new-salary.page';
 import { AutomationsPage, CreateAutomationPage, EditAutomationPage } from '@pages/automations';
 import { UIKitPage } from '@pages/ui-kit';
 import { SettingsPage } from '@pages/settings';
@@ -28,8 +31,6 @@ import {
   EditCardPage,
   NewCardBrandPage,
   EditCardBrandPage,
-  NewCardTypePage,
-  EditCardTypePage,
   NewSubscriptionPage,
   EditSubscriptionPage,
   NewProductServicePage,
@@ -129,6 +130,18 @@ export const routes: RouteObject[] = [
                 element: <AnalyticsPage />,
               },
               {
+                path: '/projections',
+                element: <ProjectionsPage />,
+              },
+              {
+                path: '/projections/:month',
+                element: <ProjectionDetailPage />,
+              },
+              {
+                path: '/projections/salary/new',
+                element: <NewSalaryPage />,
+              },
+              {
                 path: '/automations',
                 element: <AutomationsPage />,
               },
@@ -175,14 +188,7 @@ export const routes: RouteObject[] = [
                 path: '/catalogs/card-brands/edit/:id',
                 element: <EditCardBrandPage />,
               },
-              {
-                path: '/catalogs/card-types/new',
-                element: <NewCardTypePage />,
-              },
-              {
-                path: '/catalogs/card-types/edit/:id',
-                element: <EditCardTypePage />,
-              },
+
               {
                 path: '/catalogs/subscriptions/new',
                 element: <NewSubscriptionPage />,

@@ -5,6 +5,12 @@ export interface Money {
   currency: string;
 }
 
+export interface TransactionInstallment {
+  total_installments: number;
+  interest_rate?: string;
+  grace_months?: number;
+}
+
 export interface Transaction {
   id: string;
   account_id: string;
@@ -21,6 +27,7 @@ export interface Transaction {
   card_id: string | null;
   subscription_id: string | null;
   product_id: string | null;
+  installment?: TransactionInstallment | null;
   account?: {
     id?: string;
     name?: string;
@@ -47,6 +54,7 @@ export interface CreateTransactionDto {
   card_id?: string;
   subscription_id?: string;
   product_id?: string;
+  installment?: TransactionInstallment;
 }
 
 export interface CreateTransferDto {

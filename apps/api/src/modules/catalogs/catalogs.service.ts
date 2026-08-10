@@ -81,58 +81,34 @@ export class CatalogsService {
     });
   }
 
-  // --- Card Types ---
-  async getCardTypes(userId: string) {
-    return this.prisma.cardType.findMany({
-      where: { user_id: userId },
-      orderBy: { name: 'asc' },
-    });
-  }
 
-  async createCardType(userId: string, data: { name: string }) {
-    return this.prisma.cardType.create({
-      data: {
-        ...data,
-        user_id: userId,
-      },
-    });
-  }
-
-  async updateCardType(userId: string, id: string, data: { name: string }) {
-    return this.prisma.cardType.update({
-      where: { id, user_id: userId },
-      data,
-    });
-  }
-
-  async deleteCardType(userId: string, id: string) {
-    return this.prisma.cardType.delete({
-      where: { id, user_id: userId },
-    });
-  }
 
   // --- Cards ---
   async getCards(userId: string) {
     return this.prisma.card.findMany({
       where: { user_id: userId },
-      include: { institution: true, brand: true, type: true },
+      include: { institution: true, brand: true },
       orderBy: { name: 'asc' },
     });
   }
 
-  async createCard(userId: string, data: { institution_id: string; name: string; brand_id: string; type_id: string; last_four: string }) {
+  async createCard(userId: string, data: { institution_id: string; name: string; brand_id: string; type: string; last_four: string; base_interest_rate?: string | null; billing_day?: number | null; payment_day?: number | null }) {
     return this.prisma.card.create({
       data: {
         ...data,
+        base_interest_rate: data.base_interest_rate ? Number(data.base_interest_rate) : null,
         user_id: userId,
       },
     });
   }
 
-  async updateCard(userId: string, id: string, data: { institution_id?: string; name?: string; brand_id?: string; type_id?: string; last_four?: string }) {
+  async updateCard(userId: string, id: string, data: { institution_id?: string; name?: string; brand_id?: string; type?: string; last_four?: string; base_interest_rate?: string | null; billing_day?: number | null; payment_day?: number | null }) {
     return this.prisma.card.update({
       where: { id, user_id: userId },
-      data,
+      data: {
+        ...data,
+        base_interest_rate: data.base_interest_rate ? Number(data.base_interest_rate) : null,
+      },
     });
   }
 

@@ -64,6 +64,11 @@ export class CreateTransactionUseCase {
       cardId: dto.card_id ?? null,
       subscriptionId: dto.subscription_id ?? null,
       productId: dto.product_id ?? null,
+      installment: dto.installment ? {
+        totalInstallments: dto.installment.total_installments,
+        interestRate: dto.installment.interest_rate ? Number(dto.installment.interest_rate) : null,
+        graceMonths: dto.installment.grace_months ?? 0,
+      } : null,
     });
 
     // Update account balance synchronously within the use case to ensure it participates in UoW
