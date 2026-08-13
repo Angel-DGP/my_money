@@ -5,6 +5,8 @@ import { useTheme } from '@app/providers/ThemeProvider';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useServerWarmup } from '../../shared/hooks/useServerWarmup';
+import { ServerWakeupNotice } from '../../shared/ui/ServerWakeupNotice';
 
 const registerSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -20,6 +22,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export const RegisterPage = () => {
   const { register: registerUser, isRegistering } = useAuth();
+  const { isWakingUp, elapsedSeconds } = useServerWarmup(isRegistering);
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
 
@@ -122,10 +125,11 @@ export const RegisterPage = () => {
               />
             </div>
 
-            <div className="col-span-12 mt-2">
+            <div className="col-span-12 mt-2 space-y-3">
               <Button type="submit" className="w-full" loading={isRegistering}>
                 Registrarse
               </Button>
+              {isWakingUp && <ServerWakeupNotice elapsedSeconds={elapsedSeconds} />}
             </div>
           </FormLayout>
 

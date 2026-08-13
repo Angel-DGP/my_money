@@ -5,6 +5,8 @@ import { useTheme } from '@app/providers/ThemeProvider';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useServerWarmup } from '../../shared/hooks/useServerWarmup';
+import { ServerWakeupNotice } from '../../shared/ui/ServerWakeupNotice';
 
 const loginSchema = z.object({
   email: z.string().email('Ingresa un correo electrónico válido'),
@@ -15,6 +17,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const LoginPage = () => {
   const { login, isLoggingIn } = useAuth();
+  const { isWakingUp, elapsedSeconds } = useServerWarmup(isLoggingIn);
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, setTheme } = useTheme();
@@ -103,10 +106,11 @@ export const LoginPage = () => {
               />
             </div>
 
-            <div className="col-span-12 mt-2">
+            <div className="col-span-12 mt-2 space-y-3">
               <Button type="submit" className="w-full" loading={isLoggingIn}>
                 Ingresar
               </Button>
+              {isWakingUp && <ServerWakeupNotice elapsedSeconds={elapsedSeconds} />}
             </div>
           </FormLayout>
 
