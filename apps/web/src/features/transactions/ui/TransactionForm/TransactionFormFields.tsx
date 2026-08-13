@@ -1,4 +1,4 @@
-import { Input, Select, Icon } from "@mymoney/ui";
+import { Input, Select, Icon, Checkbox } from "@mymoney/ui";
 import { useAccountsQuery, type Account } from "@entities/account";
 import { useCategoriesQuery, type Category } from "@entities/category";
 import {
@@ -34,6 +34,8 @@ export function TransactionFormFields({
 
   const selectedCard = cards.find((c) => c.id === selectedCardId);
   const isCreditCard = selectedCard?.type === "CREDIT";
+
+  const isThirdParty = watch("is_third_party");
 
   return (
     <div className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
@@ -234,6 +236,58 @@ export function TransactionFormFields({
         </div>
       </div>
 
+      {/* ─── SECCIÓN: TERCEROS (PRÉSTAMOS / REEMBOLSOS) ─────────────────────── */}
+      {selectedType !== "TRANSFER" && (
+        <div className="col-span-12 space-y-5 animate-in fade-in duration-200">
+          <div className="border-b border-border-subtle pb-3">
+            <h3 className="text-lg font-semibold text-text-primary flex items-center gap-2">
+              <Icon name="user" size="sm" className="text-brand-500" />
+              Dinero de Terceros
+            </h3>
+            <p className="text-sm text-text-secondary mt-1">
+              Activa esto si el movimiento corresponde a un tercero (ej: prestaste tu tarjeta o te reembolsarán).
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <Checkbox
+              id="is_third_party"
+              label="Es a nombre de un tercero"
+              description="Habilita para especificar de quién es el gasto o ingreso."
+              disabled={isView}
+              {...register("is_third_party")}
+            />
+
+            {isThirdParty && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-5 bg-surface-2/40 p-5 rounded-xl border border-border-subtle animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="col-span-12 md:col-span-6 space-y-2">
+                  <Input
+                    id="third_party_owner"
+                    label="¿A nombre de quién?"
+                    required
+                    placeholder="Ej. Juan Pérez"
+                    disabled={isView}
+                    error={errors.third_party_owner?.message as string}
+                    {...register("third_party_owner")}
+                  />
+                </div>
+                
+                <div className="col-span-12 md:col-span-6 space-y-2">
+                  <Input
+                    id="third_party_note"
+                    label="Nota del tercero (Opcional)"
+                    placeholder="Ej. Me pagará la otra semana..."
+                    disabled={isView}
+                    error={errors.third_party_note?.message as string}
+                    {...register("third_party_note")}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* ─── SECCIÓN: INFORMACIÓN ADICIONAL (OPCIONAL) ───────────────────────── */}
       {selectedType !== "TRANSFER" && (
         <div className="col-span-12 space-y-5">
@@ -264,70 +318,75 @@ export function TransactionFormFields({
               </Select>
             </div>
 
-            <div className="col-span-12 md:col-span-6 space-y-2">
-              <Select
-                id="card_id"
-                label="Tarjeta Usada"
-                disabled={isView}
-                error={errors.card_id?.message as string}
-                {...register("card_id")}
-                placeholder="Seleccionar tarjeta..."
-              >
-                <option value="none">Ninguna</option>
-                {cards.map(
-                  (c: { id: string; name: string; last_four?: string }) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} (*{c.last_four})
-                    </option>
-                  ),
-                )}
-              </Select>
-            </div>
+            {selectedType === "EXPENSE" && (
+              <>
+                <div className="col-span-12 md:col-span-6 space-y-2">
+                  <Select
+                    id="card_id"
+                    label="Tarjeta Usada"
+                    disabled={isView}
+                    error={errors.card_id?.message as string}
+                    {...register("card_id")}
+                    placeholder="Seleccionar tarjeta..."
+                  >
+                    <option value="none">Ninguna</option>
+                    {cards.map(
+                      (c: { id: string; name: string; last_four?: string }) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name} (*{c.last_four})
+                        </option>
+                      ),
+                    )}
+                  </Select>
+                </div>
 
-            <div className="col-span-12 md:col-span-6 space-y-2">
-              <Select
-                id="subscription_id"
-                label="Suscripción Relacionada"
-                disabled={isView}
-                error={errors.subscription_id?.message as string}
-                {...register("subscription_id")}
-                placeholder="Seleccionar suscripción..."
-              >
-                <option value="none">Ninguna</option>
-                {subscriptions.map(
-                  (s: {
-                    id: string;
-                    name: string;
-                    amount: string | number;
-                  }) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} ({s.amount})
-                    </option>
-                  ),
-                )}
-              </Select>
-            </div>
+                <div className="col-span-12 md:col-span-6 space-y-2">
+                  <Select
+                    id="subscription_id"
+                    label="Suscripción Relacionada"
+                    disabled={isView}
+                    error={errors.subscription_id?.message as string}
+                    {...register("subscription_id")}
+                    placeholder="Seleccionar suscripción..."
+                  >
+                    <option value="none">Ninguna</option>
+                    {subscriptions.map(
+                      (s: {
+                        id: string;
+                        name: string;
+                        amount: string | number;
+                      }) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name} ({s.amount})
+                        </option>
+                      ),
+                    )}
+                  </Select>
+                </div>
 
-            <div className="col-span-12 md:col-span-6 space-y-2">
-              <Select
-                id="product_id"
-                label="Comercio / Producto"
-                disabled={isView}
-                error={errors.product_id?.message as string}
-                {...register("product_id")}
-                placeholder="Seleccionar producto..."
-              >
-                <option value="none">Ninguno</option>
-                {products.map((p) => {
-                  const catName = p.category?.name || "Sin Categoría";
-                  return (
-                    <option key={p.id} value={p.id}>
-                      {catName} - {p.name}
-                    </option>
-                  );
-                })}
-              </Select>
-            </div>
+                <div className="col-span-12 md:col-span-6 space-y-2">
+                  <Select
+                    id="product_id"
+                    label="Comercio / Producto"
+                    disabled={isView}
+                    error={errors.product_id?.message as string}
+                    {...register("product_id")}
+                    placeholder="Seleccionar producto..."
+                  >
+                    <option value="none">Ninguno</option>
+                    {products.map((p) => {
+                      const catName = p.category?.name || "Sin Categoría";
+                      return (
+                        <option key={p.id} value={p.id}>
+                          {catName} - {p.name}
+                        </option>
+                      );
+                    })}
+                  </Select>
+                </div>
+              </>
+            )}
+
 
             <div className="col-span-12 space-y-2 pt-2">
               <Input

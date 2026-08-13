@@ -9,7 +9,7 @@ export function NewSalaryPage() {
       <PageContainer.Header
         title="Registrar Sueldo"
         description="Ingresa un sueldo recurrente para visualizarlo en tus proyecciones."
-        backTo={() => navigate('/projections')}
+        backTo={() => navigate('/planning?tab=projections')}
       />
       <PageContainer.Body variant="transparent" className="py-6">
         <SalaryForm />

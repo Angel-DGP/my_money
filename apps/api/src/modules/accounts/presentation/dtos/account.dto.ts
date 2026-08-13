@@ -33,6 +33,12 @@ export class AccountDto {
   @ApiPropertyOptional({ example: 'wallet' })
   icon?: string | null;
 
+  @ApiPropertyOptional({ format: 'uuid' })
+  institution_id?: string | null;
+
+  @ApiPropertyOptional({ example: 'Plan Jubilación' })
+  specific_type?: string | null;
+
   static fromDomain(account: Account): AccountDto {
     return {
       id: account.id,
@@ -42,6 +48,8 @@ export class AccountDto {
       current_balance: account.currentBalance.toJSON(),
       color: account.color,
       icon: account.icon,
+      institution_id: account.institutionId,
+      specific_type: account.specificType,
     };
   }
 }

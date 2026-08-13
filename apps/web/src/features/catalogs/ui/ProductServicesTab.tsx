@@ -1,16 +1,43 @@
 import { useState } from 'react';
 import { useProductServices, useDeleteProductService } from '../api/useCatalogs';
-import { Button, Icon, PageContainer, AlertDialog, DataTable, type ColumnDef } from '@mymoney/ui';
+import {
+  Button,
+  Icon,
+  PageContainer,
+  AlertDialog,
+  DataTable,
+  type ColumnDef,
+} from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
-import { Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ProductServiceDrawer } from './ProductServiceDrawer';
 import type { ProductServiceDto } from '../../../shared/api/dto/catalogs.dto';
 
 export function ProductServicesTab() {
   const { data: products, isLoading, isError, error, refetch } = useProductServices();
   const deleteProduct = useDeleteProductService();
-  const navigate = useNavigate();
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductServiceDto | null>(null);
+  const [isViewMode, setIsViewMode] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
+
+  const handleOpenCreate = () => {
+    setSelectedProduct(null);
+    setIsViewMode(false);
+    setDrawerOpen(true);
+  };
+
+  const handleOpenEdit = (prod: ProductServiceDto) => {
+    setSelectedProduct(prod);
+    setIsViewMode(false);
+    setDrawerOpen(true);
+  };
+
+  const handleOpenView = (prod: ProductServiceDto) => {
+    setSelectedProduct(prod);
+    setIsViewMode(true);
+    setDrawerOpen(true);
+  };
 
   const columns: ColumnDef<ProductServiceDto>[] = [
     {
@@ -23,11 +50,14 @@ export function ProductServicesTab() {
     {
       key: 'category.name',
       header: 'Categoría por Defecto',
-      cell: (prod) => prod.category ? (
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-surface-2 text-xs font-medium text-text-secondary">
-          {prod.category.name}
-        </span>
-      ) : '-',
+      cell: (prod) =>
+        prod.category ? (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-2 text-xs font-medium text-text-secondary border border-border-subtle">
+            {prod.category.name}
+          </span>
+        ) : (
+          <span className="text-text-muted text-xs">Sin categoría</span>
+        ),
     },
     {
       key: 'actions',
@@ -35,14 +65,38 @@ export function ProductServicesTab() {
       align: 'right',
       sticky: 'right',
       cell: (prod) => (
-        <div className="flex items-center justify-center gap-1">
-          <button type="button" onClick={(e) => { e.stopPropagation(); navigate(`/catalogs/products/${prod.id}/edit`, { state: { isView: true } }); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+        <div className="flex items-center justify-end gap-1">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenView(prod);
+            }}
+            className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-surface-2 rounded-lg transition-colors"
+            title="Ver Detalle"
+          >
             <Icon name="eye" size="sm" />
           </button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); navigate(`/catalogs/products/${prod.id}/edit`); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenEdit(prod);
+            }}
+            className="p-1.5 text-text-muted hover:text-primary-600 hover:bg-surface-2 rounded-lg transition-colors"
+            title="Editar"
+          >
             <Icon name="edit" size="sm" />
           </button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); setProductToDelete(prod.id); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setProductToDelete(prod.id);
+            }}
+            className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-lg transition-colors"
+            title="Eliminar"
+          >
             <Icon name="trash" size="sm" />
           </button>
         </div>
@@ -53,58 +107,71 @@ export function ProductServicesTab() {
   return (
     <PageContainer>
       <PageContainer.Header
-        title="Productos y Servicios Frecuentes"
-        description="Guarda nombres de comercios o servicios (ej. Supermaxi, Uber) para autocompletar rápidamente tus gastos."
+        title="Productos y Comercios Frecuentes"
+        description="Guarda nombres de comercios o servicios (ej. Supermaxi, Uber, Apple) para autocompletar rápidamente tus gastos."
         actions={
-          <Button onClick={() => navigate('/catalogs/products/new')} className="w-full sm:w-auto">
-            <Plus className="w-4 h-4 mr-2" />
-            Nuevo Producto
+          <Button
+            onClick={handleOpenCreate}
+            variant="primary"
+            className="w-full sm:w-auto"
+          >
+            <Icon name="plus" size="xs" className="mr-1.5" />
+            Nuevo Comercio
           </Button>
         }
       />
       <PageContainer.Body variant="transparent">
-        <div className="flex flex-col gap-4 animate-in fade-in duration-300">
-          <QueryState
-            data={products}
-            isLoading={isLoading}
-            isError={isError}
-            error={error}
-            onRetry={refetch}
-          >
-            {() => (
-              <div className="flex flex-col gap-4 animate-in fade-in duration-300">
-                <DataTable<ProductServiceDto>
-                  data={products || []}
-                  columns={columns}
-                  pageSize={10}
-                  searchFields={['name', (prod) => prod.category?.name || '']}
-                  searchPlaceholder="Buscar producto o comercio..."
-                  defaultSort={{ column: 'name', direction: 'asc' }}
-                  onRowClick={(prod) => navigate(`/catalogs/products/${prod.id}/edit`, { state: { isView: true } })}
-                  emptyMessage="No tienes productos frecuentes registrados."
-                />
-              </div>
-            )}
-          </QueryState>
-        </div>
-      </PageContainer.Body>
+        <QueryState
+          data={products}
+          isLoading={isLoading}
+          isError={isError}
+          error={error}
+          onRetry={refetch}
+        >
+          {() => (
+            <div className="flex flex-col gap-4 animate-in fade-in duration-300">
+              <DataTable<ProductServiceDto>
+                data={products || []}
+                columns={columns}
+                pageSize={10}
+                searchFields={['name']}
+                searchPlaceholder="Buscar comercio frecuente..."
+                defaultSort={{ column: 'name', direction: 'asc' }}
+                onRowClick={(prod) => handleOpenView(prod)}
+                emptyMessage="No tienes comercios frecuentes guardados."
+              />
+            </div>
+          )}
+        </QueryState>
 
-      <AlertDialog
-        open={!!productToDelete}
-        onOpenChange={(open) => !open && setProductToDelete(null)}
-        title="Eliminar Comercio/Producto"
-        description="¿Estás seguro de que deseas eliminar este comercio? Esta acción no se puede deshacer."
-        type="error"
-        confirmText="Sí, eliminar"
-        isLoading={deleteProduct.isPending}
-        onConfirm={() => {
-          if (productToDelete) {
-            deleteProduct.mutate(productToDelete, {
-              onSuccess: () => setProductToDelete(null)
-            });
-          }
-        }}
-      />
+        {/* Product Drawer */}
+        <ProductServiceDrawer
+          open={drawerOpen}
+          onOpenChange={setDrawerOpen}
+          product={selectedProduct}
+          isView={isViewMode}
+        />
+
+        {/* Delete Dialog */}
+        <AlertDialog
+          open={!!productToDelete}
+          onOpenChange={(open) => !open && setProductToDelete(null)}
+          title="¿Eliminar comercio?"
+          description="Estás a punto de eliminar este comercio frecuente de tu lista."
+          type="error"
+          confirmText="Eliminar"
+          isLoading={deleteProduct.isPending}
+          onConfirm={async () => {
+            if (!productToDelete) return;
+            try {
+              await deleteProduct.mutateAsync(productToDelete);
+              setProductToDelete(null);
+            } catch (err) {
+              console.error('Error al eliminar comercio', err);
+            }
+          }}
+        />
+      </PageContainer.Body>
     </PageContainer>
   );
 }

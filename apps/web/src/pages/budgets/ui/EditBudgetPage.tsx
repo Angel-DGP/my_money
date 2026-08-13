@@ -29,7 +29,7 @@ export function EditBudgetPage() {
           description: 'Los cambios se han guardado exitosamente.',
           variant: 'success',
         });
-        navigate('/budgets');
+        navigate('/planning?tab=budgets');
       },
       onError: () => {
         toast({

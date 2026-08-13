@@ -17,7 +17,11 @@ const FILTERS = [
   { label: 'Inversión', value: 'INVESTMENT' },
 ];
 
+import { useNavigate } from 'react-router-dom';
+
 export function AccountsTable({ accounts, onView, onEdit, onDelete }: AccountsTableProps) {
+  const navigate = useNavigate();
+
   const columns: ColumnDef<Account>[] = [
     {
       key: 'name',
@@ -55,13 +59,22 @@ export function AccountsTable({ accounts, onView, onEdit, onDelete }: AccountsTa
       sticky: 'right',
       cell: (account) => (
         <div className="flex justify-center gap-1">
-          <button type="button" onClick={(e) => { e.stopPropagation(); onView(account); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+          <button 
+            type="button" 
+            title="Ver transacciones de esta cuenta"
+            aria-label="Ver transacciones"
+            onClick={(e) => { e.stopPropagation(); navigate(`/transactions?accountId=${account.id}`); }} 
+            className="p-1.5 text-text-muted hover:text-secondary-500 hover:bg-secondary-50 dark:hover:bg-secondary-900/20 rounded-md transition-colors"
+          >
+            <Icon name="arrow-left-right" size="sm" />
+          </button>
+          <button type="button" title="Ver detalle" aria-label="Ver detalle" onClick={(e) => { e.stopPropagation(); onView(account); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
             <Icon name="eye" size="sm" />
           </button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(account); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+          <button type="button" title="Editar cuenta" aria-label="Editar cuenta" onClick={(e) => { e.stopPropagation(); onEdit(account); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
             <Icon name="edit" size="sm" />
           </button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(account); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
+          <button type="button" title="Eliminar cuenta" aria-label="Eliminar cuenta" onClick={(e) => { e.stopPropagation(); onDelete(account); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
             <Icon name="trash" size="sm" />
           </button>
         </div>

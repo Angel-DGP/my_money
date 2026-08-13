@@ -4,6 +4,8 @@ import { CreateGoalUseCase } from './application/use-cases/create-goal.use-case'
 import { GetGoalsUseCase } from './application/use-cases/get-goals.use-case';
 import { GetGoalByIdUseCase } from './application/use-cases/get-goal-by-id.use-case';
 import { AddGoalProgressUseCase } from './application/use-cases/add-goal-progress.use-case';
+import { UpdateGoalUseCase } from './application/use-cases/update-goal.use-case';
+import { DeleteGoalUseCase } from './application/use-cases/delete-goal.use-case';
 import { GOAL_REPOSITORY } from './domain/goal.repository.interface';
 import { PrismaGoalRepository } from './infrastructure/prisma-goal.repository';
 import { PrismaModule } from '../../prisma/prisma.module';
@@ -16,6 +18,8 @@ import { PrismaModule } from '../../prisma/prisma.module';
     GetGoalsUseCase,
     GetGoalByIdUseCase,
     AddGoalProgressUseCase,
+    UpdateGoalUseCase,
+    DeleteGoalUseCase,
     {
       provide: GOAL_REPOSITORY,
       useClass: PrismaGoalRepository,

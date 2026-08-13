@@ -41,7 +41,21 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
       header: 'Descripción',
       sortable: true,
       className: 'font-medium text-text-primary',
-      cell: (t) => t.description || 'Sin descripción',
+      cell: (t) => (
+        <div className="flex flex-col gap-1">
+          <span>{t.description || 'Sin descripción'}</span>
+          {t.installment && (
+            <Badge variant="warning" className="w-fit text-[10px] px-1.5 py-0 leading-none">
+              Diferido a {t.installment.total_installments} meses
+            </Badge>
+          )}
+          {t.is_third_party && (
+            <Badge variant="neutral" className="w-fit text-[10px] px-1.5 py-0 leading-none">
+              Tercero: {t.third_party_owner}
+            </Badge>
+          )}
+        </div>
+      ),
     },
     {
       key: 'account',

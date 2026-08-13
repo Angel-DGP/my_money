@@ -154,7 +154,13 @@ export class Transaction {
       amount: { value: transaction.amount.value.toString(), currency: transaction.amount.currency },
       transactionType: transaction.type,
       date: transaction.date.toISOString(),
+      description: transaction.description,
       transferPairId: transaction.transferPairId,
+      installment: transaction.installment ? {
+        totalInstallments: transaction.installment.totalInstallments,
+        interestRate: transaction.installment.interestRate,
+        graceMonths: transaction.installment.graceMonths,
+      } : null,
       occurredAt: new Date(),
     }));
 

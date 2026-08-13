@@ -7,7 +7,8 @@ export interface Money {
 
 export interface TransactionInstallment {
   total_installments: number;
-  interest_rate?: string;
+  /** Backend retorna `number | null`; NO usar como string */
+  interest_rate?: number | null;
   grace_months?: number;
 }
 

@@ -1,21 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
-export interface CreateProductServiceDto {
-  name: string;
-  category_id: string;
-}
-
-export interface UpdateSubscriptionDto {
-  category_id?: string;
-  card_id?: string;
-  name?: string;
-  amount?: number;
-  currency?: string;
-  billing_cycle?: string;
-  next_billing_date?: string;
-  url?: string;
-}
+import { CreateProductServiceDto, UpdateSubscriptionDto } from './dto/catalogs.dto';
 
 @Injectable()
 export class CatalogsService {
@@ -23,10 +9,25 @@ export class CatalogsService {
 
   // --- Institutions ---
   async getInstitutions(userId: string) {
-    return this.prisma.institution.findMany({
+    let institutions = await this.prisma.institution.findMany({
       where: { user_id: userId },
       orderBy: { name: 'asc' },
     });
+
+    if (institutions.length === 0) {
+      await this.prisma.institution.createMany({
+        data: [
+          { user_id: userId, name: 'Efectivo / Personal', type: 'OTHER' },
+          { user_id: userId, name: 'Banco Principal', type: 'BANK' },
+        ],
+      });
+      institutions = await this.prisma.institution.findMany({
+        where: { user_id: userId },
+        orderBy: { name: 'asc' },
+      });
+    }
+
+    return institutions;
   }
 
   async createInstitution(userId: string, data: { name: string; type: string }) {
@@ -53,10 +54,26 @@ export class CatalogsService {
 
   // --- Card Brands ---
   async getCardBrands(userId: string) {
-    return this.prisma.cardBrand.findMany({
+    let brands = await this.prisma.cardBrand.findMany({
       where: { user_id: userId },
       orderBy: { name: 'asc' },
     });
+
+    if (brands.length === 0) {
+      await this.prisma.cardBrand.createMany({
+        data: [
+          { user_id: userId, name: 'Visa' },
+          { user_id: userId, name: 'Mastercard' },
+          { user_id: userId, name: 'American Express' },
+        ],
+      });
+      brands = await this.prisma.cardBrand.findMany({
+        where: { user_id: userId },
+        orderBy: { name: 'asc' },
+      });
+    }
+
+    return brands;
   }
 
   async createCardBrand(userId: string, data: { name: string }) {
@@ -127,20 +144,48 @@ export class CatalogsService {
     });
   }
 
-  async createSubscription(userId: string, data: { category_id: string; card_id?: string; name: string; amount: number; currency: string; billing_cycle: string; next_billing_date: string; url?: string }) {
-    return this.prisma.subscription.create({
+  async createSubscription(userId: string, data: { category_id: string; card_id?: string; name: string; amount: number; currency?: string; billing_cycle: string; next_billing_date: string; url?: string; duration_months?: number }) {
+    const subscription = await this.prisma.subscription.create({
       data: {
         category_id: data.category_id,
         card_id: data.card_id,
         name: data.name,
         amount: data.amount,
-        currency: data.currency,
+        currency: data.currency || 'USD',
         billing_cycle: data.billing_cycle,
         next_billing_date: new Date(data.next_billing_date),
         url: data.url,
         user_id: userId,
       },
     });
+
+    if (data.duration_months && data.duration_months > 0) {
+      const eventsToCreate = [];
+      const currentDate = new Date(data.next_billing_date);
+
+      for (let i = 0; i < data.duration_months; i++) {
+        eventsToCreate.push({
+          user_id: userId,
+          amount: data.amount,
+          type: "EXPENSE",
+          date: new Date(currentDate),
+          source_type: "SUBSCRIPTION",
+          reference_id: subscription.id,
+          description: `Suscripción: ${data.name}`,
+          status: "PENDING",
+        });
+
+        if (data.billing_cycle === 'YEARLY') {
+          currentDate.setFullYear(currentDate.getFullYear() + 1);
+        } else {
+          currentDate.setMonth(currentDate.getMonth() + 1);
+        }
+      }
+
+      await this.prisma.cashflowEvent.createMany({ data: eventsToCreate });
+    }
+
+    return subscription;
   }
 
   async updateSubscription(userId: string, id: string, data: UpdateSubscriptionDto) {

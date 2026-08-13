@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Input, Label, FormLayout, PageContainer } from '@mymoney/ui';
+import { Button, Input, Label, FormLayout } from '@mymoney/ui';
 import type { AddGoalProgressDto } from '@entities/goal';
 
 interface AddProgressFormProps {
@@ -62,14 +62,15 @@ export function AddProgressForm({ goalName, defaultCurrency, onSubmit, onCancel,
           />
         </div>
 
-      <PageContainer.Footer className="col-span-12">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={!!isLoading}>
+      <div className="flex justify-end gap-2 mt-4 col-span-12 border-t border-border-subtle pt-3">
+        <Button type="button" size="sm" variant="outline" onClick={onCancel} disabled={!!isLoading}>
           Cancelar
         </Button>
-        <Button type="submit" disabled={!!isLoading} form="addprogressform-form">
+        <Button type="submit" size="sm" disabled={!!isLoading} form="addprogressform-form">
           {isLoading ? 'Guardando...' : 'Aportar'}
         </Button>
-      </PageContainer.Footer>
+      </div>
+
     </FormLayout>
   );
 }

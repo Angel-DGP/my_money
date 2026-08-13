@@ -155,6 +155,7 @@ describe('Goal Entity', () => {
         accountId: null,
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
       });
 
       expect(() => {

@@ -7,4 +7,6 @@ export interface IGoalRepository {
   findAllByUser(userId: string): Promise<Goal[]>;
   findActiveByUser(userId: string): Promise<Goal[]>;
   save(goal: Goal): Promise<void>;
+  delete(goal: Goal): Promise<void>;
 }
+

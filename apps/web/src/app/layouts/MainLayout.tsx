@@ -7,14 +7,19 @@ import { NotificationBell } from '@widgets/notification';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Dashboard', icon: 'layout-dashboard' as const },
-  { path: '/accounts', label: 'Cuentas', icon: 'credit-card' as const },
-  { path: '/categories', label: 'Categorías', icon: 'tag' as const },
+  { path: '/accounts', label: 'Cuentas', icon: 'wallet' as const },
   { path: '/transactions', label: 'Transacciones', icon: 'arrow-left-right' as const },
-  { path: '/budgets', label: 'Presupuestos', icon: 'pie-chart' as const },
-  { path: '/goals', label: 'Metas', icon: 'target' as const },
-  { path: '/projections', label: 'Proyecciones', icon: 'trending-up' as const },
+  { 
+    path: '/planning', 
+    label: 'Planificación', 
+    icon: 'target' as const,
+    subItems: [
+      { path: '/planning?tab=budgets', label: 'Presupuestos' },
+      { path: '/planning?tab=goals', label: 'Metas de Ahorro' },
+      { path: '/planning?tab=projections', label: 'Flujo de Caja' },
+    ]
+  },
   { path: '/analytics', label: 'Analíticas', icon: 'bar-chart-2' as const },
-  { path: '/automations', label: 'Automatizaciones', icon: 'repeat' as const },
   { 
     path: '/catalogs', 
     label: 'Catálogos', 
@@ -25,7 +30,8 @@ const NAV_ITEMS = [
       { path: '/catalogs/subscriptions', label: 'Suscripciones' },
       { path: '/catalogs/products', label: 'Compras Frecuentes' },
     ]
-  }
+  },
+  { path: '/settings', label: 'Configuración', icon: 'settings' as const },
 ];
 
 export function MainLayout() {
@@ -44,7 +50,8 @@ export function MainLayout() {
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(path);
+    const basePath = path.split('?')[0] || path;
+    return location.pathname.startsWith(basePath);
   };
 
   const toggleExpand = (path: string) => {
@@ -135,7 +142,19 @@ export function MainLayout() {
                 {item.subItems && isExpanded && (
                   <div className="flex flex-col gap-1 pl-9 pr-2 py-1 animate-in slide-in-from-top-2 duration-200">
                     {item.subItems.map((subItem) => {
-                      const isSubActive = location.pathname === subItem.path || location.pathname.startsWith(`${subItem.path}/`);
+                      const isSubActive = (() => {
+                        if (subItem.path.includes('?')) {
+                          const parts = subItem.path.split('?');
+                          const subPath = parts[0] || '';
+                          const subQuery = parts[1] || '';
+                          if (location.pathname !== subPath) return false;
+                          const currentTab = new URLSearchParams(location.search).get('tab') || 'budgets';
+                          const itemTab = new URLSearchParams(subQuery).get('tab');
+                          return currentTab === itemTab;
+                        }
+                        return location.pathname === subItem.path || location.pathname.startsWith(`${subItem.path}/`);
+                      })();
+
                       return (
                         <Link
                           key={subItem.path}

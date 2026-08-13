@@ -36,7 +36,7 @@ export function ProjectionDetailPage() {
       <PageContainer.Header
         title={`Detalle de Proyección: ${month ? formatMonth(month) : ""}`}
         description="Vista detallada de los movimientos esperados para este mes."
-        backTo={() => navigate("/projections")}
+        backTo={() => navigate("/planning?tab=projections")}
       />
 
       <PageContainer.Body variant="transparent" className="py-6 space-y-6">
@@ -45,7 +45,7 @@ export function ProjectionDetailPage() {
             Cargando detalles...
           </div>
         ) : !projection ? (
-          <div className="py-12 text-center text-text-secondary bg-background-paper rounded-2xl border border-border-subtle">
+          <div className="py-12 text-center text-text-secondary bg-surface rounded-2xl border border-border-subtle">
             No se encontraron datos para este mes.
           </div>
         ) : (
@@ -104,11 +104,11 @@ export function ProjectionDetailPage() {
                       parseFloat(projection.total_expense)
                     }
                     currency="USD"
-                    className={`text-2xl font-bold ${parseFloat(projection.total_income) - parseFloat(projection.total_expense) < 0 ? "text-error-600" : "text-brand-600"}`}
+                    className={`text-2xl font-bold ${parseFloat(projection.total_income) - parseFloat(projection.total_expense) < 0 ? "text-error-600" : "text-primary-600 dark:text-primary-400"}`}
                   />
                   <Icon
                     name="bar-chart-2"
-                    className="text-brand-500 opacity-50"
+                    className="text-primary-500 opacity-50"
                     size="lg"
                   />
                 </div>

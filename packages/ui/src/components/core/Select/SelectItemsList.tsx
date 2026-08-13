@@ -1,4 +1,3 @@
-
 import { cn } from '../Button';
 import { Icon } from '../Icon';
 import { useSelectContext } from './hooks/useSelect';
@@ -23,14 +22,15 @@ export function SelectItemsList() {
                 'relative flex w-full cursor-pointer select-none items-center rounded-lg px-3 py-2 text-sm outline-none transition-colors my-0.5',
                 opt.disabled
                   ? 'pointer-events-none opacity-50'
-                  : 'hover:bg-primary-100 dark:hover:bg-primary-900 hover:text-primary-900 dark:hover:text-primary-100',
-                isSelected && 'bg-primary-100 text-primary-900 dark:bg-primary-900 dark:text-primary-100 font-medium'
+                  : isSelected
+                    ? 'bg-primary-500/15 text-primary-600 dark:text-primary-400 font-semibold'
+                    : 'text-text-primary hover:bg-surface-2'
               )}
             >
               <span className="truncate block w-full pr-6">{opt.label}</span>
               {isSelected && (
                 <span className="absolute right-3 flex items-center justify-center">
-                  <Icon name="check" size="sm" className="text-primary-600 dark:text-primary-400" />
+                  <Icon name="check" size="sm" className="text-primary-500" />
                 </span>
               )}
             </div>

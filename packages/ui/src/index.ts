@@ -20,6 +20,7 @@ export * from './components/core/Typography/Text';
 export * from './components/navigation/Tabs';
 export * from './components/navigation/Pagination';
 export * from './components/overlay/Dialog';
+export * from './components/overlay/Drawer';
 export * from './components/overlay/Modal';
 export * from './components/overlay/AlertDialog';
 export * from './components/overlay/Dropdown';

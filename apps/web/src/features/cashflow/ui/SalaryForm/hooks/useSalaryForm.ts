@@ -34,7 +34,7 @@ export function useSalaryForm() {
         description: `Se proyectaron ${data.months} meses de sueldo correctamente.`,
         variant: "success",
       });
-      navigate("/projections");
+      navigate("/planning?tab=projections");
     } catch (error) {
       toast({
         title: "Error",

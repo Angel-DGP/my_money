@@ -38,11 +38,15 @@ export function RecentTransactionsWidget() {
             {data.map((t: Transaction) => (
               <TransactionCard
                 key={t.id}
-                title={t.category_id ? categoryMap[t.category_id] || 'Categoría' : 'Categoría'}
+                title={t.description || (t.category_id ? categoryMap[t.category_id] : '') || 'Transacción'}
                 category={accountMap[t.account_id] || 'Cuenta'}
                 amount={Number(t.amount.value)}
                 variant={t.type === 'INCOME' ? 'income' : 'expense'}
                 date={new Date(t.date)}
+                badges={[
+                  ...(t.installment ? [{ text: `Diferido: ${t.installment.total_installments} meses`, variant: 'warning' as const }] : []),
+                  ...(t.is_third_party ? [{ text: `Tercero: ${t.third_party_owner}`, variant: 'neutral' as const }] : [])
+                ]}
               />
             ))}
           </div>

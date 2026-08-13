@@ -1,14 +1,98 @@
 import { useTransactionsQuery, useDeleteTransaction, type Transaction } from '@entities/transaction';
-import { TransactionsTable } from '@features/transactions';
-import { Button, Icon, PageContainer, Text, AlertDialog } from '@mymoney/ui';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useAccountsQuery } from '@entities/account';
+import { useCategoriesQuery } from '@entities/category';
+import { TransactionsTable, TransactionDrawer } from '@features/transactions';
+import { Button, Icon, PageContainer, Text, AlertDialog, Select, Badge } from '@mymoney/ui';
+import { useSearchParams } from 'react-router-dom';
+import { useState, useMemo } from 'react';
 
 export function TransactionsPage() {
-  const navigate = useNavigate();
-  const { data, isLoading, isError } = useTransactionsQuery({ page: 1, limit: 15 });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [page, setPage] = useState(1);
+
+  const accountIdParam = searchParams.get('accountId') || searchParams.get('account_id') || '';
+  const typeParam = searchParams.get('type') || '';
+  const categoryIdParam = searchParams.get('categoryId') || searchParams.get('category_id') || '';
+
+  const { data: accounts } = useAccountsQuery();
+  const { data: categories } = useCategoriesQuery();
+
+  const [drawerState, setDrawerState] = useState<{
+    open: boolean;
+    transaction: Transaction | null;
+    isView: boolean;
+  }>({
+    open: false,
+    transaction: null,
+    isView: false,
+  });
+
+  const queryParams = useMemo(() => ({
+    page,
+    limit: 15,
+    account_id: accountIdParam || undefined,
+    type: typeParam || undefined,
+    category_id: categoryIdParam || undefined,
+  }), [page, accountIdParam, typeParam, categoryIdParam]);
+
+  const { data, isLoading, isError } = useTransactionsQuery(queryParams);
   const deleteTransaction = useDeleteTransaction();
   const [txToDelete, setTxToDelete] = useState<Transaction | null>(null);
+
+  const handleAccountChange = (val: string) => {
+    setPage(1);
+    const newParams = new URLSearchParams(searchParams);
+    if (val && val !== 'all') {
+      newParams.set('accountId', val);
+    } else {
+      newParams.delete('accountId');
+      newParams.delete('account_id');
+    }
+    setSearchParams(newParams);
+  };
+
+  const handleTypeChange = (val: string) => {
+    setPage(1);
+    const newParams = new URLSearchParams(searchParams);
+    if (val && val !== 'all') {
+      newParams.set('type', val);
+    } else {
+      newParams.delete('type');
+    }
+    setSearchParams(newParams);
+  };
+
+  const handleCategoryChange = (val: string) => {
+    setPage(1);
+    const newParams = new URLSearchParams(searchParams);
+    if (val && val !== 'all') {
+      newParams.set('categoryId', val);
+    } else {
+      newParams.delete('categoryId');
+      newParams.delete('category_id');
+    }
+    setSearchParams(newParams);
+  };
+
+  const handleClearFilters = () => {
+    setPage(1);
+    setSearchParams(new URLSearchParams());
+  };
+
+  const activeAccount = accounts?.find(a => a.id === accountIdParam);
+  const hasActiveFilters = Boolean(accountIdParam || typeParam || categoryIdParam);
+
+  const handleOpenCreate = () => {
+    setDrawerState({ open: true, transaction: null, isView: false });
+  };
+
+  const handleView = (tx: Transaction) => {
+    setDrawerState({ open: true, transaction: tx, isView: true });
+  };
+
+  const handleEdit = (tx: Transaction) => {
+    setDrawerState({ open: true, transaction: tx, isView: false });
+  };
 
   const handleDeleteConfirm = async () => {
     if (!txToDelete) return;
@@ -24,15 +108,95 @@ export function TransactionsPage() {
     <PageContainer className="max-w-7xl">
       <PageContainer.Header
         title="Transacciones"
-        description="Historial completo de tus movimientos"
+        description={activeAccount ? `Movimientos de la cuenta: ${activeAccount.name}` : "Historial completo de tus movimientos"}
         actions={
-          <Button onClick={() => navigate('/transactions/new')}>
+          <Button onClick={handleOpenCreate}>
             <Icon name="plus" size="sm" className="mr-2" />
             Nueva Transacción
           </Button>
         }
       />
       <PageContainer.Body variant="transparent">
+        {/* ─── BARRA DE FILTROS ──────────────────────────────────────────────── */}
+        <div className="bg-surface rounded-2xl border border-border-subtle p-4 mb-6 shadow-sm space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <Select
+                id="filter-account"
+                label="Cuenta"
+                value={accountIdParam || 'all'}
+                onChange={(e) => handleAccountChange(e.target.value)}
+              >
+                <option value="all">Todas las cuentas</option>
+                {accounts?.map((acc) => (
+                  <option key={acc.id} value={acc.id}>
+                    {acc.name} ({acc.type})
+                  </option>
+                ))}
+              </Select>
+            </div>
+
+            <div>
+              <Select
+                id="filter-type"
+                label="Tipo de Movimiento"
+                value={typeParam || 'all'}
+                onChange={(e) => handleTypeChange(e.target.value)}
+              >
+                <option value="all">Todos los tipos</option>
+                <option value="INCOME">Ingresos</option>
+                <option value="EXPENSE">Gastos</option>
+                <option value="TRANSFER">Transferencias</option>
+              </Select>
+            </div>
+
+            <div>
+              <Select
+                id="filter-category"
+                label="Categoría"
+                value={categoryIdParam || 'all'}
+                onChange={(e) => handleCategoryChange(e.target.value)}
+              >
+                <option value="all">Todas las categorías</option>
+                {categories?.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          </div>
+
+          {hasActiveFilters && (
+            <div className="flex flex-wrap items-center justify-between pt-2 border-t border-border-subtle/50 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="text-text-muted">Filtros activos:</span>
+                {activeAccount && (
+                  <Badge variant="primary" size="sm">
+                    Cuenta: {activeAccount.name}
+                  </Badge>
+                )}
+                {typeParam && (
+                  <Badge variant="neutral" size="sm">
+                    Tipo: {typeParam === 'INCOME' ? 'Ingreso' : typeParam === 'EXPENSE' ? 'Gasto' : 'Transferencia'}
+                  </Badge>
+                )}
+                {categoryIdParam && categories && (
+                  <Badge variant="neutral" size="sm">
+                    Categoría: {categories.find(c => c.id === categoryIdParam)?.name || 'Seleccionada'}
+                  </Badge>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={handleClearFilters}
+                className="text-primary-500 hover:text-primary-600 font-medium hover:underline flex items-center gap-1"
+              >
+                <Icon name="x" size="xs" /> Limpiar filtros
+              </button>
+            </div>
+          )}
+        </div>
         {isLoading ? (
           <div className="flex justify-center py-12">
             <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
@@ -51,8 +215,8 @@ export function TransactionsPage() {
           <>
             <TransactionsTable 
               transactions={data || []}
-              onView={(tx) => navigate('/transactions/edit', { state: { transaction: tx, isView: true } })} 
-              onEdit={(tx) => navigate('/transactions/edit', { state: { transaction: tx } })}
+              onView={handleView} 
+              onEdit={handleEdit}
               onDelete={(tx) => setTxToDelete(tx)}
             />
 
@@ -67,10 +231,80 @@ export function TransactionsPage() {
               isLoading={deleteTransaction.isPending}
             />
 
-            {/* Paginación - Omitido temporalmente ya que API no expone meta aún */}
+            {(() => {
+              const meta = data?.meta;
+              if (!meta || meta.total_pages <= 1) return null;
+              return (
+                <div className="flex items-center justify-between mt-6 px-4 py-3 bg-surface-1 border border-border-subtle rounded-xl">
+                  <div className="flex flex-1 justify-between sm:hidden">
+                    <Button
+                      variant="outline"
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={!meta.has_previous}
+                    >
+                      Anterior
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setPage((p) => Math.min(meta.total_pages, p + 1))}
+                      disabled={!meta.has_next}
+                    >
+                      Siguiente
+                    </Button>
+                  </div>
+                  <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div>
+                      <Text variant="muted" className="text-sm">
+                        Mostrando página <span className="font-semibold text-text-primary">{meta.current_page}</span> de{' '}
+                        <span className="font-semibold text-text-primary">{meta.total_pages}</span> ({meta.total_items} transacciones)
+                      </Text>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={!meta.has_previous}
+                      >
+                        <Icon name="chevron-left" size="sm" className="mr-1" /> Anterior
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPage((p) => Math.min(meta.total_pages, p + 1))}
+                        disabled={!meta.has_next}
+                      >
+                        Siguiente <Icon name="chevron-right" size="sm" className="ml-1" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </>
         )}
+
+        {/* Floating Action Button (FAB) para Mobile */}
+        <div className="fixed bottom-6 right-6 sm:hidden z-30">
+          <button
+            type="button"
+            onClick={handleOpenCreate}
+            className="w-14 h-14 rounded-full bg-primary-600 hover:bg-primary-700 text-white shadow-xl flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-primary-500/30 active:scale-95 transition-all"
+            aria-label="Registrar nueva transacción"
+          >
+            <Icon name="plus" size="md" />
+          </button>
+        </div>
       </PageContainer.Body>
+
+      {/* ─── DRAWER DE TRANSACCIONES (Crear / Editar / Recibo) ──────────────── */}
+      <TransactionDrawer
+        open={drawerState.open}
+        onOpenChange={(open) => setDrawerState((prev) => ({ ...prev, open }))}
+        transaction={drawerState.transaction}
+        initialViewMode={drawerState.isView}
+      />
     </PageContainer>
   );
 }
+

@@ -1,6 +1,6 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import {
   Button,
   Input,
@@ -8,13 +8,13 @@ import {
   PageContainer,
   Icon,
   Label,
-  FormLayout,
-} from "@mymoney/ui";
-import { useCategoriesQuery } from "@entities/category";
+  Card,
+} from '@mymoney/ui';
+import { useCategoriesQuery } from '@entities/category';
 
 const productSchema = z.object({
-  name: z.string().min(2, "El nombre es requerido"),
-  category_id: z.string().min(1, "La categoría es requerida"),
+  name: z.string().min(2, 'El nombre es requerido'),
+  category_id: z.string().min(1, 'La categoría es requerida'),
   description: z.string().optional().nullable(),
 });
 
@@ -35,7 +35,7 @@ export function ProductServiceForm({
   isLoading,
   isView,
 }: ProductServiceFormProps) {
-  const { data: categories } = useCategoriesQuery();
+  const { data: categories = [] } = useCategoriesQuery();
 
   const {
     register,
@@ -46,56 +46,61 @@ export function ProductServiceForm({
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      name: initialData?.name || "",
-      category_id: initialData?.category_id || "",
-      description: initialData?.description || "",
+      name: initialData?.name || '',
+      category_id: initialData?.category_id || '',
+      description: initialData?.description || '',
     },
   });
 
-  const category_id = watch("category_id");
+  const category_id = watch('category_id');
 
   return (
-    <FormLayout
+    <form
       id="productserviceform-form"
       onSubmit={handleSubmit(onSubmit)}
-      className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10"
+      className="max-w-2xl mx-auto space-y-6"
     >
-      {/* ─── SECCIÓN: INFORMACIÓN DEL COMERCIO/PRODUCTO ────────────────────── */}
-      <div className="col-span-12 space-y-5">
-        <div className="border-b border-border-subtle pb-3">
-          <h3 className="text-lg font-semibold text-text-primary flex items-center gap-2">
-            <Icon name="shopping-bag" size="sm" className="text-primary-500" />
-            Información del Comercio / Producto
-          </h3>
-          <p className="text-sm text-text-secondary mt-1">
-            Detalles sobre el lugar donde realizas compras o el producto
-            adquirido.
-          </p>
+      <Card>
+        <div className="p-6 border-b border-border-subtle flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-500">
+            <Icon name="shopping-bag" size="sm" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-text-primary">
+              Información del Comercio / Producto
+            </h3>
+            <p className="text-xs text-text-secondary mt-0.5">
+              Detalles sobre el comercio o servicio recurrente.
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-          <div className="col-span-12 md:col-span-6 space-y-2">
-            <Label htmlFor="name" required>
-              Nombre del Comercio/Producto
+        <div className="p-6 space-y-5">
+          <div className="space-y-1.5">
+            <Label htmlFor="prod-name" required>
+              Nombre del Comercio / Producto
             </Label>
             <Input
-              id="name"
-              placeholder="Ej: Supermaxi, Amazon, Apple..."
+              id="prod-name"
+              placeholder="Ej: Supermaxi, Amazon, Apple, Uber..."
               disabled={isView || isLoading}
               error={errors.name?.message}
               required
-              {...register("name")}
+              {...register('name')}
             />
           </div>
 
-          <div className="col-span-12 md:col-span-6 space-y-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="prod-cat" required>
+              Categoría Principal
+            </Label>
             <Select
-              id="category_id"
+              id="prod-cat"
               name="category_id"
-              label="Categoría Principal"
-              value={category_id || ""}
+              label=""
+              value={category_id || ''}
               onValueChange={(val) =>
-                setValue("category_id", val, { shouldValidate: true })
+                setValue('category_id', val, { shouldValidate: true })
               }
               error={errors.category_id?.message}
               searchable
@@ -104,7 +109,7 @@ export function ProductServiceForm({
               placeholder="Seleccionar categoría..."
             >
               {categories
-                ?.filter((c) => c.type === "EXPENSE")
+                .filter((c) => c.type === 'EXPENSE')
                 .map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
@@ -113,43 +118,39 @@ export function ProductServiceForm({
             </Select>
           </div>
 
-          <div className="col-span-12 md:col-span-12 space-y-2">
-            <Label htmlFor="description">Descripción (Opcional)</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="prod-desc">Descripción (Opcional)</Label>
             <Input
-              id="description"
+              id="prod-desc"
               placeholder="Categoría general o notas"
               disabled={isView || isLoading}
               error={errors.description?.message}
-              {...register("description")}
+              {...register('description')}
             />
           </div>
         </div>
-      </div>
 
-      <PageContainer.Footer className="col-span-12">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={onCancel}
-          disabled={isLoading}
-        >
-          {isView ? "Volver" : "Cancelar"}
-        </Button>
-        {!isView && (
+        <PageContainer.Footer>
           <Button
-            type="submit"
+            type="button"
+            variant="ghost"
+            onClick={onCancel}
             disabled={isLoading}
-            leftIcon={isLoading ? "loader-2" : undefined}
-            form="productserviceform-form"
           >
-            {isLoading
-              ? "Guardando..."
-              : initialData
-                ? "Actualizar Comercio"
-                : "Guardar Comercio"}
+            {isView ? 'Volver' : 'Cancelar'}
           </Button>
-        )}
-      </PageContainer.Footer>
-    </FormLayout>
+          {!isView && (
+            <Button
+              type="submit"
+              disabled={isLoading}
+              loading={isLoading}
+            >
+              <Icon name="check" size="xs" className="mr-1.5" />
+              {initialData ? 'Actualizar Comercio' : 'Guardar Comercio'}
+            </Button>
+          )}
+        </PageContainer.Footer>
+      </Card>
+    </form>
   );
 }

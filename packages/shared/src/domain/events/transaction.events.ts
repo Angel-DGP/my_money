@@ -8,7 +8,13 @@ export interface TransactionCreatedEventProps extends Omit<DomainEventProps, 'ag
   amount: { value: string; currency: string };
   transactionType: 'INCOME' | 'EXPENSE' | 'TRANSFER';
   date: string;
+  description?: string | null;
   transferPairId: string | null;
+  installment?: {
+    totalInstallments: number;
+    interestRate: number | null;
+    graceMonths: number;
+  } | null;
 }
 
 export class TransactionCreatedEvent extends DomainEvent {
@@ -20,7 +26,13 @@ export class TransactionCreatedEvent extends DomainEvent {
   public readonly amount: { value: string; currency: string };
   public readonly transactionType: 'INCOME' | 'EXPENSE' | 'TRANSFER';
   public readonly date: string;
+  public readonly description: string | null;
   public readonly transferPairId: string | null;
+  public readonly installment?: {
+    totalInstallments: number;
+    interestRate: number | null;
+    graceMonths: number;
+  } | null;
 
   constructor(props: TransactionCreatedEventProps) {
     super({ ...props, aggregateId: props.transactionId });
@@ -31,7 +43,9 @@ export class TransactionCreatedEvent extends DomainEvent {
     this.amount = props.amount;
     this.transactionType = props.transactionType;
     this.date = props.date;
+    this.description = props.description ?? null;
     this.transferPairId = props.transferPairId;
+    this.installment = props.installment ?? null;
   }
 }
 

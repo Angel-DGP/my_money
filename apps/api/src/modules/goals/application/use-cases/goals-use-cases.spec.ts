@@ -5,12 +5,14 @@ import { GetGoalByIdUseCase } from './get-goal-by-id.use-case';
 import { Goal } from '../../domain/goal.entity';
 import { GoalStatus } from '../../domain/goal-status.enum';
 import { Money, Currency } from '@mymoney/shared';
+import { IGoalRepository } from '../../domain/goal.repository.interface';
 
 import { NotFoundException } from '@nestjs/common';
 import { GoalException } from '../../domain/exceptions/goal.exceptions';
 
 describe('Goals Use Cases', () => {
-  let mockGoalRepository: Record<string, jest.Mock>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let mockGoalRepository: jest.Mocked<IGoalRepository>;
   let mockUnitOfWork: Record<string, jest.Mock>;
   let mockEventEmitter: Record<string, jest.Mock>;
   const userId = 'user-1';
@@ -21,7 +23,8 @@ describe('Goals Use Cases', () => {
       findById: jest.fn(),
       findAllByUser: jest.fn(),
       findActiveByUser: jest.fn(),
-    };
+      delete: jest.fn(),
+    } as unknown as jest.Mocked<IGoalRepository>;
 
     mockUnitOfWork = {
       execute: jest.fn((work) => work()),

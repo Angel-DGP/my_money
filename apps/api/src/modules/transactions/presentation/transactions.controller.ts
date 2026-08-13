@@ -8,9 +8,11 @@ import { CreateTransactionUseCase } from '../application/use-cases/create-transa
 import { UpdateTransactionUseCase } from '../application/use-cases/update-transaction.use-case';
 import { DeleteTransactionUseCase } from '../application/use-cases/delete-transaction.use-case';
 import { ListTransactionsUseCase } from '../application/use-cases/list-transactions.use-case';
+import { GetTransactionByIdUseCase } from '../application/use-cases/get-transaction-by-id.use-case';
 import { CreateTransferUseCase } from '../application/use-cases/create-transfer.use-case';
 import { GetTransferPairUseCase } from '../application/use-cases/get-transfer-pair.use-case';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
+
 
 @UseGuards(JwtAuthGuard)
 @Controller({ path: 'transactions', version: '1' })
@@ -20,9 +22,11 @@ export class TransactionsController {
     private readonly updateTransactionUseCase: UpdateTransactionUseCase,
     private readonly deleteTransactionUseCase: DeleteTransactionUseCase,
     private readonly listTransactionsUseCase: ListTransactionsUseCase,
+    private readonly getTransactionByIdUseCase: GetTransactionByIdUseCase,
     private readonly createTransferUseCase: CreateTransferUseCase,
     private readonly getTransferPairUseCase: GetTransferPairUseCase
   ) {}
+
 
   @Get()
   async findAll(
@@ -53,6 +57,15 @@ export class TransactionsController {
   ): Promise<ApiResponse<TransactionDto>> {
     const userId = req.user.id;
     const data = await this.createTransactionUseCase.execute(userId, dto);
+    return { data };
+  }
+
+  @Get(':id')
+  async findOne(
+    @Request() req: AuthenticatedRequest,
+    @Param('id') id: string
+  ): Promise<ApiResponse<TransactionDto>> {
+    const data = await this.getTransactionByIdUseCase.execute(id, req.user.id);
     return { data };
   }
 

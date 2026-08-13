@@ -13,6 +13,11 @@ export const transactionSchema = z.object({
   from_account_id: z.string().optional(),
   to_account_id: z.string().optional(),
   
+  // Third Party
+  is_third_party: z.boolean().optional(),
+  third_party_owner: z.string().optional(),
+  third_party_note: z.string().optional(),
+  
   // Catalogs
   payment_method: z.string().optional(),
   card_id: z.string().optional(),
@@ -21,7 +26,7 @@ export const transactionSchema = z.object({
   
   installment: z.object({
     total_installments: z.coerce.number().min(2, 'Debe ser al menos 2 meses'),
-    interest_rate: z.string().optional(),
+    interest_rate: z.coerce.number().optional(),
     grace_months: z.coerce.number().min(0).optional(),
   }).optional(),
 }).superRefine((data, ctx) => {

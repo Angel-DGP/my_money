@@ -1,6 +1,10 @@
 # UI Rules
 
-- **Formularios de Creación**: Para la creación de entidades (cuentas, transacciones, presupuestos, metas, etc.), NO se deben utilizar modales (`Dialog` o ventanas flotantes). Todos los formularios de creación deben implementarse como **páginas dedicadas** (ej: `/transactions/new`, `/accounts/new`) utilizando el Feature Sliced Design (FSD) y siguiendo el flujo de navegación natural.
+- **Formularios de Creación y Edición (Drawers y Bottom Sheets)**: Para la creación y edición de entidades (cuentas, transacciones, presupuestos, etc.), se utiliza la arquitectura de **Drawers responsivos**:
+  - **Desktop / Tablet ($\ge 768px$):** **Slide-over Drawer** lateral derecho (`Drawer`).
+  - **Mobile ($< 768px$):** **Bottom Sheet** táctil con grabber nativo.
+  - **Creación Rápida Inline:** Modales livianos centrados (`Dialog`) por encima del Drawer para crear elementos de apoyo (bancos, marcas, categorías) sin perder el contexto ni los datos ya escritos.
+  - **Páginas fijas:** Se mantiene la compatibilidad de rutas dedicadas para acceso directo o bookmarks.
 
 # Project Architecture & Quality Standards (Definition of Done)
 

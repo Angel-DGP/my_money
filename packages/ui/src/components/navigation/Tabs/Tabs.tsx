@@ -90,7 +90,7 @@ export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
         role="tablist"
         aria-orientation={orientation}
         className={cn(
-          'inline-flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800/80 p-1 text-text-secondary',
+          'inline-flex items-center justify-center rounded-xl bg-surface-2 p-1 text-text-secondary border border-border-subtle',
           orientation === 'horizontal' ? 'h-10' : 'flex-col h-auto w-max',
           className
         )}
@@ -164,8 +164,10 @@ export const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>
         }}
         onKeyDown={handleKeyDown}
         className={cn(
-          'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50',
-          'data-[state=active]:bg-background data-[state=active]:text-text-primary data-[state=active]:shadow-sm',
+          'inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all',
+          'text-text-secondary hover:text-text-primary',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50',
+          'data-[state=active]:bg-surface data-[state=active]:text-text-primary data-[state=active]:font-semibold data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-border-subtle',
           orientation === 'vertical' && 'w-full text-left justify-start',
           className
         )}

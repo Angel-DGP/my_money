@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { GoalsService } from '@shared/api/services/goals';
-import type { CreateGoalDto, AddGoalProgressDto } from '../types/goal.types';
+import type { CreateGoalDto, AddGoalProgressDto, UpdateGoalDto } from '../types/goal.types';
 import { goalKeys } from './keys';
 import { goalInvalidations } from './invalidations';
 import { useSessionStore } from '@entities/session';
@@ -37,12 +37,13 @@ export function useUpdateGoal() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CreateGoalDto> }) => GoalsService.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdateGoalDto }) => GoalsService.update(id, data),
     onSuccess: (_, variables) => {
       goalInvalidations.onUpdate(queryClient, variables.id);
     },
   });
 }
+
 
 export function useDeleteGoal() {
   const queryClient = useQueryClient();

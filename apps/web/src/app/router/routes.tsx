@@ -17,8 +17,9 @@ import { ProjectionsPage } from '@pages/cashflow/projections.page';
 import { ProjectionDetailPage } from '@pages/cashflow/projection-detail.page';
 import { NewSalaryPage } from '@pages/cashflow/new-salary.page';
 import { AutomationsPage, CreateAutomationPage, EditAutomationPage } from '@pages/automations';
-import { UIKitPage } from '@pages/ui-kit';
+import { PlanningPage } from '@pages/planning';
 import { SettingsPage } from '@pages/settings';
+import { UIKitPage } from '@pages/ui-kit';
 import { 
   CatalogsPage,
   InstitutionsPage,
@@ -100,6 +101,10 @@ export const routes: RouteObject[] = [
               {
                 path: '/transactions/edit',
                 element: <EditTransactionPage />,
+              },
+              {
+                path: '/planning',
+                element: <PlanningPage />,
               },
               {
                 path: '/budgets',

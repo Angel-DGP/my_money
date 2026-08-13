@@ -33,8 +33,8 @@ export const useDashboardSummary = () => {
   return useQuery({
     queryKey: ['dashboard', 'summary'],
     queryFn: async () => {
-      const response = await apiClient.get('/dashboard/summary');
-      return response.data as unknown as DashboardSummary;
+      const response = await apiClient.get<DashboardSummary>('/dashboard/summary');
+      return response.data;
     },
     enabled: !!token,
   });
@@ -45,8 +45,8 @@ export const useMonthlyFlow = () => {
   return useQuery({
     queryKey: ['dashboard', 'monthly-flow'],
     queryFn: async () => {
-      const response = await apiClient.get('/dashboard/monthly-flow');
-      return response.data as unknown as MonthlyFlowResponse;
+      const response = await apiClient.get<MonthlyFlowResponse>('/dashboard/monthly-flow');
+      return response.data;
     },
     enabled: !!token,
   });

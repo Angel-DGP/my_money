@@ -6,7 +6,7 @@ export function ActiveGoalsWidget() {
   const { data: response = [], isLoading, isError, refetch } = useGoalsQuery();
 
   // Filtrar solo las que no estén completadas
-  const activeGoals = response.filter((g: GoalDto) => g.status !== 'completed').slice(0, 3); // Top 3
+  const activeGoals = response.filter((g: GoalDto) => g.status !== 'COMPLETED').slice(0, 3); // Top 3
 
   return (
     <div className="bg-background rounded-xl border border-border-subtle p-6">

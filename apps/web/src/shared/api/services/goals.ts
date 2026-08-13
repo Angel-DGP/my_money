@@ -1,5 +1,5 @@
 import { apiClient } from '../client';
-import type { CreateGoalDto, AddGoalProgressDto, GoalDto } from '@entities/goal';
+import type { CreateGoalDto, AddGoalProgressDto, GoalDto, UpdateGoalDto } from '@entities/goal';
 
 export const GoalsService = {
   async getAll(status?: string): Promise<GoalDto[]> {
@@ -18,7 +18,7 @@ export const GoalsService = {
     return data;
   },
 
-  async update(id: string, payload: Partial<CreateGoalDto>): Promise<GoalDto> {
+  async update(id: string, payload: UpdateGoalDto): Promise<GoalDto> {
     const { data } = await apiClient.patch<GoalDto>(`/goals/${id}`, payload);
     return data;
   },

@@ -2,6 +2,7 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { useSessionStore } from '@entities/session';
 import { useGlobalErrorStore } from '../../store/global-error.store';
 import { API_CONFIG } from '../config';
+import { formatApiErrorMessage } from '../../utils/formatApiError';
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
 
@@ -66,17 +67,20 @@ export const errorInterceptor = async (error: AxiosError): Promise<never> => {
   }
 
   const status = error.response.status;
-  const data = error.response.data as { message?: string | string[] } | null | undefined;
+  const data = error.response.data;
+
+  // Validation / Business Error (400, 404, 409, 422)
+  if (status === 400 || status === 404 || status === 409 || status === 422) {
+    const formattedMsg = formatApiErrorMessage(data);
+    if (error.response.data && typeof error.response.data === 'object') {
+      (error.response.data as { formattedMessage?: string }).formattedMessage = formattedMsg;
+    }
+    showError('Error de validación', formattedMsg);
+  }
 
   // Server Error (5xx)
   if (status >= 500) {
     showError('Error del servidor', 'Ocurrió un problema inesperado en nuestros servidores. Intenta más tarde.');
-  }
-
-  // Validation Error (400)
-  if (status === 400 && data?.message) {
-    const msg = Array.isArray(data.message) ? data.message.join('. ') : data.message;
-    showError('Error de validación', msg || 'Revisa la información proporcionada.');
   }
 
   // Solo actuar con refresh token en errores 401

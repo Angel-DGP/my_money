@@ -4,12 +4,23 @@ import type {
   CreateTransactionDto,
   UpdateTransactionDto,
   CreateTransferDto,
+  PaginatedResponse,
 } from '@entities/transaction';
 
+export interface TransactionQueryParams {
+  page?: number | undefined;
+  limit?: number | undefined;
+  account_id?: string | undefined;
+  category_id?: string | undefined;
+  type?: string | undefined;
+  start_date?: string | undefined;
+  end_date?: string | undefined;
+}
+
 export const TransactionsService = {
-  async getAll(params?: { page?: number; limit?: number }): Promise<Transaction[]> {
+  async getAll(params?: TransactionQueryParams): Promise<Transaction[] & { meta?: PaginatedResponse<Transaction>['meta'] }> {
     const response = await apiClient.get<Transaction[]>('/transactions', { params });
-    return response.data;
+    return response.data as unknown as Transaction[] & { meta?: PaginatedResponse<Transaction>['meta'] };
   },
 
   async getById(id: string): Promise<Transaction> {

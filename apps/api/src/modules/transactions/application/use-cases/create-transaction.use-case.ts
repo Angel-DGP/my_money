@@ -66,7 +66,7 @@ export class CreateTransactionUseCase {
       productId: dto.product_id ?? null,
       installment: dto.installment ? {
         totalInstallments: dto.installment.total_installments,
-        interestRate: dto.installment.interest_rate ? Number(dto.installment.interest_rate) : null,
+        interestRate: dto.installment.interest_rate ?? null,
         graceMonths: dto.installment.grace_months ?? 0,
       } : null,
     });

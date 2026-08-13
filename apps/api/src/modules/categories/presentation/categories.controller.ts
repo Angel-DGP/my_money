@@ -12,7 +12,7 @@ import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 @ApiTags('Categories')
 @ApiCookieAuth('session_id')
 @UseGuards(JwtAuthGuard)
-@Controller('categories')
+@Controller({ path: 'categories', version: '1' })
 export class CategoriesController {
   constructor(
     private readonly createCategoryUseCase: CreateCategoryUseCase,

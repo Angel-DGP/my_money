@@ -21,7 +21,7 @@ export function NewBudgetPage() {
           description: 'El presupuesto se ha creado exitosamente.',
           variant: 'success',
         });
-        navigate('/budgets');
+        navigate('/planning?tab=budgets');
       },
       onError: () => {
         toast({

@@ -7,9 +7,9 @@ export class TransactionInstallmentDto {
   @IsNotEmpty()
   total_installments!: number;
 
-  @IsNumberString()
+  @IsNumber()
   @IsOptional()
-  interest_rate?: string;
+  interest_rate?: number;
 
   @IsNumber()
   @IsOptional()

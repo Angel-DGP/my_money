@@ -8,7 +8,7 @@ import { MonthlyFlowResponseDto } from '../application/dtos/monthly-flow.dto';
 import { ApiResponse } from '@mymoney/shared';
 
 @UseGuards(JwtAuthGuard)
-@Controller('dashboard')
+@Controller({ path: 'dashboard', version: '1' })
 export class DashboardController {
   constructor(
     private readonly getDashboardSummaryUseCase: GetDashboardSummaryUseCase,

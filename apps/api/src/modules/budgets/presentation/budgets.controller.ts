@@ -14,7 +14,7 @@ import { ApiResponse } from '@mymoney/shared';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
-@Controller('budgets')
+@Controller({ path: 'budgets', version: '1' })
 export class BudgetsController {
   constructor(
     private readonly createBudgetUseCase: CreateBudgetUseCase,

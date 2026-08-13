@@ -16,15 +16,13 @@ export function useTransactionForm(initialData?: Transaction) {
 
   const isEdit = !!initialData;
   const transferPairId = initialData?.transfer_pair_id;
-  const { data: transferPair } = useTransferPairQuery(transferPairId);
-
-  const form = useForm<TransactionFormData>({
+  const { data: transferPair } = useTransferPairQuery(transferPairId);  const form = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       type: (initialData?.type as 'INCOME' | 'EXPENSE' | 'TRANSFER') || 'EXPENSE',
       amount: initialData ? parseFloat(initialData.amount.value) : ('' as unknown as number),
       description: initialData?.description || '',
-      note: initialData?.third_party_note || '',
+      note: !initialData?.is_third_party ? (initialData?.third_party_note || '') : '',
       date: initialData?.date ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       category_id: initialData?.category_id || (initialData ? 'none' : ''),
       account_id: initialData?.account_id || '',
@@ -34,7 +32,18 @@ export function useTransactionForm(initialData?: Transaction) {
       card_id: initialData?.card_id || (initialData ? 'none' : ''),
       subscription_id: initialData?.subscription_id || (initialData ? 'none' : ''),
       product_id: initialData?.product_id || (initialData ? 'none' : ''),
-      installment: undefined,
+      
+      // Third party details
+      is_third_party: initialData?.is_third_party || false,
+      third_party_owner: initialData?.third_party_owner || '',
+      third_party_note: initialData?.is_third_party ? (initialData?.third_party_note || '') : '',
+
+      // Installment details
+      installment: initialData?.installment ? {
+        total_installments: initialData.installment.total_installments,
+        interest_rate: initialData.installment.interest_rate ?? undefined,
+        grace_months: initialData.installment.grace_months ?? 0,
+      } : undefined,
     } as TransactionFormData
   });
 
@@ -64,7 +73,9 @@ export function useTransactionForm(initialData?: Transaction) {
             description: data.description,
             date: data.date,
             category_id: data.category_id === 'none' ? null : (data.category_id || null),
-            third_party_note: data.note || null,
+            is_third_party: data.is_third_party || false,
+            third_party_owner: data.is_third_party ? (data.third_party_owner || null) : null,
+            third_party_note: data.is_third_party ? (data.third_party_note || null) : (data.note || null),
             payment_method: data.payment_method === 'none' ? null : (data.payment_method || null),
             card_id: data.card_id === 'none' ? null : (data.card_id || null),
             subscription_id: data.subscription_id === 'none' ? null : (data.subscription_id || null),
@@ -88,7 +99,13 @@ export function useTransactionForm(initialData?: Transaction) {
             date: data.date,
             account_id: data.account_id!,
             ...(data.category_id && data.category_id !== 'none' ? { category_id: data.category_id } : {}),
-            ...(data.note ? { third_party_note: data.note } : {}),
+            is_third_party: data.is_third_party || false,
+            ...(data.is_third_party ? {
+              third_party_owner: data.third_party_owner || null,
+              third_party_note: data.third_party_note || null,
+            } : {
+              third_party_note: data.note || null,
+            }),
             ...(data.payment_method && data.payment_method !== 'none' ? { payment_method: data.payment_method } : {}),
             ...(data.card_id && data.card_id !== 'none' ? { card_id: data.card_id } : {}),
             ...(data.subscription_id && data.subscription_id !== 'none' ? { subscription_id: data.subscription_id } : {}),
@@ -102,7 +119,6 @@ export function useTransactionForm(initialData?: Transaction) {
       console.error('Failed to save transaction', error);
     }
   };
-
   const handleConfirmDelete = async () => {
     if (!initialData) return;
     try {

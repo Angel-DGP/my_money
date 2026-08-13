@@ -32,7 +32,7 @@ export function GoalsTable({ goals, onView, onEdit, onDelete, onAddProgress }: G
             <p className="truncate text-text-primary">{goal.name}</p>
             {goal.description && <p className="text-xs text-text-secondary font-normal truncate max-w-[150px]" title={goal.description}>{goal.description}</p>}
           </div>
-          {goal.status === 'completed' && <Badge variant="success" className="ml-2 shrink-0">Completado</Badge>}
+          {goal.status === 'COMPLETED' && <Badge variant="success" className="ml-2 shrink-0">Completado</Badge>}
         </div>
       ),
     },
@@ -55,7 +55,7 @@ export function GoalsTable({ goals, onView, onEdit, onDelete, onAddProgress }: G
       key: 'proyeccion',
       header: 'Proyección',
       cell: (goal) => (
-        goal.status !== 'completed' && goal.days_remaining !== null ? (
+        goal.status !== 'COMPLETED' && goal.days_remaining !== null ? (
           <div className="flex flex-col text-sm">
             <span className="font-medium text-text-primary">{goal.days_remaining} días restantes</span>
             {goal.monthly_required && goal.monthly_required > 0 && (
@@ -86,7 +86,7 @@ export function GoalsTable({ goals, onView, onEdit, onDelete, onAddProgress }: G
       sticky: 'right',
       cell: (goal) => (
         <div className="flex justify-center gap-1">
-          <button type="button" aria-label="Aportar" disabled={goal.status === 'completed'} onClick={(e) => { e.stopPropagation(); onAddProgress(goal); }} className="p-1.5 text-text-muted hover:text-success-500 hover:bg-success-50 dark:hover:bg-success-900/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <button type="button" aria-label="Aportar" disabled={goal.status === 'COMPLETED'} onClick={(e) => { e.stopPropagation(); onAddProgress(goal); }} className="p-1.5 text-text-muted hover:text-success-500 hover:bg-success-50 dark:hover:bg-success-900/20 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <Icon name="piggy-bank" size="sm" />
           </button>
           <button type="button" aria-label="Ver" onClick={(e) => { e.stopPropagation(); onView(goal); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
@@ -112,8 +112,8 @@ export function GoalsTable({ goals, onView, onEdit, onDelete, onAddProgress }: G
       searchPlaceholder="Buscar por nombre..."
       filters={FILTERS}
       filterField={(g, f) => {
-        if (f === 'completed') return g.status === 'completed';
-        if (f === 'active') return g.status !== 'completed';
+        if (f === 'completed') return g.status === 'COMPLETED';
+        if (f === 'active') return g.status !== 'COMPLETED';
         return true;
       }}
       defaultSort={{ column: 'name', direction: 'asc' }}

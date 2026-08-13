@@ -151,11 +151,25 @@ export class Account {
     this._updatedBy = updatedBy;
   }
 
-  updateProfile(name: string, color: string | null, icon: string | null, updatedBy: string): void {
+  /**
+   * Actualiza los campos de perfil editables de la cuenta.
+   * Los campos `type` y `currency` son inmutables después de la creación.
+   */
+  updateProfile(
+    name: string,
+    color: string | null,
+    icon: string | null,
+    updatedBy: string,
+    institutionId?: string | null,
+    specificType?: string | null,
+  ): void {
     this._name = name;
     this._color = color;
     this._icon = icon;
-    
+
+    if (institutionId !== undefined) this._institutionId = institutionId;
+    if (specificType !== undefined) this._specificType = specificType;
+
     this._updatedAt = new Date();
     this._updatedBy = updatedBy;
   }

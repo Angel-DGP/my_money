@@ -16,7 +16,7 @@ export function NewGoalPage() {
           description: 'La meta de ahorro se ha creado exitosamente.',
           variant: 'success',
         });
-        navigate('/goals');
+        navigate('/planning?tab=goals');
       },
       onError: () => {
         toast({
@@ -33,13 +33,13 @@ export function NewGoalPage() {
       <PageContainer.Header
         title="Nueva Meta de Ahorro"
         description="Define objetivos financieros a mediano o largo plazo"
-        backTo={() => navigate(-1)}
+        backTo={() => navigate('/planning?tab=goals')}
       />
 
       <PageContainer.Body variant="transparent" className="py-6">
         <GoalForm
           onSubmit={handleSubmit}
-          onCancel={() => navigate('/goals')}
+          onCancel={() => navigate('/planning?tab=goals')}
           isLoading={createGoal.isPending}
         />
       </PageContainer.Body>

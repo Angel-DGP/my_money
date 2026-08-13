@@ -7,4 +7,7 @@ export const accountSchema = z.object({
   initial_balance: z.string().optional(),
   institution_id: z.string().optional(),
   specific_type: z.string().optional(),
+  color: z.string().optional(),
+  icon: z.string().optional(),
 });
+

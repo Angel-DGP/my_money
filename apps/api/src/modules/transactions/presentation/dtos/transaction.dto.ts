@@ -21,6 +21,11 @@ export class TransactionDto {
   subscription_id!: string | null;
   product_id!: string | null;
   transfer_pair_id!: string | null;
+  installment?: {
+    total_installments: number;
+    interest_rate: number | null;
+    grace_months: number;
+  } | null;
   account!: { id: string; name: string; icon: string | null } | null;
   category!: { id: string; name: string; icon: string | null } | null;
 
@@ -44,6 +49,11 @@ export class TransactionDto {
       subscription_id: entity.subscriptionId,
       product_id: entity.productId,
       transfer_pair_id: entity.transferPairId,
+      installment: entity.installment ? {
+        total_installments: entity.installment.totalInstallments,
+        interest_rate: entity.installment.interestRate,
+        grace_months: entity.installment.graceMonths,
+      } : null,
       account: entity.account ? { id: entity.account.id, name: entity.account.name, icon: entity.account.icon } : null,
       category: entity.category ? { id: entity.category.id, name: entity.category.name, icon: entity.category.icon } : null,
     };

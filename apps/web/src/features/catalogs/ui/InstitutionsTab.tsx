@@ -2,15 +2,42 @@ import { useState } from 'react';
 import { useInstitutions, useDeleteInstitution } from '../api/useCatalogs';
 import { Button, Icon, PageContainer, AlertDialog, DataTable, type ColumnDef } from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
-import { Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { InstitutionDrawer } from './InstitutionDrawer';
 import type { InstitutionDto } from '../../../shared/api/dto/catalogs.dto';
+
+const TYPE_LABELS: Record<string, string> = {
+  BANK: 'Banco',
+  WALLET: 'Billetera Digital',
+  COOP: 'Cooperativa',
+  OTHER: 'Otro',
+};
 
 export function InstitutionsTab() {
   const { data: institutions, isLoading, isError, error, refetch } = useInstitutions();
   const deleteInstitution = useDeleteInstitution();
-  const navigate = useNavigate();
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedInst, setSelectedInst] = useState<InstitutionDto | null>(null);
+  const [isViewMode, setIsViewMode] = useState(false);
   const [instToDelete, setInstToDelete] = useState<InstitutionDto | null>(null);
+
+  const handleOpenCreate = () => {
+    setSelectedInst(null);
+    setIsViewMode(false);
+    setDrawerOpen(true);
+  };
+
+  const handleOpenEdit = (inst: InstitutionDto) => {
+    setSelectedInst(inst);
+    setIsViewMode(false);
+    setDrawerOpen(true);
+  };
+
+  const handleOpenView = (inst: InstitutionDto) => {
+    setSelectedInst(inst);
+    setIsViewMode(true);
+    setDrawerOpen(true);
+  };
 
   const columns: ColumnDef<InstitutionDto>[] = [
     {
@@ -24,7 +51,11 @@ export function InstitutionsTab() {
       key: 'type',
       header: 'Tipo',
       sortable: true,
-      cell: (inst) => inst.type,
+      cell: (inst) => (
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-2 text-text-secondary border border-border-subtle">
+          {TYPE_LABELS[inst.type] || inst.type}
+        </span>
+      ),
     },
     {
       key: 'actions',
@@ -32,14 +63,38 @@ export function InstitutionsTab() {
       align: 'right',
       sticky: 'right',
       cell: (inst) => (
-        <div className="flex items-center justify-center gap-1">
-          <button type="button" onClick={(e) => { e.stopPropagation(); navigate(`/catalogs/institutions/edit/${inst.id}`, { state: { isView: true } }); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+        <div className="flex items-center justify-end gap-1">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenView(inst);
+            }}
+            className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-surface-2 rounded-lg transition-colors"
+            title="Ver Detalle"
+          >
             <Icon name="eye" size="sm" />
           </button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); navigate(`/catalogs/institutions/edit/${inst.id}`); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenEdit(inst);
+            }}
+            className="p-1.5 text-text-muted hover:text-primary-600 hover:bg-surface-2 rounded-lg transition-colors"
+            title="Editar"
+          >
             <Icon name="edit" size="sm" />
           </button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); setInstToDelete(inst); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setInstToDelete(inst);
+            }}
+            className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-lg transition-colors"
+            title="Eliminar"
+          >
             <Icon name="trash" size="sm" />
           </button>
         </div>
@@ -51,10 +106,10 @@ export function InstitutionsTab() {
     <PageContainer>
       <PageContainer.Header
         title="Bancos e Instituciones"
-        description="Administra los bancos donde tienes cuentas y tarjetas."
+        description="Administra los bancos y billeteras donde tienes cuentas y tarjetas."
         actions={
-          <Button onClick={() => navigate('/catalogs/institutions/new')} className="w-full sm:w-auto">
-            <Plus className="w-4 h-4 mr-2" />
+          <Button onClick={handleOpenCreate} variant="primary" className="w-full sm:w-auto">
+            <Icon name="plus" size="xs" className="mr-1.5" />
             Nueva Institución
           </Button>
         }
@@ -76,13 +131,22 @@ export function InstitutionsTab() {
                 searchFields={['name', 'type']}
                 searchPlaceholder="Buscar institución..."
                 defaultSort={{ column: 'name', direction: 'asc' }}
-                onRowClick={(inst) => navigate(`/catalogs/institutions/edit/${inst.id}`, { state: { isView: true } })}
+                onRowClick={(inst) => handleOpenView(inst)}
                 emptyMessage="No tienes instituciones registradas."
               />
             </div>
           )}
         </QueryState>
 
+        {/* Responsive Drawer */}
+        <InstitutionDrawer
+          open={drawerOpen}
+          onOpenChange={setDrawerOpen}
+          institution={selectedInst}
+          isView={isViewMode}
+        />
+
+        {/* Delete Dialog */}
         <AlertDialog
           open={!!instToDelete}
           onOpenChange={(open) => !open && setInstToDelete(null)}
@@ -96,12 +160,11 @@ export function InstitutionsTab() {
             try {
               await deleteInstitution.mutateAsync(instToDelete.id);
               setInstToDelete(null);
-            } catch (error) {
-              console.error("Error al eliminar la institución", error);
+            } catch (err) {
+              console.error('Error al eliminar la institución', err);
             }
           }}
         />
-
       </PageContainer.Body>
     </PageContainer>
   );

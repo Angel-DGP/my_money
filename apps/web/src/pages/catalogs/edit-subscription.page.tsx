@@ -20,19 +20,15 @@ export function EditSubscriptionPage() {
   const handleSubmit = async (data: SubscriptionFormData) => {
     if (!id) return;
     try {
-      await updateSubscription.mutateAsync({ id, data });
-      toast({ title: "Suscripción actualizada", variant: "success" });
-      navigate("/catalogs/subscriptions");
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "No se pudo actualizar la suscripción";
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "error",
-      });
+      const payload = {
+        ...data,
+        currency: 'USD',
+      };
+      await updateSubscription.mutateAsync({ id, data: payload });
+      toast({ title: 'Suscripción actualizada', variant: 'success' });
+      navigate('/catalogs/subscriptions');
+    } catch {
+      // Handled by global error interceptor
     }
   };
 

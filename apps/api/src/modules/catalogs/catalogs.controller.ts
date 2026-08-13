@@ -1,49 +1,21 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Req } from '@nestjs/common';
-import { CatalogsService, CreateProductServiceDto, UpdateSubscriptionDto } from './catalogs.service';
+import { CatalogsService } from './catalogs.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
-
-// ─── Catalog Create DTOs ─────────────────────────────────────────────────────
-
-interface CreateInstitutionDto {
-  name: string;
-  type: string;
-  logo_url?: string;
-}
-
-interface CreateCardBrandDto {
-  name: string;
-  logo_url?: string;
-}
-
-
-
-interface CreateCardDto {
-  name: string;
-  last_four: string;
-  institution_id: string;
-  brand_id: string;
-  type: string;
-  base_interest_rate?: string | null;
-  billing_day?: number | null;
-  payment_day?: number | null;
-}
-
-interface CreateSubscriptionDto {
-  name: string;
-  category_id: string;
-  amount: number;
-  currency: string;
-  billing_cycle: string;
-  next_billing_date: string;
-  card_id?: string;
-}
+import {
+  CreateInstitutionDto,
+  CreateCardBrandDto,
+  CreateCardDto,
+  CreateSubscriptionDto,
+  CreateProductServiceDto,
+  UpdateSubscriptionDto,
+} from './dto/catalogs.dto';
 
 
 
 // ─── Controller ──────────────────────────────────────────────────────────────
 
-@Controller('catalogs')
+@Controller({ path: 'catalogs', version: '1' })
 @UseGuards(JwtAuthGuard)
 export class CatalogsController {
   constructor(private readonly catalogsService: CatalogsService) {}

@@ -22,7 +22,9 @@ interface RawGoal {
   account_id: string | null;
   created_at: Date;
   updated_at: Date;
+  deleted_at: Date | null;
 }
+
 
 @Injectable()
 export class PrismaGoalRepository implements IGoalRepository {
@@ -33,8 +35,8 @@ export class PrismaGoalRepository implements IGoalRepository {
   }
 
   async findById(id: string): Promise<Goal | null> {
-    const record = await this.getClient().goal.findUnique({
-      where: { id },
+    const record = await this.getClient().goal.findFirst({
+      where: { id, deleted_at: null },
     });
 
     if (!record) return null;
@@ -42,9 +44,10 @@ export class PrismaGoalRepository implements IGoalRepository {
     return this.mapToDomain(record);
   }
 
+
   async findAllByUser(userId: string): Promise<Goal[]> {
     const records = await this.getClient().goal.findMany({
-      where: { user_id: userId },
+      where: { user_id: userId, deleted_at: null },
       orderBy: { created_at: 'desc' },
     });
 
@@ -53,15 +56,17 @@ export class PrismaGoalRepository implements IGoalRepository {
 
   async findActiveByUser(userId: string): Promise<Goal[]> {
     const records = await this.getClient().goal.findMany({
-      where: { 
+      where: {
         user_id: userId,
         status: GoalStatus.ACTIVE,
+        deleted_at: null,
       },
       orderBy: { created_at: 'desc' },
     });
 
     return records.map(record => this.mapToDomain(record));
   }
+
 
   async save(goal: Goal): Promise<void> {
     const data = {
@@ -91,6 +96,17 @@ export class PrismaGoalRepository implements IGoalRepository {
     });
   }
 
+  async delete(goal: Goal): Promise<void> {
+    await this.getClient().goal.update({
+      where: { id: goal.id },
+      data: {
+        deleted_at: goal.deletedAt ?? new Date(),
+        updated_at: new Date(),
+      },
+    });
+  }
+
+
   private mapToDomain(record: RawGoal): Goal {
     return Goal.reconstitute({
       id: record.id,
@@ -107,6 +123,8 @@ export class PrismaGoalRepository implements IGoalRepository {
       accountId: record.account_id,
       createdAt: record.created_at,
       updatedAt: record.updated_at,
+      deletedAt: record.deleted_at,
     });
   }
 }
+

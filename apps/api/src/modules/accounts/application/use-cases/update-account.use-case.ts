@@ -43,7 +43,9 @@ export class UpdateAccountUseCase {
       dto.name ?? account.name,
       dto.color !== undefined ? dto.color : account.color,
       dto.icon !== undefined ? dto.icon : account.icon,
-      userId
+      userId,
+      dto.institution_id,
+      dto.specific_type,
     );
 
     await this.accountRepository.save(account);

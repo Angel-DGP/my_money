@@ -26,7 +26,7 @@ export function EditGoalPage() {
           description: 'Los cambios se han guardado exitosamente.',
           variant: 'success',
         });
-        navigate('/goals');
+        navigate('/planning?tab=goals');
       },
       onError: () => {
         toast({
@@ -43,7 +43,7 @@ export function EditGoalPage() {
       <PageContainer.Header
         title={isView ? "Ver Meta de Ahorro" : "Editar Meta de Ahorro"}
         description={isView ? "Detalles de tu meta" : "Modifica los detalles de tu meta de ahorro"}
-        backTo={() => navigate(-1)}
+        backTo={() => navigate('/planning?tab=goals')}
       />
 
       <PageContainer.Body variant="transparent" className="py-6">

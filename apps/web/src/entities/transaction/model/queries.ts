@@ -8,7 +8,9 @@ import { transactionKeys } from './keys';
 import { transactionInvalidations } from './invalidations';
 import { useSessionStore } from '@entities/session';
 
-export function useTransactionsQuery(params?: { page?: number; limit?: number }) {
+import type { TransactionQueryParams } from '@shared/api/services/transactions';
+
+export function useTransactionsQuery(params?: TransactionQueryParams) {
   const token = useSessionStore((s) => s.token);
   return useQuery({
     queryKey: transactionKeys.list(params),

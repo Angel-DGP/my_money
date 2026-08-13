@@ -33,7 +33,9 @@ export interface GoalProps {
   accountId: string | null;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 }
+
 
 export class Goal {
   private props: GoalProps;
@@ -58,6 +60,8 @@ export class Goal {
   get accountId(): string | null { return this.props.accountId; }
   get createdAt(): Date { return this.props.createdAt; }
   get updatedAt(): Date { return this.props.updatedAt; }
+  get deletedAt(): Date | null { return this.props.deletedAt; }
+
 
   // Restituye un Goal existente (ej. desde el repositorio)
   static reconstitute(props: GoalProps): Goal {
@@ -99,7 +103,9 @@ export class Goal {
       accountId: props.accountId || null,
       createdAt: now,
       updatedAt: now,
+      deletedAt: null,
     });
+
   }
 
   // Domain Events
@@ -158,6 +164,56 @@ export class Goal {
         })
       );
     }
+  }
+
+  /**
+   * Actualiza el monto objetivo de la meta.
+   * Solo aplicable si la meta no está completada.
+   * El nuevo monto no puede ser cero ni negativo.
+   */
+  updateTargetAmount(newTargetAmount: Money): void {
+    this.assertNotCompleted();
+    if (newTargetAmount.isZero() || newTargetAmount.isNegative()) {
+      throw new Error('Target amount must be greater than zero');
+    }
+    this.props.targetAmount = newTargetAmount;
+    this.props.updatedAt = new Date();
+  }
+
+  /**
+   * Actualiza los campos editables de la meta.
+   * Un goal COMPLETED no puede ser modificado.
+   */
+  update(props: {
+    name?: string;
+    targetDate?: Date | null;
+    description?: string | null;
+    priority?: number;
+    color?: string | null;
+    icon?: string | null;
+    accountId?: string | null;
+  }): void {
+    this.assertNotCompleted();
+
+    if (props.name !== undefined) this.props.name = props.name;
+    if (props.targetDate !== undefined) this.props.targetDate = props.targetDate;
+    if (props.description !== undefined) this.props.description = props.description;
+    if (props.priority !== undefined) this.props.priority = props.priority;
+    if (props.color !== undefined) this.props.color = props.color;
+    if (props.icon !== undefined) this.props.icon = props.icon;
+    if (props.accountId !== undefined) this.props.accountId = props.accountId;
+
+    this.props.updatedAt = new Date();
+  }
+
+  /**
+   * Marca la meta como DELETED (soft delete a nivel de dominio).
+   * Registra el timestamp de borrado para filtrado en el repositorio.
+   */
+  markAsDeleted(): void {
+    const now = new Date();
+    this.props.deletedAt = now;
+    this.props.updatedAt = now;
   }
 
   // Nota: Los métodos `pause()` y `activate()` fueron omitidos de este MVP

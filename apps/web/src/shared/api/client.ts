@@ -16,6 +16,14 @@ apiClient.interceptors.request.use(authInterceptor);
 apiClient.interceptors.response.use((res) => {
   if (res.data && typeof res.data === 'object' && 'data' in res.data) {
     const { data, meta } = res.data;
+    if (meta && data && typeof data === 'object') {
+      Object.defineProperty(data, 'meta', {
+        value: meta,
+        writable: true,
+        enumerable: false,
+        configurable: true
+      });
+    }
     res.data = data;
     if (meta) {
       (res as { meta?: unknown }).meta = meta;

@@ -1,4 +1,8 @@
+import { useState } from 'react';
 import { AccountsSummaryWidget, RecentTransactionsWidget, ActiveBudgetsWidget, ActiveGoalsWidget, QuickActionsWidget, UpcomingSubscriptionsWidget } from '@widgets/dashboard';
+import { TransactionDrawer } from '@features/transactions';
+import { AccountDrawer } from '@features/accounts';
+import { useNavigate } from 'react-router-dom';
 import { MonthlyFlowChart } from '../../../widgets/dashboard/ui/MonthlyFlowChart';
 import { FinancialHealthWidget } from '../../../widgets/dashboard/ui/FinancialHealthWidget';
 import { InsightsWidget } from '../../../widgets/dashboard/ui/InsightsWidget';
@@ -12,6 +16,10 @@ const formatCurrency = (value: number, currency: string) => {
 };
 
 export function DashboardPage() {
+  const navigate = useNavigate();
+  const [transactionDrawerOpen, setTransactionDrawerOpen] = useState(false);
+  const [accountDrawerOpen, setAccountDrawerOpen] = useState(false);
+
   const { data: summary, isLoading: loadingSummary } = useDashboardSummary();
   const { data: monthlyFlow, isLoading: loadingFlow } = useMonthlyFlow();
   const { data: insights, isLoading: loadingInsights } = useInsights();
@@ -23,12 +31,9 @@ export function DashboardPage() {
     return <DashboardSkeleton />;
   }
 
-  // Helper variables for stat cards
-  const availableBalance = summary?.available_balance?.[0]?.amount || 0;
-  const currency = summary?.available_balance?.[0]?.currency || 'USD';
-  
   const currentMonthIncome = monthlyFlow?.current_month?.[0]?.income || 0;
   const currentMonthExpense = monthlyFlow?.current_month?.[0]?.expense || 0;
+  const defaultCurrency = summary?.available_balance?.[0]?.currency || 'USD';
 
   return (
     <PageContainer className="max-w-[1400px]">
@@ -39,23 +44,42 @@ export function DashboardPage() {
       <PageContainer.Body variant="transparent">
       <div className="flex flex-col gap-6">
         {/* Row 1: Quick Actions */}
-        <QuickActionsWidget />
+        <QuickActionsWidget
+          onNewTransaction={() => setTransactionDrawerOpen(true)}
+          onNewAccount={() => setAccountDrawerOpen(true)}
+          onNewBudget={() => navigate('/planning')}
+          onNewGoal={() => navigate('/planning')}
+        />
 
         {/* Row 2: Stats (2/3) + Financial Health (1/3) */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
           <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <StatCard
-              title="Saldo Disponible"
-              value={formatCurrency(availableBalance, currency)}
-              trend={{ value: 2.5, isPositive: true } as React.ComponentProps<typeof StatCard>['trend']}
-              icon="wallet"
-            />
-            <StatCard
-              title="Flujo Mensual"
-              value={formatCurrency(currentMonthIncome - currentMonthExpense, currency)}
-              trend={{ value: currentMonthIncome > currentMonthExpense ? 5.0 : -2.0, direction: currentMonthIncome > currentMonthExpense ? 'up' : 'down' } as React.ComponentProps<typeof StatCard>['trend']}
-              icon={currentMonthIncome > currentMonthExpense ? 'arrow-up-right' : 'arrow-down-left'}
-            />
+            <div className="flex flex-col gap-4">
+              {summary?.available_balance?.length ? summary.available_balance.map((bal, idx) => (
+                <StatCard
+                  key={idx}
+                  title={`Saldo Total (${bal.currency})`}
+                  value={formatCurrency(bal.amount, bal.currency)}
+                  trend={{ value: 0, isPositive: true } as React.ComponentProps<typeof StatCard>['trend']}
+                  icon="wallet"
+                />
+              )) : (
+                <StatCard
+                  title="Saldo Disponible"
+                  value={formatCurrency(0, 'USD')}
+                  trend={{ value: 0, isPositive: true } as React.ComponentProps<typeof StatCard>['trend']}
+                  icon="wallet"
+                />
+              )}
+            </div>
+            <div className="flex flex-col gap-4">
+              <StatCard
+                title="Flujo Mensual"
+                value={formatCurrency(currentMonthIncome - currentMonthExpense, defaultCurrency)}
+                trend={{ value: currentMonthIncome >= currentMonthExpense ? 5.0 : -2.0, direction: currentMonthIncome >= currentMonthExpense ? 'up' : 'down' } as React.ComponentProps<typeof StatCard>['trend']}
+                icon={currentMonthIncome >= currentMonthExpense ? 'arrow-up-right' : 'arrow-down-left'}
+              />
+            </div>
           </div>
           <div className="xl:col-span-4">
             {healthScore && <FinancialHealthWidget data={healthScore} />}
@@ -90,6 +114,16 @@ export function DashboardPage() {
         </div>
       </div>
       </PageContainer.Body>
+
+      {/* ─── DRAWERS ACCESIBLES DESDE EL DASHBOARD ─────────────────────────── */}
+      <TransactionDrawer
+        open={transactionDrawerOpen}
+        onOpenChange={setTransactionDrawerOpen}
+      />
+      <AccountDrawer
+        open={accountDrawerOpen}
+        onOpenChange={setAccountDrawerOpen}
+      />
     </PageContainer>
   );
 }
