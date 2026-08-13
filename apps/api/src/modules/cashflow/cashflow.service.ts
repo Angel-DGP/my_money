@@ -4,7 +4,7 @@ import { CreateSalaryDto } from "./dto/create-salary.dto";
 import { GetProjectionsQueryDto } from "./dto/get-projections.dto";
 import { Prisma } from "@mymoney/db";
 import { CashflowEventDto } from "./dto/cashflow-event.dto";
-import { CashflowMonthProjectionDto } from "./dto/cashflow-month-projection.dto";
+import { CashflowMonthProjectionDto, GroupedCashflowMonth } from "./dto/cashflow-month-projection.dto";
 
 @Injectable()
 export class CashflowService {

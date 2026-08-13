@@ -1,10 +1,10 @@
 export interface PrismaCashflowEventRecord {
   id: string;
-  amount: number | string;
-  type: 'INCOME' | 'EXPENSE';
+  amount: unknown;
+  type: string;
   date: Date | string;
-  status: 'PENDING' | 'PAID' | 'OVERDUE' | 'CANCELLED';
-  source_type: 'SALARY' | 'INSTALLMENT' | 'SUBSCRIPTION';
+  status: string;
+  source_type: string;
   description?: string | null;
   reference_id?: string | null;
 }
@@ -23,10 +23,10 @@ export class CashflowEventDto {
     return {
       id: record.id,
       amount: String(record.amount),
-      type: record.type,
-      date: record.date instanceof Date ? record.date.toISOString().split('T')[0] : record.date,
-      status: record.status,
-      source_type: record.source_type,
+      type: record.type as 'INCOME' | 'EXPENSE',
+      date: record.date instanceof Date ? record.date.toISOString().split('T')[0] : String(record.date),
+      status: record.status as 'PENDING' | 'PAID' | 'OVERDUE' | 'CANCELLED',
+      source_type: record.source_type as 'SALARY' | 'INSTALLMENT' | 'SUBSCRIPTION',
       description: record.description,
       reference_id: record.reference_id,
     };

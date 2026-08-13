@@ -1,9 +1,10 @@
+import { Prisma } from '@mymoney/db';
 import { CashflowEventDto, PrismaCashflowEventRecord } from './cashflow-event.dto';
 
 export interface GroupedCashflowMonth {
   month: string;
-  total_income: number;
-  total_expense: number;
+  total_income: Prisma.Decimal;
+  total_expense: Prisma.Decimal;
   events: PrismaCashflowEventRecord[];
 }
 
