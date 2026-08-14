@@ -2,16 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { CashFlowDto } from '../../dtos/analytics.dto';
 
+const MONTH_LABELS = [
+  'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+  'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+];
+
 @Injectable()
 export class GetCashFlowUseCase {
   constructor(private readonly prisma: PrismaService) {}
 
-  async execute(userId: string): Promise<CashFlowDto[]> {
+  async execute(userId: string, monthsToFetch: number = 6): Promise<CashFlowDto[]> {
     const now = new Date();
-    // We want the last 6 months including the current one
-    const monthsToFetch = 6;
     
-    // Start of the 6th month ago
+    // Start of the Nth month ago
     const startDate = new Date(now.getFullYear(), now.getMonth() - (monthsToFetch - 1), 1);
     const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
@@ -26,36 +29,60 @@ export class GetCashFlowUseCase {
         type: true,
         date: true,
         currency: true,
-      }
+      },
     });
 
-    // Initialize the last 6 months with 0
-    const monthlyData: Record<string, { income: number; expense: number; currency: string }> = {};
+    const monthlyData: Record<
+      string,
+      { income: number; expense: number; currency: string; label: string }
+    > = {};
     
     for (let i = monthsToFetch - 1; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const monthLabel = d.toISOString().substring(0, 7); // YYYY-MM
-      monthlyData[monthLabel] = { income: 0, expense: 0, currency: 'USD' }; // Default currency
+      const year = d.getFullYear();
+      const monthIndex = d.getMonth();
+      const monthKey = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
+      const label = `${MONTH_LABELS[monthIndex]} ${monthsToFetch > 12 ? year : ''}`.trim();
+      
+      monthlyData[monthKey] = {
+        income: 0,
+        expense: 0,
+        currency: 'USD',
+        label,
+      };
     }
 
     for (const tx of transactions) {
-      const monthLabel = tx.date.toISOString().substring(0, 7);
-      if (monthlyData[monthLabel]) {
+      const txDate = new Date(tx.date);
+      const year = txDate.getFullYear();
+      const monthIndex = txDate.getMonth();
+      const monthKey = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
+
+      if (monthlyData[monthKey]) {
         const amount = Number(tx.amount);
-        monthlyData[monthLabel].currency = tx.currency; // Update to actual currency
+        monthlyData[monthKey].currency = tx.currency || 'USD';
         if (tx.type === 'INCOME') {
-          monthlyData[monthLabel].income += amount;
+          monthlyData[monthKey].income += amount;
         } else if (tx.type === 'EXPENSE') {
-          monthlyData[monthLabel].expense += amount;
+          monthlyData[monthKey].expense += amount;
         }
       }
     }
 
-    return Object.entries(monthlyData).map(([month, data]) => ({
-      month,
-      income: data.income,
-      expense: data.expense,
-      currency: data.currency,
-    })).sort((a, b) => a.month.localeCompare(b.month)); // Ascending order
+    return Object.entries(monthlyData)
+      .map(([month, data]) => {
+        const income = Number(data.income.toFixed(2));
+        const expense = Number(data.expense.toFixed(2));
+        const net = Number((income - expense).toFixed(2));
+        return {
+          month,
+          label: data.label,
+          income,
+          expense,
+          net,
+          currency: data.currency,
+        };
+      })
+      .sort((a, b) => a.month.localeCompare(b.month));
   }
 }
