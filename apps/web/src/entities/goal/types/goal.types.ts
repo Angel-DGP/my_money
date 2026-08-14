@@ -60,4 +60,5 @@ export interface UpdateGoalDto {
 export interface AddGoalProgressDto {
   amount: number;
   currency: string;
+  accountId: string;
 }

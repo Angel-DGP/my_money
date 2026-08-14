@@ -61,7 +61,7 @@ export class PrismaBudgetRepository implements IBudgetRepository {
       where: { id, user_id: userId },
     });
     if (!data) return null;
-    return this.toDomain(data);
+    return this.enrichWithActualExpenses(data, userId);
   }
 
   async exists(id: string): Promise<boolean> {
@@ -74,7 +74,7 @@ export class PrismaBudgetRepository implements IBudgetRepository {
       where: { user_id: userId },
       orderBy: { start_date: 'desc' },
     });
-    return data.map(this.toDomain);
+    return Promise.all(data.map((item) => this.enrichWithActualExpenses(item, userId)));
   }
 
   async findActiveByUser(userId: string): Promise<Budget[]> {
@@ -82,7 +82,7 @@ export class PrismaBudgetRepository implements IBudgetRepository {
       where: { user_id: userId, status: 'ACTIVE' },
       orderBy: { start_date: 'desc' },
     });
-    return data.map(this.toDomain);
+    return Promise.all(data.map((item) => this.enrichWithActualExpenses(item, userId)));
   }
 
   async findByCategory(categoryId: string, userId: string): Promise<Budget[]> {
@@ -90,7 +90,7 @@ export class PrismaBudgetRepository implements IBudgetRepository {
       where: { category_id: categoryId, user_id: userId },
       orderBy: { start_date: 'desc' },
     });
-    return data.map(this.toDomain);
+    return Promise.all(data.map((item) => this.enrichWithActualExpenses(item, userId)));
   }
 
   async findActiveByCategoryAndDate(categoryId: string, userId: string, date: Date): Promise<Budget | null> {
@@ -108,7 +108,26 @@ export class PrismaBudgetRepository implements IBudgetRepository {
       },
     });
     if (!data) return null;
-    return this.toDomain(data);
+    return this.enrichWithActualExpenses(data, userId);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async enrichWithActualExpenses(data: any, userId: string): Promise<Budget> {
+    const sumResult = await this.prisma.transaction.aggregate({
+      where: {
+        user_id: userId,
+        category_id: data.category_id,
+        type: 'EXPENSE',
+        date: { gte: data.start_date, lte: data.end_date },
+        deleted_at: null,
+      },
+      _sum: { amount: true },
+    });
+    const actualSpent = sumResult._sum.amount ? Number(sumResult._sum.amount) : 0;
+    return this.toDomain({
+      ...data,
+      executed_amount: actualSpent,
+    });
   }
 
   async existsActiveBudget(userId: string, categoryId: string, period: BudgetPeriod, startDate: Date): Promise<boolean> {

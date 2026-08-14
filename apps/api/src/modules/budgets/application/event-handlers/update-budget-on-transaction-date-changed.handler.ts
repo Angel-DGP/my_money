@@ -15,7 +15,7 @@ export class UpdateBudgetOnTransactionDateChangedHandler {
     private readonly eventEmitter: EventEmitter2
   ) {}
 
-  @OnEvent('TransactionDateChanged')
+  @OnEvent(['TransactionDateChangedEvent', 'TransactionDateChanged'])
   async handle(event: TransactionDateChangedEvent) {
     if (event.transactionType !== 'EXPENSE') return;
 

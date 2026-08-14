@@ -8,4 +8,8 @@ export class AddGoalProgressDto {
   @IsString()
   @IsNotEmpty()
   currency!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  accountId!: string;
 }

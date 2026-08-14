@@ -8,6 +8,8 @@ export const goalInvalidations = {
   onAddProgress: (queryClient: QueryClient, id: string) => {
     queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
     queryClient.invalidateQueries({ queryKey: goalKeys.detail(id) });
+    queryClient.invalidateQueries({ queryKey: ['accounts'] });
+    queryClient.invalidateQueries({ queryKey: ['transactions'] });
   },
   onUpdate: (queryClient: QueryClient, id: string) => {
     queryClient.invalidateQueries({ queryKey: goalKeys.lists() });

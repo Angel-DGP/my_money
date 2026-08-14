@@ -15,7 +15,7 @@ export class UpdateBudgetOnTransactionDeletedHandler {
     private readonly eventEmitter: EventEmitter2
   ) {}
 
-  @OnEvent('TransactionDeleted')
+  @OnEvent(['TransactionDeletedEvent', 'TransactionDeleted'])
   async handle(event: TransactionDeletedEvent) {
     if (event.transactionType !== 'EXPENSE') return;
     if (!event.categoryId) return;

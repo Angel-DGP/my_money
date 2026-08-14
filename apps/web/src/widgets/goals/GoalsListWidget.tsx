@@ -120,6 +120,7 @@ export function GoalsListWidget() {
                   <AddProgressForm 
                     goalName={selectedGoal.name}
                     defaultCurrency={selectedGoal.target_amount.currency}
+                    defaultAccountId={selectedGoal.account_id}
                     onSubmit={(data) => handleAddProgressSubmit(data as AddGoalProgressDto)}
                     onCancel={handleCloseModal}
                     isLoading={addProgress.isPending}
