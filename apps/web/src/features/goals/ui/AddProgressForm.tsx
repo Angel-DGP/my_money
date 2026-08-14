@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Input, Label, FormLayout } from '@mymoney/ui';
+import { useState } from 'react';
+import { Button, Input, Label, FormLayout, NumberInput } from '@mymoney/ui';
 import type { AddGoalProgressDto } from '@entities/goal';
 
 interface AddProgressFormProps {
@@ -12,19 +12,14 @@ interface AddProgressFormProps {
 
 export function AddProgressForm({ goalName, defaultCurrency, onSubmit, onCancel, isLoading }: AddProgressFormProps) {
   const [formData, setFormData] = useState({
-    amount: '',
+    amount: 0,
     currency: defaultCurrency,
   });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
-      amount: Number(formData.amount),
+      amount: formData.amount,
       currency: formData.currency,
     });
   };
@@ -36,33 +31,32 @@ export function AddProgressForm({ goalName, defaultCurrency, onSubmit, onCancel,
       </div>
 
       <div className="col-span-12 md:col-span-6 space-y-2">
-          <Label htmlFor="amount">Monto a Aportar</Label>
-          <Input
-            id="amount"
-            name="amount"
-            type="number"
-            step="0.01"
-            min="0"
-            value={formData.amount}
-            onChange={handleChange}
-            disabled={!!isLoading}
-            required
-            placeholder="Ej: 100.00"
-          />
-        </div>
-        <div className="col-span-12 md:col-span-6 space-y-2">
-          <Label htmlFor="currency">Moneda</Label>
-          <Input
-            id="currency"
-            name="currency"
-            value={formData.currency}
-            onChange={handleChange}
-            disabled={true} // Usually we keep the goal's currency
-            required
-          />
-        </div>
+        <NumberInput
+          id="amount"
+          name="amount"
+          label="Monto a Aportar"
+          prefix="$"
+          step={10}
+          min={0}
+          value={formData.amount}
+          onChange={(val) => setFormData((prev) => ({ ...prev, amount: val || 0 }))}
+          disabled={!!isLoading}
+          required
+          placeholder="Ej: 100.00"
+        />
+      </div>
+      <div className="col-span-12 md:col-span-6 space-y-2">
+        <Label htmlFor="currency">Moneda</Label>
+        <Input
+          id="currency"
+          name="currency"
+          value={formData.currency}
+          disabled={true}
+          required
+        />
+      </div>
 
-      <div className="flex justify-end gap-2 mt-4 col-span-12 border-t border-border-subtle pt-3">
+      <div className="flex items-center justify-between gap-2 mt-4 col-span-12 border-t border-border-subtle pt-3">
         <Button type="button" size="sm" variant="outline" onClick={onCancel} disabled={!!isLoading}>
           Cancelar
         </Button>

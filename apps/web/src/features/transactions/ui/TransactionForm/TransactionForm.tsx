@@ -14,20 +14,22 @@ export function TransactionForm({ initialData, isView }: TransactionFormProps) {
       <TransactionFormFields form={form} isEdit={isEdit} isView={!!isView} />
 
       <PageContainer.Footer className="col-span-12">
-        {isEdit && !isView && (
-          <Button 
-            variant="ghost" 
-            type="button" 
-            onClick={() => setShowDeleteConfirm(true)} 
-            disabled={isPending} 
-            className="text-error-600 hover:text-error-700 hover:bg-error-50"
-          >
-            <Trash2 className="w-4 h-4 mr-2" /> Eliminar
+        <div className="flex items-center gap-2">
+          <Button type="button" variant="outline" onClick={() => navigate('/transactions')}>
+            {isView ? 'Volver' : 'Cancelar'}
           </Button>
-        )}
-        <Button type="button" variant="ghost" onClick={() => navigate('/transactions')}>
-          {isView ? 'Volver' : 'Cancelar'}
-        </Button>
+          {isEdit && !isView && (
+            <Button 
+              variant="ghost" 
+              type="button" 
+              onClick={() => setShowDeleteConfirm(true)} 
+              disabled={isPending} 
+              className="text-error-600 hover:text-error-700 hover:bg-error-500/10"
+            >
+              <Trash2 className="w-4 h-4 mr-2" /> Eliminar
+            </Button>
+          )}
+        </div>
         {!isView && (
           <Button type="submit" disabled={isPending} form="transactionform-form">
             {isEdit ? 'Actualizar' : 'Guardar'}

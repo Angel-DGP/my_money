@@ -1,5 +1,5 @@
 import { useForm, Controller } from 'react-hook-form';
-import { Button, Input, Select, Label, Checkbox, FormLayout, PageContainer } from '@mymoney/ui';
+import { Button, Input, Select, Label, Switch, FormLayout, PageContainer } from '@mymoney/ui';
 import { TriggerType, ActionType } from '@entities/automation';
 import type { CreateAutoRuleDto, AutoRuleDto } from '@entities/automation';
 
@@ -133,14 +133,14 @@ export function AutoRuleForm({ initialData, onSubmit, isSubmitting }: AutoRuleFo
           )}
         </div>
 
-        <div className="col-span-12 flex items-center space-x-2 pt-2">
+        <div className="col-span-12 pt-2">
           <Controller
             name="is_active"
             control={control}
             render={({ field }) => (
-              <Checkbox
+              <Switch
                 checked={field.value ?? false}
-                onCheckedChange={field.onChange}
+                onChange={field.onChange}
                 label="Regla Activa"
                 description="Si está activa, la regla se ejecutará cuando ocurra el desencadenante."
               />
@@ -149,6 +149,9 @@ export function AutoRuleForm({ initialData, onSubmit, isSubmitting }: AutoRuleFo
         </div>
 
       <PageContainer.Footer className="col-span-12">
+        <Button type="button" variant="outline" onClick={() => window.history.back()}>
+          Cancelar
+        </Button>
         <Button type="submit" disabled={!!isSubmitting} form="autoruleform-form">
           {isSubmitting ? 'Guardando...' : initialData ? 'Guardar Cambios' : 'Crear Regla'}
         </Button>

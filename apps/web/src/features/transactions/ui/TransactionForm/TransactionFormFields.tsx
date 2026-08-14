@@ -1,4 +1,4 @@
-import { Input, Select, Icon, Checkbox } from "@mymoney/ui";
+import { Input, Select, Icon, Switch, NumberInput, DatePicker } from "@mymoney/ui";
 import { useAccountsQuery, type Account } from "@entities/account";
 import { CategorySelect } from "../../../categories";
 import {
@@ -97,31 +97,30 @@ export function TransactionFormFields({
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Input
+            <NumberInput
               id="amount"
               label="Monto"
               required
-              type="number"
-              step="0.01"
-              min="0"
+              prefix="$"
+              step={1}
+              min={0}
               placeholder="0.00"
-              leftIcon="dollar-sign"
               disabled={isView}
               error={errors.amount?.message as string}
-              {...register("amount", { valueAsNumber: true })}
+              value={watch("amount")}
+              onChange={(val) => setValue("amount", val || 0, { shouldValidate: true })}
             />
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Input
+            <DatePicker
               id="date"
               label="Fecha"
               required
-              type="date"
-              leftIcon="calendar"
               disabled={isView}
               error={errors.date?.message as string}
-              {...register("date")}
+              value={watch("date")}
+              onChange={(d) => setValue("date", d, { shouldValidate: true })}
             />
           </div>
 
@@ -242,13 +241,16 @@ export function TransactionFormFields({
           </div>
 
           <div className="space-y-4">
-            <Checkbox
-              id="is_third_party"
-              label="Es a nombre de un tercero"
-              description="Habilita para especificar de quién es el gasto o ingreso."
-              disabled={isView}
-              {...register("is_third_party")}
-            />
+            <div className="p-4 rounded-xl bg-surface-2/30 border border-border-subtle">
+              <Switch
+                id="is_third_party"
+                label="Es a nombre de un tercero"
+                description="Habilita para especificar de quién es el gasto o ingreso."
+                disabled={isView}
+                checked={watch("is_third_party")}
+                onChange={(checked) => setValue("is_third_party", checked)}
+              />
+            </div>
 
             {isThirdParty && (
               <div className="grid grid-cols-1 md:grid-cols-12 gap-5 bg-surface-2/40 p-5 rounded-xl border border-border-subtle animate-in fade-in slide-in-from-top-2 duration-200">
@@ -410,51 +412,54 @@ export function TransactionFormFields({
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5 bg-surface-2/40 p-5 rounded-xl border border-border-subtle">
             <div className="col-span-12 md:col-span-4 space-y-2">
-              <Input
+              <NumberInput
                 id="total_installments"
-                type="number"
                 min={2}
+                max={48}
                 label="Meses (Cuotas)"
                 placeholder="Ej. 3, 6, 12..."
+                suffix="cuotas"
                 disabled={isView}
                 error={
                   errors.installment?.total_installments?.message as string
                 }
-                {...register("installment.total_installments", {
-                  valueAsNumber: true,
-                })}
+                value={watch("installment.total_installments")}
+                onChange={(val) => setValue("installment.total_installments", val || 2, { shouldValidate: true })}
               />
             </div>
 
             <div className="col-span-12 md:col-span-4 space-y-2">
-              <Input
+              <NumberInput
                 id="interest_rate"
-                type="number"
-                step="0.01"
+                step={0.01}
+                min={0}
+                max={100}
                 label="Tasa de Interés (%)"
                 placeholder={
                   selectedCard.base_interest_rate
                     ? `Base: ${selectedCard.base_interest_rate}%`
                     : "0.00"
                 }
+                suffix="%"
                 disabled={isView}
                 error={errors.installment?.interest_rate?.message as string}
-                {...register("installment.interest_rate")}
+                value={watch("installment.interest_rate") ?? undefined}
+                onChange={(val) => setValue("installment.interest_rate", val)}
               />
             </div>
 
             <div className="col-span-12 md:col-span-4 space-y-2">
-              <Input
+              <NumberInput
                 id="grace_months"
-                type="number"
                 min={0}
+                max={24}
                 label="Meses de Gracia"
                 placeholder="0"
+                suffix="meses"
                 disabled={isView}
                 error={errors.installment?.grace_months?.message as string}
-                {...register("installment.grace_months", {
-                  valueAsNumber: true,
-                })}
+                value={watch("installment.grace_months")}
+                onChange={(val) => setValue("installment.grace_months", val || 0)}
               />
             </div>
           </div>

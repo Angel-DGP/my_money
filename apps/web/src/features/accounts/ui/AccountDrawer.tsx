@@ -318,7 +318,7 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
                   </Select>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-2 border-t border-border-subtle">
+                <div className="flex items-center justify-between gap-2 pt-3 border-t border-border-subtle">
                   <Button
                     type="button"
                     size="sm"

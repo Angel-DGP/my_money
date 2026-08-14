@@ -1,9 +1,9 @@
-import { Input, Label, Select, Checkbox, Icon } from '@mymoney/ui';
+import { Input, Label, Select, Switch, NumberInput, DatePicker, Icon } from '@mymoney/ui';
 import { CategorySelect } from '../../../categories';
 import type { BudgetFormFieldsProps } from './BudgetForm.types';
 
 export function BudgetFormFields({ form, isEdit, isView, isLoading }: BudgetFormFieldsProps) {
-  const { register, formState: { errors } } = form;
+  const { register, watch, setValue, formState: { errors } } = form;
 
   return (
     <div className="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-10">
@@ -25,8 +25,8 @@ export function BudgetFormFields({ form, isEdit, isView, isLoading }: BudgetForm
             <CategorySelect
               id="category_id"
               label="Categoría"
-              value={form.watch('category_id')}
-              onChange={(val) => form.setValue('category_id', val, { shouldValidate: true })}
+              value={watch('category_id')}
+              onChange={(val: string) => setValue('category_id', val, { shouldValidate: true })}
               filterType="EXPENSE"
               disabled={isView || isEdit || isLoading}
               required
@@ -50,19 +50,19 @@ export function BudgetFormFields({ form, isEdit, isView, isLoading }: BudgetForm
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="amount" required>Límite</Label>
-            <Input
+            <NumberInput
               id="amount"
-              type="number"
-              step="0.01"
-              min="0"
+              label="Límite del Presupuesto"
+              prefix="$"
+              min={0}
+              step={10}
               disabled={isView || isLoading}
               required
               placeholder="Ej: 500.00"
-              leftIcon="dollar-sign"
-              {...register('amount', { valueAsNumber: true })}
+              value={watch('amount')}
+              onChange={(val) => setValue('amount', val || 0, { shouldValidate: true })}
+              error={errors.amount?.message}
             />
-            {errors.amount && <p className="text-error-500 text-xs">{errors.amount.message}</p>}
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
@@ -78,16 +78,15 @@ export function BudgetFormFields({ form, isEdit, isView, isLoading }: BudgetForm
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="start_date" required>Fecha de Inicio</Label>
-            <Input
+            <DatePicker
               id="start_date"
-              type="date"
+              label="Fecha de Inicio"
               disabled={isView || isEdit || isLoading}
               required
-              leftIcon="calendar"
-              {...register('start_date')}
+              value={watch('start_date')}
+              onChange={(d) => setValue('start_date', d, { shouldValidate: true })}
+              error={errors.start_date?.message}
             />
-            {errors.start_date && <p className="text-error-500 text-xs">{errors.start_date.message}</p>}
           </div>
         </div>
       </div>
@@ -106,48 +105,48 @@ export function BudgetFormFields({ form, isEdit, isView, isLoading }: BudgetForm
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="alert_threshold">Umbral de Alerta (%)</Label>
-            <Input
+            <NumberInput
               id="alert_threshold"
-              type="number"
-              min="1"
-              max="100"
+              label="Umbral de Alerta (%)"
+              min={1}
+              max={100}
+              suffix="%"
               placeholder="Ej: 80"
               disabled={isView || isLoading}
-              rightIcon="info"
-              {...register('alert_threshold', { valueAsNumber: true })}
+              value={watch('alert_threshold') ?? undefined}
+              onChange={(val) => setValue('alert_threshold', (val ?? undefined) as unknown as number)}
+              error={errors.alert_threshold?.message}
             />
-            {errors.alert_threshold && <p className="text-error-500 text-xs">{errors.alert_threshold.message}</p>}
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="soft_limit">Límite Flexible</Label>
-            <Input
+            <NumberInput
               id="soft_limit"
-              type="number"
-              step="0.01"
-              min="0"
+              label="Límite Flexible (Aviso visual)"
+              prefix="$"
+              min={0}
+              step={10}
               placeholder="Aviso visual"
               disabled={isView || isLoading}
-              leftIcon="dollar-sign"
-              {...register('soft_limit', { valueAsNumber: true })}
+              value={watch('soft_limit') ?? undefined}
+              onChange={(val) => setValue('soft_limit', (val ?? undefined) as unknown as number)}
+              error={errors.soft_limit?.message}
             />
-            {errors.soft_limit && <p className="text-error-500 text-xs">{errors.soft_limit.message}</p>}
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="hard_limit">Límite Estricto</Label>
-            <Input
+            <NumberInput
               id="hard_limit"
-              type="number"
-              step="0.01"
-              min="0"
+              label="Límite Estricto (Bloqueo / Rojo)"
+              prefix="$"
+              min={0}
+              step={10}
               placeholder="Bloqueo o alerta roja"
               disabled={isView || isLoading}
-              leftIcon="dollar-sign"
-              {...register('hard_limit', { valueAsNumber: true })}
+              value={watch('hard_limit') ?? undefined}
+              onChange={(val) => setValue('hard_limit', (val ?? undefined) as unknown as number)}
+              error={errors.hard_limit?.message}
             />
-            {errors.hard_limit && <p className="text-error-500 text-xs">{errors.hard_limit.message}</p>}
           </div>
         </div>
       </div>
@@ -164,27 +163,39 @@ export function BudgetFormFields({ form, isEdit, isView, isLoading }: BudgetForm
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-surface-2/40 p-5 rounded-xl border border-border-subtle">
-          <Checkbox
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-surface-2/40 p-5 rounded-2xl border border-border-subtle">
+          <Switch
+            id="carry_over"
             disabled={isView || isLoading}
-            label="Trasladar saldo sobrante al siguiente mes (Rollover)"
-            {...register('carry_over')}
+            label="Rollover (Trasladar saldo)"
+            description="Trasladar saldo sobrante al siguiente periodo automáticamente."
+            checked={watch('carry_over')}
+            onChange={(checked) => setValue('carry_over', checked)}
           />
-          <Checkbox
+          <Switch
+            id="ignore_refunds"
             disabled={isView || isLoading}
             label="Ignorar reembolsos"
-            {...register('ignore_refunds')}
+            description="No computar devoluciones en el gasto acumulado."
+            checked={watch('ignore_refunds')}
+            onChange={(checked) => setValue('ignore_refunds', checked)}
           />
-          <Checkbox
+          <Switch
+            id="ignore_transfers"
             disabled={isView || isLoading}
-            label="Ignorar transferencias entre cuentas"
-            {...register('ignore_transfers')}
+            label="Ignorar transferencias"
+            description="No incluir movimientos entre tus propias cuentas."
+            checked={watch('ignore_transfers')}
+            onChange={(checked) => setValue('ignore_transfers', checked)}
           />
           {isEdit && (
-            <Checkbox
+            <Switch
+              id="is_frozen"
               disabled={isView || isLoading}
-              label="Congelar presupuesto (No actualizar saldo)"
-              {...register('is_frozen')}
+              label="Congelar presupuesto"
+              description="Pausar y no actualizar saldo con nuevos gastos."
+              checked={watch('is_frozen')}
+              onChange={(checked) => setValue('is_frozen', checked)}
             />
           )}
         </div>

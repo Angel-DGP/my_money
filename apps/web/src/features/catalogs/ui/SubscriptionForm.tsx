@@ -6,13 +6,15 @@ import {
   Input,
   Select,
   MoneyInput,
+  DatePicker,
+  NumberInput,
   PageContainer,
   Icon,
   Label,
   Card,
 } from '@mymoney/ui';
 import { useCards } from '../api/useCatalogs';
-import { useCategoriesQuery } from '@entities/category';
+import { CategorySelect } from '../../categories';
 
 const subscriptionSchema = z.object({
   name: z.string().min(2, 'El nombre es requerido'),
@@ -42,7 +44,6 @@ export function SubscriptionForm({
   isView,
 }: SubscriptionFormProps) {
   const { data: cards = [] } = useCards();
-  const { data: categories = [] } = useCategoriesQuery();
 
   const {
     register,
@@ -110,30 +111,19 @@ export function SubscriptionForm({
 
             {/* Categoría */}
             <div className="space-y-1.5">
-              <Label htmlFor="sub-cat" required>
-                Categoría de Gasto
-              </Label>
-              <Select
+              <CategorySelect
                 id="sub-cat"
-                name="category_id"
+                label="Categoría de Gasto"
                 value={category_id || ''}
-                onValueChange={(val) =>
+                onChange={(val) =>
                   setValue('category_id', val, { shouldValidate: true })
                 }
                 error={errors.category_id?.message}
-                searchable
                 disabled={isView || isLoading}
+                filterType="EXPENSE"
                 required
                 placeholder="Seleccionar categoría..."
-              >
-                {categories
-                  .filter((c) => c.type === 'EXPENSE')
-                  .map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-              </Select>
+              />
             </div>
 
             {/* Monto */}
@@ -180,34 +170,31 @@ export function SubscriptionForm({
 
             {/* Fecha de Cobro */}
             <div className="space-y-1.5">
-              <Label htmlFor="sub-date" required>
-                Próxima fecha de cobro
-              </Label>
-              <Input
+              <DatePicker
                 id="sub-date"
-                type="date"
+                label="Próxima fecha de cobro"
                 disabled={isView || isLoading}
                 error={errors.next_billing_date?.message}
                 required
-                {...register('next_billing_date')}
+                value={watch('next_billing_date')}
+                onChange={(d) => setValue('next_billing_date', d, { shouldValidate: true })}
               />
             </div>
 
             {/* Meses a proyectar */}
             <div className="space-y-1.5">
-              <Label htmlFor="sub-duration" required>
-                Meses a Proyectar en Flujo de Caja
-              </Label>
-              <Input
+              <NumberInput
                 id="sub-duration"
-                type="number"
+                label="Meses a Proyectar en Flujo de Caja"
                 min={1}
                 max={36}
+                suffix="meses"
                 placeholder="Ej. 12"
                 disabled={isView || isLoading}
                 error={errors.duration_months?.message}
                 required
-                {...register('duration_months')}
+                value={watch('duration_months')}
+                onChange={(val) => setValue('duration_months', val ?? 12, { shouldValidate: true })}
               />
             </div>
           </div>

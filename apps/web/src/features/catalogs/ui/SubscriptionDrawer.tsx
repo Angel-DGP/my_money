@@ -9,11 +9,13 @@ import {
   Label,
   Select,
   MoneyInput,
+  DatePicker,
+  NumberInput,
   Icon,
   toast,
 } from '@mymoney/ui';
 import { useCards, useCreateSubscription, useUpdateSubscription } from '../api/useCatalogs';
-import { useCategoriesQuery } from '@entities/category';
+import { CategorySelect } from '../../categories';
 import type { SubscriptionDto } from '../../../shared/api/dto/catalogs.dto';
 
 const subscriptionSchema = z.object({
@@ -42,7 +44,6 @@ export function SubscriptionDrawer({
   isView = false,
 }: SubscriptionDrawerProps) {
   const { data: cards = [] } = useCards();
-  const { data: categories = [] } = useCategoriesQuery();
   const createSubscription = useCreateSubscription();
   const updateSubscription = useUpdateSubscription();
   const isEditing = !!subscription && !isView;
@@ -156,28 +157,19 @@ export function SubscriptionDrawer({
 
             {/* Categoría */}
             <div className="space-y-1.5">
-              <Label htmlFor="sub-cat" required>
-                Categoría de Gasto
-              </Label>
-              <Select
+              <CategorySelect
                 id="sub-cat"
+                label="Categoría de Gasto"
                 value={categoryIdValue || ''}
                 disabled={isView || isPending}
-                onValueChange={(val) =>
+                onChange={(val) =>
                   setValue('category_id', val, { shouldValidate: true })
                 }
                 error={errors.category_id?.message}
-                searchable
+                filterType="EXPENSE"
+                required
                 placeholder="Seleccionar categoría..."
-              >
-                {categories
-                  .filter((c) => c.type === 'EXPENSE')
-                  .map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-              </Select>
+              />
             </div>
 
             {/* Costo / Monto */}
@@ -223,16 +215,14 @@ export function SubscriptionDrawer({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="sub-date" required>
-                  Próxima Fecha de Cobro
-                </Label>
-                <Input
+                <DatePicker
                   id="sub-date"
-                  type="date"
+                  label="Próxima Fecha de Cobro"
                   disabled={isView || isPending}
                   error={errors.next_billing_date?.message}
                   required
-                  {...register('next_billing_date')}
+                  value={watch('next_billing_date')}
+                  onChange={(d) => setValue('next_billing_date', d, { shouldValidate: true })}
                 />
               </div>
             </div>
@@ -261,15 +251,16 @@ export function SubscriptionDrawer({
 
             {/* Meses a Proyectar */}
             <div className="space-y-1.5">
-              <Label htmlFor="sub-duration">Meses a Proyectar en Flujo de Caja</Label>
-              <Input
+              <NumberInput
                 id="sub-duration"
-                type="number"
+                label="Meses a Proyectar en Flujo de Caja"
                 min={1}
                 max={36}
+                suffix="meses"
                 disabled={isView || isPending}
                 error={errors.duration_months?.message}
-                {...register('duration_months')}
+                value={watch('duration_months')}
+                onChange={(val) => setValue('duration_months', val ?? 12, { shouldValidate: true })}
               />
               <p className="text-[11px] text-text-muted">
                 Generará proyecciones automáticas en la pestaña de Planificación &gt; Flujo de Caja.

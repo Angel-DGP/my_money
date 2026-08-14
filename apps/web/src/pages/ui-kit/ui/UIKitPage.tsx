@@ -5,6 +5,9 @@ import {
   Input,
   Select,
   Checkbox,
+  Switch,
+  NumberInput,
+  DatePicker,
   Heading,
   Text,
   Badge,
@@ -60,41 +63,39 @@ export function UIKitPage() {
             <div className="flex flex-wrap gap-4">
               <Button variant="primary">Primary</Button>
               <Button variant="secondary">Secondary</Button>
+              <Button variant="outline">Outline</Button>
               <Button variant="ghost">Ghost</Button>
               <Button variant="destructive">Danger</Button>
+              <Button variant="primary" loading>Loading</Button>
+              <Button variant="primary" disabled>Disabled</Button>
             </div>
             <div className="flex flex-wrap gap-4 items-center">
               <Button size="sm">Small</Button>
               <Button size="md">Medium</Button>
               <Button size="lg">Large</Button>
-              <Button disabled>Disabled</Button>
-            </div>
-            <div className="flex flex-wrap gap-4">
-              <Button>
-                <Icon name="plus" size="sm" className="mr-2" />
-                Con Icono
-              </Button>
-              <Button variant="secondary" size="icon">
-                <Icon name="settings" size="sm" />
-              </Button>
             </div>
           </Card>
         </section>
 
-        {/* Inputs & Formularios */}
+        {/* Formularios & Controles */}
         <section>
-          <Heading level="h2" className="mb-4">Formularios (Inputs & Selects)</Heading>
-          <Card className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="Texto" placeholder="Escribe algo..." />
-            <Input label="Con Error" error="Este campo es requerido" defaultValue="Texto erróneo" />
+          <Heading level="h2" className="mb-4">Formularios & Controles</Heading>
+          <Card className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Input label="Texto" placeholder="Placeholder..." />
+            <Input label="Con Error" error="Este campo es obligatorio" defaultValue="Texto inválido" />
             <Input label="Búsqueda" placeholder="Buscar..." type="search" />
-            <Input label="Número" type="number" defaultValue={100} />
+            <NumberInput label="Input Numérico con Steppers" min={1} max={31} placeholder="15" suffix="días" />
+            <NumberInput label="Tasa de Interés" step={0.1} min={0} max={100} placeholder="16.5" suffix="%" />
+            <DatePicker label="Selector de Fecha" />
             <Select label="Select Básico">
               <option value="1">Opción 1</option>
               <option value="2">Opción 2</option>
             </Select>
-            <div className="flex items-end h-full">
+            <div className="flex items-center">
               <Checkbox id="check1" label="Checkbox Normal" />
+            </div>
+            <div className="flex items-center col-span-1 md:col-span-2">
+              <Switch id="switch1" label="Toggle Estilo Apple" description="Activa o desactiva preferencias con animación fluida." defaultChecked />
             </div>
           </Card>
         </section>

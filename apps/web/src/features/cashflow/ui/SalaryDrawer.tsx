@@ -11,6 +11,8 @@ import {
   Label,
   Select,
   MoneyInput,
+  DatePicker,
+  NumberInput,
   toast,
 } from '@mymoney/ui';
 
@@ -138,27 +140,30 @@ export function SalaryDrawer({ open, onOpenChange }: SalaryDrawerProps) {
             {/* Fecha de Inicio y Cantidad de Meses */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="salary-start-date" required>Fecha de Inicio (Primer Pago)</Label>
-                <Input
+                <DatePicker
                   id="salary-start-date"
-                  type="date"
+                  label="Fecha de Inicio (Primer Pago)"
                   disabled={isPending}
                   error={errors.startDate?.message}
-                  {...register('startDate')}
+                  required
+                  value={watch('startDate')}
+                  onChange={(d) => setValue('startDate', d, { shouldValidate: true })}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="salary-months" required>Meses a Proyectar</Label>
-                <Input
+                <NumberInput
                   id="salary-months"
-                  type="number"
+                  label="Meses a Proyectar"
                   min={1}
                   max={36}
+                  suffix="meses"
                   placeholder="12"
                   disabled={isPending}
                   error={errors.months?.message}
-                  {...register('months', { valueAsNumber: true })}
+                  required
+                  value={watch('months')}
+                  onChange={(val) => setValue('months', val || 12, { shouldValidate: true })}
                 />
               </div>
             </div>

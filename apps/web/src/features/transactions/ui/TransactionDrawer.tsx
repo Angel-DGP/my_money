@@ -24,6 +24,9 @@ import {
   Label,
   Select,
   MoneyInput,
+  DatePicker,
+  Switch,
+  NumberInput,
   Icon,
   Badge,
   Amount,
@@ -511,14 +514,14 @@ export function TransactionDrawer({
                 {/* Fecha y Descripción */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="drawer-tx-date" required>Fecha</Label>
-                    <Input
+                    <DatePicker
                       id="drawer-tx-date"
-                      type="date"
+                      label="Fecha"
+                      value={watch('date')}
+                      onChange={(d) => setValue('date', d, { shouldValidate: true })}
                       disabled={isPending}
                       error={errors.date?.message as string}
                       required
-                      {...register('date')}
                     />
                   </div>
 
@@ -539,20 +542,17 @@ export function TransactionDrawer({
                 {selectedType !== 'TRANSFER' && (
                   <div className="space-y-4 pt-2 border-t border-border-subtle">
                     {/* Switch Terceros */}
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-surface-2/30 border border-border-subtle">
-                      <div>
-                        <span className="text-xs font-semibold text-text-primary block">¿Es a nombre de un tercero?</span>
-                        <span className="text-xs text-text-muted">Si pagaste por alguien o recibiste dinero para otro.</span>
-                      </div>
-                      <input
-                        type="checkbox"
+                    <div className="p-3.5 rounded-xl bg-surface-2/30 border border-border-subtle">
+                      <Switch
                         id="drawer-tx-third-party"
-                        className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-border"
+                        label="¿Es a nombre de un tercero?"
+                        description="Si pagaste por alguien o recibiste dinero para otro."
                         checked={showThirdParty}
-                        onChange={(e) => {
-                          setShowThirdParty(e.target.checked);
-                          setValue('is_third_party', e.target.checked);
+                        onChange={(checked) => {
+                          setShowThirdParty(checked);
+                          setValue('is_third_party', checked);
                         }}
+                        disabled={isPending}
                       />
                     </div>
 
@@ -582,54 +582,58 @@ export function TransactionDrawer({
                     {/* Switch Cuotas / Diferidos (solo Gasto) */}
                     {selectedType === 'EXPENSE' && (
                       <>
-                        <div className="flex items-center justify-between p-3 rounded-xl bg-surface-2/30 border border-border-subtle">
-                          <div>
-                            <span className="text-xs font-semibold text-text-primary block">¿Pago a cuotas (Diferido)?</span>
-                            <span className="text-xs text-text-muted">Proyecta los pagos automáticamente en el flujo de caja.</span>
-                          </div>
-                          <input
-                            type="checkbox"
+                        <div className="p-3.5 rounded-xl bg-surface-2/30 border border-border-subtle">
+                          <Switch
                             id="drawer-tx-installments"
-                            className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-border"
+                            label="¿Pago a cuotas (Diferido)?"
+                            description="Proyecta los pagos automáticamente en el flujo de caja."
                             checked={showInstallments}
-                            onChange={(e) => setShowInstallments(e.target.checked)}
+                            onChange={(checked) => setShowInstallments(checked)}
+                            disabled={isPending}
                           />
                         </div>
 
                         {showInstallments && (
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-surface-2/20 border border-border-subtle animate-in fade-in duration-200">
                             <div className="space-y-2">
-                              <Label htmlFor="drawer-inst-total" required>Nº de Cuotas</Label>
-                              <Input
+                              <NumberInput
                                 id="drawer-inst-total"
-                                type="number"
+                                label="Nº de Cuotas"
                                 min={2}
                                 max={48}
                                 placeholder="Ej: 3, 6, 12"
+                                suffix="cuotas"
                                 disabled={isPending}
-                                {...register('installment.total_installments', { valueAsNumber: true })}
+                                value={watch('installment.total_installments')}
+                                onChange={(val) => setValue('installment.total_installments', val || 2)}
+                                required
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="drawer-inst-rate">Tasa Interés (%)</Label>
-                              <Input
+                              <NumberInput
                                 id="drawer-inst-rate"
-                                type="number"
-                                step="0.01"
+                                label="Tasa Interés (%)"
+                                step={0.01}
+                                min={0}
+                                max={100}
                                 placeholder="0.00"
+                                suffix="%"
                                 disabled={isPending}
-                                {...register('installment.interest_rate', { valueAsNumber: true })}
+                                value={watch('installment.interest_rate') ?? undefined}
+                                onChange={(val) => setValue('installment.interest_rate', val)}
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="drawer-inst-grace">Meses Gracia</Label>
-                              <Input
+                              <NumberInput
                                 id="drawer-inst-grace"
-                                type="number"
+                                label="Meses Gracia"
                                 min={0}
+                                max={24}
                                 placeholder="0"
+                                suffix="meses"
                                 disabled={isPending}
-                                {...register('installment.grace_months', { valueAsNumber: true })}
+                                value={watch('installment.grace_months') ?? undefined}
+                                onChange={(val) => setValue('installment.grace_months', val)}
                               />
                             </div>
                           </div>
@@ -757,7 +761,7 @@ export function TransactionDrawer({
                   </Badge>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-2 border-t border-border-subtle">
+                <div className="flex items-center justify-between gap-2 pt-3 border-t border-border-subtle">
                   <Button
                     type="button"
                     size="sm"

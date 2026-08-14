@@ -149,7 +149,7 @@ const PageContainerFooter = ({
           'shrink-0',
           'px-4 sm:px-6 lg:px-8 py-4',
           'bg-background/80 backdrop-blur-md border-t border-border-subtle',
-          'flex justify-end gap-3',
+          'flex items-center justify-between gap-3',
           className,
         )}
       >

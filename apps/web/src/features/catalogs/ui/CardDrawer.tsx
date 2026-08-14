@@ -8,6 +8,7 @@ import {
   Input,
   Label,
   Select,
+  NumberInput,
   Icon,
   toast,
 } from '@mymoney/ui';
@@ -283,42 +284,47 @@ export function CardDrawer({
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <Label htmlFor="billing-day">Día de Corte (1-31)</Label>
-                      <Input
+                      <NumberInput
                         id="billing-day"
-                        type="number"
+                        label="Día de Corte (1-31)"
                         min={1}
                         max={31}
                         placeholder="Ej: 15"
                         disabled={isView || isPending}
                         error={errors.billing_day?.message}
-                        {...register('billing_day')}
+                        value={watch('billing_day') ? Number(watch('billing_day')) : undefined}
+                        onChange={(val) => setValue('billing_day', (val ?? '') as unknown as number, { shouldValidate: true })}
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="payment-day">Día de Pago (1-31)</Label>
-                      <Input
+                      <NumberInput
                         id="payment-day"
-                        type="number"
+                        label="Día de Pago (1-31)"
                         min={1}
                         max={31}
                         placeholder="Ej: 5"
                         disabled={isView || isPending}
                         error={errors.payment_day?.message}
-                        {...register('payment_day')}
+                        value={watch('payment_day') ? Number(watch('payment_day')) : undefined}
+                        onChange={(val) => setValue('payment_day', (val ?? '') as unknown as number, { shouldValidate: true })}
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="interest-rate">Tasa de Interés Anual (Opcional)</Label>
-                    <Input
+                    <NumberInput
                       id="interest-rate"
-                      placeholder="Ej: 16.5%"
+                      label="Tasa de Interés Anual (Opcional)"
+                      placeholder="Ej: 16.5"
+                      step={0.1}
+                      min={0}
+                      max={100}
+                      suffix="%"
                       disabled={isView || isPending}
                       error={errors.base_interest_rate?.message}
-                      {...register('base_interest_rate')}
+                      value={watch('base_interest_rate') ? Number(watch('base_interest_rate')) : undefined}
+                      onChange={(val) => setValue('base_interest_rate', val !== undefined ? String(val) : '', { shouldValidate: true })}
                     />
                   </div>
                 </div>

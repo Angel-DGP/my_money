@@ -5,6 +5,7 @@ import {
   Button,
   Input,
   Select,
+  NumberInput,
   PageContainer,
   Icon,
   Label,
@@ -216,41 +217,46 @@ export function CardForm({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="billing_day">Día de Corte (1-31)</Label>
-                  <Input
+                  <NumberInput
                     id="billing_day"
-                    type="number"
+                    label="Día de Corte (1-31)"
                     min={1}
                     max={31}
                     placeholder="Ej: 15"
                     disabled={isView || isLoading}
                     error={errors.billing_day?.message}
-                    {...register('billing_day')}
+                    value={watch('billing_day') ? Number(watch('billing_day')) : undefined}
+                    onChange={(val) => setValue('billing_day', (val ?? '') as unknown as number, { shouldValidate: true })}
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="payment_day">Día de Pago (1-31)</Label>
-                  <Input
+                  <NumberInput
                     id="payment_day"
-                    type="number"
+                    label="Día de Pago (1-31)"
                     min={1}
                     max={31}
                     placeholder="Ej: 5"
                     disabled={isView || isLoading}
                     error={errors.payment_day?.message}
-                    {...register('payment_day')}
+                    value={watch('payment_day') ? Number(watch('payment_day')) : undefined}
+                    onChange={(val) => setValue('payment_day', (val ?? '') as unknown as number, { shouldValidate: true })}
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="base_interest_rate">Tasa de Interés Anual</Label>
-                  <Input
+                  <NumberInput
                     id="base_interest_rate"
-                    placeholder="Ej: 16.5%"
+                    label="Tasa de Interés Anual"
+                    placeholder="Ej: 16.5"
+                    step={0.1}
+                    min={0}
+                    max={100}
+                    suffix="%"
                     disabled={isView || isLoading}
                     error={errors.base_interest_rate?.message}
-                    {...register('base_interest_rate')}
+                    value={watch('base_interest_rate') ? Number(watch('base_interest_rate')) : undefined}
+                    onChange={(val) => setValue('base_interest_rate', val !== undefined ? String(val) : '', { shouldValidate: true })}
                   />
                 </div>
               </div>

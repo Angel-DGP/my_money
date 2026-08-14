@@ -1,4 +1,4 @@
-import { Input, Select, Icon } from '@mymoney/ui';
+import { Input, Select, NumberInput, DatePicker, Icon } from '@mymoney/ui';
 import { useAccountsQuery, type Account } from '@entities/account';
 import type { UseFormReturn } from 'react-hook-form';
 import type { SalaryFormData } from './SalaryForm.schema';
@@ -8,7 +8,7 @@ interface SalaryFormFieldsProps {
 }
 
 export function SalaryFormFields({ form }: SalaryFormFieldsProps) {
-  const { register, formState: { errors } } = form;
+  const { register, watch, setValue, formState: { errors } } = form;
   const { data: accounts = [] } = useAccountsQuery();
 
   return (
@@ -41,17 +41,17 @@ export function SalaryFormFields({ form }: SalaryFormFieldsProps) {
           </div>
 
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Input
+            <NumberInput
               id="amount"
               label="Sueldo (Ingreso)"
-              type="number"
-              step="0.01"
-              min="0"
+              prefix="$"
+              step={10}
+              min={0}
               placeholder="0.00"
-              leftIcon="dollar-sign"
               required
               error={errors.amount?.message}
-              {...register('amount', { valueAsNumber: true })}
+              value={watch('amount')}
+              onChange={(val) => setValue('amount', val || 0, { shouldValidate: true })}
             />
           </div>
           
@@ -65,23 +65,28 @@ export function SalaryFormFields({ form }: SalaryFormFieldsProps) {
           </div>
 
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Input
-              type="date"
+            <DatePicker
+              id="startDate"
               label="Fecha de Inicio"
-              leftIcon="calendar"
-              {...register('startDate')}
+              required
+              value={watch('startDate')}
+              onChange={(d) => setValue('startDate', d, { shouldValidate: true })}
               error={errors.startDate?.message}
             />
           </div>
           
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Input
-              type="number"
+            <NumberInput
+              id="months"
               label="Meses a Proyectar"
-              {...register('months')}
+              min={1}
+              max={36}
+              suffix="meses"
               error={errors.months?.message}
               placeholder="Ej: 12"
               helperText="¿Por cuántos meses deseas registrar este ingreso?"
+              value={watch('months')}
+              onChange={(val) => setValue('months', val || 12, { shouldValidate: true })}
             />
           </div>
         </div>

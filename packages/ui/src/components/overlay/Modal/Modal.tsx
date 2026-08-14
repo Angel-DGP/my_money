@@ -69,7 +69,7 @@ export const ModalFooter = React.forwardRef<HTMLDivElement, ModalFooterProps>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-4', className)}
+      className={cn('flex items-center justify-between gap-3 mt-5 pt-3 border-t border-border-subtle', className)}
       {...props}
     />
   )

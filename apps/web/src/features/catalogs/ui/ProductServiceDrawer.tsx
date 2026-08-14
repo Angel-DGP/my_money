@@ -7,12 +7,11 @@ import {
   Button,
   Input,
   Label,
-  Select,
   Icon,
   toast,
 } from '@mymoney/ui';
 import { useCreateProductService, useUpdateProductService } from '../api/useCatalogs';
-import { useCategoriesQuery } from '@entities/category';
+import { CategorySelect } from '../../categories';
 import type { ProductServiceDto } from '../../../shared/api/dto/catalogs.dto';
 
 const productSchema = z.object({
@@ -36,7 +35,6 @@ export function ProductServiceDrawer({
   product,
   isView = false,
 }: ProductServiceDrawerProps) {
-  const { data: categories = [] } = useCategoriesQuery();
   const createProduct = useCreateProductService();
   const updateProduct = useUpdateProductService();
   const isEditing = !!product && !isView;
@@ -132,26 +130,18 @@ export function ProductServiceDrawer({
 
             {/* Categoría Principal */}
             <div className="space-y-1.5">
-              <Label htmlFor="prod-category" required>
-                Categoría Principal
-              </Label>
-              <Select
+              <CategorySelect
                 id="prod-category"
+                label="Categoría Principal"
                 value={categoryIdValue || ''}
                 disabled={isView || isPending}
-                onValueChange={(val) =>
+                onChange={(val) =>
                   setValue('category_id', val, { shouldValidate: true })
                 }
                 error={errors.category_id?.message}
-                searchable
+                required
                 placeholder="Seleccionar categoría..."
-              >
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </Select>
+              />
             </div>
 
             {/* Descripción (Opcional) */}

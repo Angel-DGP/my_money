@@ -1,4 +1,4 @@
-import { Input, Label, Select, ColorPicker, Icon } from '@mymoney/ui';
+import { Input, Label, Select, ColorPicker, NumberInput, DatePicker, Icon } from '@mymoney/ui';
 import { useAccountsQuery, type Account } from '@entities/account';
 import type { GoalFormFieldsProps } from './GoalForm.types';
 
@@ -40,19 +40,19 @@ export function GoalFormFields({ form, isView, isLoading }: GoalFormFieldsProps)
           </div>
 
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Label htmlFor="target_amount" required>Objetivo (Monto a alcanzar)</Label>
-            <Input
+            <NumberInput
               id="target_amount"
-              type="number"
-              step="0.01"
-              min="0"
+              label="Objetivo (Monto a alcanzar)"
+              prefix="$"
+              min={0}
+              step={10}
               disabled={isView || isLoading}
               required
               placeholder="Ej: 5000.00"
-              leftIcon="dollar-sign"
-              {...register('target_amount', { valueAsNumber: true })}
+              value={watch('target_amount')}
+              onChange={(val) => setValue('target_amount', val || 0, { shouldValidate: true })}
+              error={errors.target_amount?.message}
             />
-            {errors.target_amount && <p className="text-error-500 text-xs">{errors.target_amount.message}</p>}
           </div>
 
           <div className="col-span-12 space-y-2">
@@ -93,15 +93,14 @@ export function GoalFormFields({ form, isView, isLoading }: GoalFormFieldsProps)
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
           <div className="col-span-12 md:col-span-4 space-y-2">
-            <Label htmlFor="target_date">Fecha Objetivo (Opcional)</Label>
-            <Input
+            <DatePicker
               id="target_date"
-              type="date"
+              label="Fecha Objetivo (Opcional)"
               disabled={isView || isLoading}
-              leftIcon="calendar"
-              {...register('target_date')}
+              value={watch('target_date')}
+              onChange={(d) => setValue('target_date', d, { shouldValidate: true })}
+              error={errors.target_date?.message}
             />
-            {errors.target_date && <p className="text-error-500 text-xs">{errors.target_date.message}</p>}
           </div>
 
           <div className="col-span-12 md:col-span-4 space-y-2">
