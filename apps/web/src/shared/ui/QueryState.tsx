@@ -26,36 +26,48 @@ export function QueryState<T>({
 }: QueryStateProps<T>) {
   if (isLoading) {
     return (
-      <div className="flex justify-center p-12">
-        <Icon name="loader-2" className="animate-spin text-primary-500" size="lg" />
+      <div className="flex flex-col items-center justify-center p-12 text-center bg-surface rounded-2xl border border-border-subtle animate-pulse">
+        <Icon name="loader-2" className="animate-spin text-primary-500 mb-3" size="lg" />
+        <span className="text-xs text-text-secondary">Cargando información...</span>
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center bg-error-50 border border-error-200 rounded-lg">
-        <Icon name="alert-triangle" size="lg" className="text-error-600 mb-4" />
-        <h3 className="text-lg font-medium text-error-800">Error al cargar datos</h3>
-        <p className="text-sm text-error-600 mt-1 mb-4">{error?.message || 'Ha ocurrido un error inesperado.'}</p>
+      <div className="flex flex-col items-center justify-center p-10 text-center bg-surface border border-error-500/25 rounded-2xl shadow-sm">
+        <div className="w-12 h-12 rounded-2xl bg-error-500/10 flex items-center justify-center text-error-500 mb-3.5">
+          <Icon name="alert-triangle" size="md" />
+        </div>
+        <h3 className="text-base font-bold text-text-primary">Error al cargar datos</h3>
+        <p className="text-xs sm:text-sm text-text-secondary mt-1 mb-5 max-w-md leading-relaxed">
+          {error?.message === 'Network Error'
+            ? 'No se pudo conectar con el servidor. Es posible que el servidor en la nube esté despertando o no haya conexión.'
+            : (error?.message || 'Ha ocurrido un error inesperado al consultar la información.')}
+        </p>
         {onRetry && (
-          <Button variant="outline" onClick={onRetry}>Reintentar</Button>
+          <Button variant="secondary" size="sm" onClick={onRetry}>
+            <Icon name="refresh-cw" size="xs" className="mr-1.5" />
+            Reintentar
+          </Button>
         )}
       </div>
     );
   }
 
-  const isEmpty = 
-    data === null || 
-    data === undefined || 
+  const isEmpty =
+    data === null ||
+    data === undefined ||
     (Array.isArray(data) && data.length === 0);
 
   if (isEmpty) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center bg-background border border-border-subtle rounded-lg">
-        <Icon name={emptyIcon} size="lg" className="text-text-secondary mb-4" />
-        <h3 className="text-lg font-medium text-text-primary">{emptyTitle}</h3>
-        <p className="text-sm text-text-secondary mt-1">{emptyDescription}</p>
+      <div className="flex flex-col items-center justify-center p-12 text-center bg-surface border border-border-subtle rounded-2xl shadow-sm">
+        <div className="w-12 h-12 rounded-2xl bg-surface-2 flex items-center justify-center text-text-muted mb-3.5">
+          <Icon name={emptyIcon} size="md" />
+        </div>
+        <h3 className="text-base font-bold text-text-primary">{emptyTitle}</h3>
+        <p className="text-xs sm:text-sm text-text-secondary mt-1 max-w-md">{emptyDescription}</p>
       </div>
     );
   }

@@ -34,8 +34,9 @@ import {
 interface TransactionDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  transaction?: Transaction | null;
-  initialViewMode?: boolean;
+  transaction?: Transaction | null | undefined;
+  initialViewMode?: boolean | undefined;
+  defaultAccountId?: string | undefined;
 }
 
 export function TransactionDrawer({
@@ -43,6 +44,7 @@ export function TransactionDrawer({
   onOpenChange,
   transaction,
   initialViewMode = false,
+  defaultAccountId,
 }: TransactionDrawerProps) {
   const isEdit = !!transaction;
   const [isView, setIsView] = useState(initialViewMode);
@@ -140,9 +142,9 @@ export function TransactionDrawer({
         note: '',
         date: new Date().toISOString().split('T')[0],
         category_id: 'none',
-        account_id: accounts?.[0]?.id || '',
-        from_account_id: accounts?.[0]?.id || '',
-        to_account_id: accounts?.[1]?.id || '',
+        account_id: defaultAccountId || accounts?.[0]?.id || '',
+        from_account_id: defaultAccountId || accounts?.[0]?.id || '',
+        to_account_id: accounts?.[1]?.id || accounts?.[0]?.id || '',
         payment_method: 'none',
         card_id: 'none',
         subscription_id: 'none',
@@ -153,7 +155,7 @@ export function TransactionDrawer({
         installment: undefined,
       } as TransactionFormData);
     }
-  }, [transaction, reset, open, accounts]);
+  }, [transaction, reset, open, accounts, defaultAccountId]);
 
   const isPending = createTransaction.isPending || createTransfer.isPending || updateTransaction.isPending || deleteTransaction.isPending;
 

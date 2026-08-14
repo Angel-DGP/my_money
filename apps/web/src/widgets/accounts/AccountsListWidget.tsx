@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useAccountsQuery, useDeleteAccount } from '@entities/account';
 import type { Account } from '@entities/account';
-import { useTransactionsQuery } from '@entities/transaction';
+import { useTransactionsQuery, type Transaction } from '@entities/transaction';
 import { AccountsTable, AccountDrawer } from '@features/accounts';
+import { TransactionDrawer } from '@features/transactions';
 import { Button, Icon, toast, PageContainer, AlertDialog, Badge, Amount } from '@mymoney/ui';
 import { useState, useMemo } from 'react';
 import { QueryState } from '@shared/ui/QueryState';
@@ -20,6 +21,15 @@ export function AccountsListWidget() {
   }>({
     open: false,
     account: null,
+    isView: false,
+  });
+  const [txDrawerState, setTxDrawerState] = useState<{
+    open: boolean;
+    transaction: Transaction | null;
+    isView: boolean;
+  }>({
+    open: false,
+    transaction: null,
     isView: false,
   });
   const [accountToDelete, setAccountToDelete] = useState<Account | null>(null);
@@ -180,8 +190,8 @@ export function AccountsListWidget() {
                     </h4>
                     <button
                       type="button"
-                      onClick={() => navigate('/transactions/new')}
-                      className="text-xs text-primary-500 hover:text-primary-600 font-medium hover:underline flex items-center gap-1"
+                      onClick={() => setTxDrawerState({ open: true, transaction: null, isView: false })}
+                      className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-500 font-medium hover:underline flex items-center gap-1"
                     >
                       <Icon name="plus" size="xs" /> Nuevo Movimiento
                     </button>
@@ -195,7 +205,7 @@ export function AccountsListWidget() {
                         <div
                           key={tx.id}
                           className="flex items-center justify-between p-3 rounded-xl bg-surface hover:bg-surface-2 border border-border-subtle transition-colors cursor-pointer"
-                          onClick={() => navigate('/transactions/edit', { state: { transaction: tx, isView: true } })}
+                          onClick={() => setTxDrawerState({ open: true, transaction: tx, isView: true })}
                         >
                           <div className="flex items-center gap-3">
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
@@ -270,6 +280,15 @@ export function AccountsListWidget() {
         onOpenChange={(open) => setAccountDrawer((prev) => ({ ...prev, open }))}
         account={accountDrawer.account}
         isView={accountDrawer.isView}
+      />
+
+      {/* ─── DRAWER DE TRANSACCIÓN (Detalle / Creación) ───────────────────── */}
+      <TransactionDrawer
+        open={txDrawerState.open}
+        onOpenChange={(open) => setTxDrawerState((prev) => ({ ...prev, open }))}
+        transaction={txDrawerState.transaction}
+        initialViewMode={txDrawerState.isView}
+        defaultAccountId={selectedAccount?.id}
       />
 
       {/* ─── DIÁLOGO DE ELIMINACIÓN ────────────────────────────────────────── */}
