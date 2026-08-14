@@ -15,4 +15,5 @@ export interface DatePickerProps {
   placeholder?: string | undefined;
   className?: string | undefined;
   showPresets?: boolean | undefined;
+  align?: 'left' | 'right' | 'auto' | undefined;
 }

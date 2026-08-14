@@ -56,12 +56,29 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(
       placeholder = 'DD/MM/AAAA',
       className,
       showPresets = true,
+      align = 'auto',
     },
     ref
   ) => {
     const isControlled = controlledValue !== undefined;
     const [isOpen, setIsOpen] = useState(false);
+    const [autoAlign, setAutoAlign] = useState<'left' | 'right'>('left');
     const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      if (isOpen && containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const screenWidth = window.innerWidth;
+        // If right side of container + 290px overflows screen or container is in right half
+        if (rect.left + 290 > screenWidth || rect.left > screenWidth / 2) {
+          setAutoAlign('right');
+        } else {
+          setAutoAlign('left');
+        }
+      }
+    }, [isOpen]);
+
+    const effectiveAlign = align === 'auto' ? autoAlign : align;
 
     const initialDate = useMemo(() => {
       const initial = parseDate(isControlled ? controlledValue : defaultValue);
@@ -283,7 +300,12 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(
 
         {/* Dropdown Floating Calendar */}
         {isOpen && (
-          <div className="absolute top-full left-0 mt-1.5 w-72 sm:w-76 z-50 rounded-xl border border-border-subtle bg-surface shadow-2xl p-3.5 animate-in fade-in zoom-in-95 duration-150">
+          <div
+            className={cn(
+              'absolute top-full mt-1.5 w-72 max-w-[calc(100vw-2rem)] z-50 rounded-xl border border-border-subtle bg-surface shadow-2xl p-3.5 animate-in fade-in zoom-in-95 duration-150',
+              effectiveAlign === 'right' ? 'right-0 left-auto' : 'left-0 right-auto'
+            )}
+          >
             {/* Header: Month / Year Navigation */}
             <div className="flex items-center justify-between pb-2.5 border-b border-border-subtle">
               <span className="font-bold text-sm text-text-primary capitalize">

@@ -36,7 +36,7 @@ export const PageContainerComponent = ({ children, className }: PageContainerPro
       <div className="flex flex-col h-full w-full">
         {/* Scroll container: todo el contenido scrollea aquí. pb-6 garantiza
             espacio al fondo sin importar qué clases pasen las páginas al Body */}
-        <div className={cn('flex-1 min-h-0 overflow-y-auto custom-scrollbar pb-6', className)}>
+        <div className={cn('flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar pb-6', className)}>
           {children}
         </div>
         {/* Footer slot: siempre fuera del scroll, siempre pegado al fondo */}

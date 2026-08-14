@@ -280,7 +280,7 @@ export const DrawerBody = React.forwardRef<HTMLDivElement, DrawerBodyProps>(
     return (
       <div
         ref={ref}
-        className={cn('flex-1 overflow-y-auto custom-scrollbar px-6 py-5', className)}
+        className={cn('flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar px-6 py-5', className)}
         {...props}
       />
     );
