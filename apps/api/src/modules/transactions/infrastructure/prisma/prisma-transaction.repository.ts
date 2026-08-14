@@ -32,11 +32,12 @@ export class PrismaTransactionRepository implements ITransactionRepository {
   }
 
   async save(entity: Transaction): Promise<void> {
-    const data = TransactionMapper.toPersistence(entity);
+    const createData = TransactionMapper.toCreateInput(entity);
+    const updateData = TransactionMapper.toUpdateInput(entity);
     await this.prisma.transaction.upsert({
       where: { id: entity.id },
-      create: data as Prisma.TransactionUncheckedCreateInput,
-      update: data as unknown as Prisma.TransactionUncheckedUpdateInput,
+      create: createData,
+      update: updateData,
     });
   }
 

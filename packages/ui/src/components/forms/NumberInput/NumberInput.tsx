@@ -61,7 +61,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const rawVal = e.target.value;
+      const rawVal = e.target.value.replace(',', '.');
       // Allow empty, minus sign, digits, and single decimal point
       if (rawVal === '' || /^-?\d*\.?\d*$/.test(rawVal)) {
         notifyChange(rawVal);

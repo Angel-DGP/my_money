@@ -203,11 +203,11 @@ export function ProjectionDetailPage() {
                   <thead>
                     <tr className="border-b border-border-subtle bg-surface-2/30 text-xs font-semibold text-text-secondary uppercase tracking-wider">
                       <th className="py-3 px-4 w-32">Fecha</th>
-                      <th className="py-3 px-4">Descripción</th>
+                      <th className="py-3 px-4 min-w-[160px]">Descripción</th>
                       <th className="py-3 px-4">Origen</th>
                       <th className="py-3 px-4">Estado</th>
                       <th className="py-3 px-4 text-right">Monto</th>
-                      <th className="py-3 px-4 text-right w-44">Acción</th>
+                      <th className="py-3 px-4 text-right w-36 sticky right-0 z-10 bg-surface shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.1)]">Acción</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border-subtle">
@@ -278,15 +278,16 @@ export function ProjectionDetailPage() {
                                 {formatCurrency(parseFloat(event.amount))}
                               </span>
                             </td>
-                            <td className="py-3 px-4 text-right">
+                            <td className="py-3 px-4 text-right sticky right-0 z-10 bg-surface shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.1)]">
                               {isPaid ? (
                                 <Button
                                   size="xs"
                                   variant="ghost"
                                   disabled={unpayEvent.isPending}
                                   onClick={() => handleUnpay(event)}
-                                  className="text-text-muted hover:text-text-primary text-xs"
+                                  className="text-text-muted hover:text-text-primary text-xs inline-flex items-center gap-1"
                                 >
+                                  <Icon name="refresh-cw" size="xs" />
                                   Desmarcar
                                 </Button>
                               ) : (
@@ -294,9 +295,9 @@ export function ProjectionDetailPage() {
                                   size="xs"
                                   variant="outline"
                                   onClick={() => handleOpenPayModal(event)}
-                                  className="text-amber-500 border-amber-500/40 hover:bg-amber-500/10 hover:border-amber-500 text-xs font-semibold"
+                                  className="text-amber-500 border-amber-500/40 hover:bg-amber-500/10 hover:border-amber-500 text-xs font-semibold inline-flex items-center gap-1 shadow-xs"
                                 >
-                                  <Icon name="check" size="xs" className="mr-1" />
+                                  <Icon name="credit-card" size="xs" />
                                   Pagar
                                 </Button>
                               )}

@@ -26,8 +26,9 @@ export function AnalyticsPage() {
       <PageContainer.Header
         title="Analíticas y Reportes"
         description="Métricas ejecutivas, flujo de dinero, desglose de gastos y recomendaciones inteligentes."
+        className="flex-col sm:flex-row items-start sm:items-center gap-3"
         actions={
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-surface-2/60 border border-border-subtle shrink-0">
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-2/60 border border-border-subtle overflow-x-auto max-w-full w-full sm:w-auto justify-between sm:justify-start">
             {PERIOD_OPTIONS.map((opt) => {
               const isActive = selectedMonths === opt.value;
               return (
@@ -35,7 +36,7 @@ export function AnalyticsPage() {
                   key={opt.value}
                   type="button"
                   onClick={() => setSelectedMonths(opt.value)}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                  className={`flex-1 sm:flex-initial px-3 py-1.5 text-xs font-semibold rounded-lg transition-all text-center whitespace-nowrap ${
                     isActive
                       ? 'bg-brand-500 text-white shadow-xs'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-3/50'

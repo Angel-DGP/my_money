@@ -113,7 +113,7 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
       align: 'right',
       sticky: 'right',
       cell: (t) => (
-        <div className="flex justify-end items-center gap-1">
+        <div className="flex flex-wrap sm:flex-nowrap justify-end items-center gap-1 max-w-[58px] sm:max-w-none ml-auto">
           <button 
             type="button" 
             title="Ver detalle"

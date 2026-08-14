@@ -69,7 +69,7 @@ export class TransactionMapper {
     });
   }
 
-  static toPersistence(entity: Transaction): Prisma.TransactionUncheckedCreateInput {
+  static toCreateInput(entity: Transaction): Prisma.TransactionUncheckedCreateInput {
     return {
       id: entity.id,
       user_id: entity.userId,
@@ -89,13 +89,15 @@ export class TransactionMapper {
       card_id: entity.cardId,
       subscription_id: entity.subscriptionId,
       product_id: entity.productId,
-      installment: entity.installment ? {
-        create: {
-          total_installments: entity.installment.totalInstallments,
-          interest_rate: entity.installment.interestRate,
-          grace_months: entity.installment.graceMonths
-        }
-      } : undefined,
+      installment: entity.installment
+        ? {
+            create: {
+              total_installments: entity.installment.totalInstallments,
+              interest_rate: entity.installment.interestRate,
+              grace_months: entity.installment.graceMonths,
+            },
+          }
+        : undefined,
       created_at: entity.createdAt,
       created_by: entity.createdBy,
       updated_at: entity.updatedAt,
@@ -103,5 +105,50 @@ export class TransactionMapper {
       deleted_at: entity.deletedAt,
       deleted_by: entity.deletedBy,
     };
+  }
+
+  static toUpdateInput(entity: Transaction): Prisma.TransactionUncheckedUpdateInput {
+    return {
+      account_id: entity.accountId,
+      category_id: entity.categoryId,
+      type: entity.type,
+      amount: entity.amount.value.toString(),
+      currency: entity.amount.currency,
+      description: entity.description,
+      date: entity.date,
+      transfer_pair_id: entity.transferPairId,
+      is_recurring: entity.isRecurring,
+      is_third_party: entity.isThirdParty,
+      third_party_owner: entity.thirdPartyOwner,
+      third_party_note: entity.thirdPartyNote,
+      payment_method: entity.paymentMethod,
+      card_id: entity.cardId,
+      subscription_id: entity.subscriptionId,
+      product_id: entity.productId,
+      installment: entity.installment
+        ? {
+            upsert: {
+              create: {
+                total_installments: entity.installment.totalInstallments,
+                interest_rate: entity.installment.interestRate,
+                grace_months: entity.installment.graceMonths,
+              },
+              update: {
+                total_installments: entity.installment.totalInstallments,
+                interest_rate: entity.installment.interestRate,
+                grace_months: entity.installment.graceMonths,
+              },
+            },
+          }
+        : undefined,
+      updated_at: entity.updatedAt,
+      updated_by: entity.updatedBy,
+      deleted_at: entity.deletedAt,
+      deleted_by: entity.deletedBy,
+    };
+  }
+
+  static toPersistence(entity: Transaction): Prisma.TransactionUncheckedCreateInput {
+    return this.toCreateInput(entity);
   }
 }
