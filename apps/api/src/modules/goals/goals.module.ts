@@ -8,6 +8,7 @@ import { UpdateGoalUseCase } from './application/use-cases/update-goal.use-case'
 import { DeleteGoalUseCase } from './application/use-cases/delete-goal.use-case';
 import { GOAL_REPOSITORY } from './domain/goal.repository.interface';
 import { PrismaGoalRepository } from './infrastructure/prisma-goal.repository';
+import { PrismaModule } from '../../prisma/prisma.module';
 import { AccountsModule } from '../accounts/accounts.module';
 import { TransactionsModule } from '../transactions/transactions.module';
 

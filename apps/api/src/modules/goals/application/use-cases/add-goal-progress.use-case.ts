@@ -39,9 +39,9 @@ export class AddGoalProgressUseCase {
     const amountToAdd = Money.of(dto.amount, dto.currency as Currency);
 
     // Validar saldo suficiente en la cuenta de origen
-    if (account.balance.value.lt(amountToAdd.value)) {
+    if (account.currentBalance.value.lt(amountToAdd.value)) {
       throw new BadRequestException(
-        `Saldo insuficiente en ${account.name}. Saldo disponible: ${account.balance.value.toFixed(2)} ${account.currency}`
+        `Saldo insuficiente en ${account.name}. Saldo disponible: ${account.currentBalance.value.toFixed(2)} ${account.currency}`
       );
     }
 
@@ -50,7 +50,7 @@ export class AddGoalProgressUseCase {
 
     // Debitar saldo de la cuenta de origen
     const delta = BalanceDelta.decrease(amountToAdd);
-    const balanceChangeEvent = account.applyBalanceDelta(delta, 'GOAL_CONTRIBUTION');
+    const balanceChangeEvent = account.applyBalanceDelta(delta, 'TRANSACTION_CREATED');
 
     // Registrar la transacción de débito por ahorro
     const transaction = Transaction.create({
