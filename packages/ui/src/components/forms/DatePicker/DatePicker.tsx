@@ -240,24 +240,25 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(
           disabled={disabled}
           onClick={() => !readOnly && setIsOpen((prev) => !prev)}
           className={cn(
-            'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border bg-surface text-sm transition-all duration-150 shadow-sm',
+            'flex h-10 min-h-10 w-full items-center justify-between rounded-lg border bg-background/50 backdrop-blur-sm px-3 text-sm text-text-primary transition-all shadow-sm',
+            'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-500 focus-visible:border-primary-500',
             hasError
-              ? 'border-error-500 ring-1 ring-error-500/30'
+              ? 'border-error-500 ring-1 ring-error-500'
               : isOpen
-              ? 'border-primary-500 ring-2 ring-primary-500/20'
-              : 'border-border-subtle hover:border-text-secondary/40',
+              ? 'border-primary-500 ring-1 ring-primary-500'
+              : 'border-border-subtle hover:border-border-strong',
             disabled && 'opacity-50 bg-surface-2 cursor-not-allowed',
             readOnly && 'cursor-default'
           )}
         >
-          <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex items-center gap-2 min-w-0">
             <Icon name="calendar" size="xs" className="text-text-muted shrink-0" />
-            <span className={cn('truncate font-medium', selectedDate ? 'text-text-primary' : 'text-text-muted')}>
+            <span className={cn('truncate', !selectedDate && 'text-text-muted')}>
               {selectedDate ? formatDateDisplay(selectedDate) : placeholder}
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 text-text-muted shrink-0">
+          <div className="flex items-center gap-1 text-text-muted shrink-0">
             {selectedDate && !disabled && !readOnly && (
               <span
                 role="button"
@@ -266,7 +267,7 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(
                   e.stopPropagation();
                   handleClear();
                 }}
-                className="p-1 hover:text-text-primary rounded-md hover:bg-surface-2 transition-colors cursor-pointer"
+                className="p-0.5 hover:text-text-primary rounded hover:bg-surface-2 transition-colors cursor-pointer text-xs leading-none"
                 title="Limpiar fecha"
               >
                 ✕
@@ -275,16 +276,16 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(
             <Icon
               name="chevron-down"
               size="xs"
-              className={cn('transition-transform duration-200', isOpen && 'rotate-180')}
+              className={cn('text-text-secondary transition-transform duration-200', isOpen && 'rotate-180')}
             />
           </div>
         </button>
 
         {/* Dropdown Floating Calendar */}
         {isOpen && (
-          <div className="absolute top-full left-0 mt-1.5 w-72 sm:w-80 z-50 rounded-2xl border border-border-subtle bg-surface shadow-2xl p-4 animate-in fade-in zoom-in-95 duration-150">
+          <div className="absolute top-full left-0 mt-1.5 w-72 sm:w-76 z-50 rounded-xl border border-border-subtle bg-surface shadow-2xl p-3.5 animate-in fade-in zoom-in-95 duration-150">
             {/* Header: Month / Year Navigation */}
-            <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
+            <div className="flex items-center justify-between pb-2.5 border-b border-border-subtle">
               <span className="font-bold text-sm text-text-primary capitalize">
                 {MONTH_NAMES[viewDate.getMonth()]} {viewDate.getFullYear()}
               </span>
@@ -292,7 +293,7 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(
                 <button
                   type="button"
                   onClick={handlePrevMonth}
-                  className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-2 transition-colors"
+                  className="p-1 rounded-md text-text-muted hover:text-text-primary hover:bg-surface-2 transition-colors"
                   aria-label="Mes anterior"
                 >
                   <Icon name="chevron-left" size="xs" />
@@ -300,7 +301,7 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(
                 <button
                   type="button"
                   onClick={handleNextMonth}
-                  className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-2 transition-colors"
+                  className="p-1 rounded-md text-text-muted hover:text-text-primary hover:bg-surface-2 transition-colors"
                   aria-label="Mes siguiente"
                 >
                   <Icon name="chevron-right" size="xs" />
@@ -309,7 +310,7 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(
             </div>
 
             {/* Day Names Row */}
-            <div className="grid grid-cols-7 gap-1 pt-3 pb-1 text-center">
+            <div className="grid grid-cols-7 gap-1 pt-2.5 pb-1 text-center">
               {DAY_NAMES.map((name) => (
                 <span key={name} className="text-[11px] font-bold text-text-muted uppercase">
                   {name}
@@ -328,7 +329,7 @@ export const DatePicker = React.forwardRef<HTMLInputElement, DatePickerProps>(
                     disabled={item.isDisabled}
                     onClick={() => handleSelectDate(item.date)}
                     className={cn(
-                      'h-8 w-8 mx-auto flex items-center justify-center rounded-xl text-xs font-medium transition-all duration-150',
+                      'h-7.5 w-7.5 mx-auto flex items-center justify-center rounded-lg text-xs font-medium transition-all duration-150',
                       !item.isCurrentMonth && 'text-text-muted/30 pointer-events-none',
                       item.isCurrentMonth && !item.isSelected && 'text-text-primary hover:bg-surface-2 active:scale-95',
                       item.isSelected && 'bg-primary-500 text-white font-bold shadow-sm scale-105',

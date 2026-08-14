@@ -106,15 +106,16 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
 
         <div
           className={cn(
-            'relative flex items-center rounded-xl border bg-surface transition-all duration-150 shadow-sm overflow-hidden',
-            hasError
-              ? 'border-error-500 ring-1 ring-error-500/30'
-              : 'border-border-subtle focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20',
+            'group relative flex h-10 min-h-10 items-center w-full rounded-lg border shadow-sm transition-all overflow-hidden',
+            'bg-background/50 backdrop-blur-sm border-border-subtle text-text-primary',
+            'focus-within:ring-1 focus-within:ring-primary-500 focus-within:border-primary-500',
+            !disabled && !hasError && 'hover:border-border-strong',
+            hasError && 'border-error-500 focus-within:ring-error-500 focus-within:border-error-500',
             disabled && 'opacity-50 bg-surface-2 cursor-not-allowed'
           )}
         >
           {prefix && (
-            <span className="pl-3.5 pr-1 text-sm font-semibold text-text-muted select-none">
+            <span className="pl-3 pr-1 text-sm font-semibold text-text-muted select-none">
               {prefix}
             </span>
           )}
@@ -134,25 +135,25 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             className={cn(
-              'w-full bg-transparent py-2.5 px-3.5 text-sm text-text-primary placeholder:text-text-muted outline-none font-medium',
+              'w-full h-full bg-transparent px-3 text-sm text-text-primary placeholder:text-text-muted outline-none font-medium',
               // Hide browser default spinners
               '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
             )}
           />
 
           {suffix && (
-            <span className="pr-3 pl-1 text-xs font-semibold text-text-muted select-none">
+            <span className="px-2 text-xs font-semibold text-text-muted select-none">
               {suffix}
             </span>
           )}
 
           {showSteppers && !disabled && !readOnly && (
-            <div className="flex flex-col border-l border-border-subtle shrink-0">
+            <div className="flex flex-col h-full border-l border-border-subtle divide-y divide-border-subtle shrink-0">
               <button
                 type="button"
                 tabIndex={-1}
                 onClick={handleIncrement}
-                className="h-5 px-2 flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-2 active:bg-surface-hover transition-colors"
+                className="flex-1 px-2.5 flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-2 active:bg-surface-3 transition-colors"
                 aria-label="Incrementar"
               >
                 <Icon name="chevron-up" size="xs" />
@@ -161,7 +162,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
                 type="button"
                 tabIndex={-1}
                 onClick={handleDecrement}
-                className="h-5 px-2 flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-2 active:bg-surface-hover transition-colors border-t border-border-subtle"
+                className="flex-1 px-2.5 flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-2 active:bg-surface-3 transition-colors"
                 aria-label="Decrementar"
               >
                 <Icon name="chevron-down" size="xs" />
