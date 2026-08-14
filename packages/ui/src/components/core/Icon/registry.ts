@@ -95,10 +95,12 @@ import {
   Book,
   Map,
   Percent,
+  Minus,
 } from 'lucide-react';
 
 export const iconRegistry = {
   plus: Plus,
+  minus: Minus,
   trash: Trash2,
   pencil: Pencil,
   edit: Pencil,

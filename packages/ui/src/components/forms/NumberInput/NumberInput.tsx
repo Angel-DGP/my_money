@@ -142,30 +142,30 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           />
 
           {suffix && (
-            <span className="px-2 text-xs font-semibold text-text-muted select-none">
+            <span className="px-2 text-xs font-medium text-text-muted select-none">
               {suffix}
             </span>
           )}
 
           {showSteppers && !disabled && !readOnly && (
-            <div className="flex flex-col h-full border-l border-border-subtle divide-y divide-border-subtle shrink-0">
-              <button
-                type="button"
-                tabIndex={-1}
-                onClick={handleIncrement}
-                className="flex-1 px-2.5 flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-2 active:bg-surface-3 transition-colors"
-                aria-label="Incrementar"
-              >
-                <Icon name="chevron-up" size="xs" />
-              </button>
+            <div className="flex items-center gap-1 pr-1.5 shrink-0 select-none">
               <button
                 type="button"
                 tabIndex={-1}
                 onClick={handleDecrement}
-                className="flex-1 px-2.5 flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-2 active:bg-surface-3 transition-colors"
+                className="w-7 h-7 flex items-center justify-center rounded-md text-text-muted hover:text-text-primary hover:bg-surface-2 active:bg-surface-3 active:scale-95 transition-all"
                 aria-label="Decrementar"
               >
-                <Icon name="chevron-down" size="xs" />
+                <Icon name="minus" size="xs" />
+              </button>
+              <button
+                type="button"
+                tabIndex={-1}
+                onClick={handleIncrement}
+                className="w-7 h-7 flex items-center justify-center rounded-md text-text-muted hover:text-text-primary hover:bg-surface-2 active:bg-surface-3 active:scale-95 transition-all"
+                aria-label="Incrementar"
+              >
+                <Icon name="plus" size="xs" />
               </button>
             </div>
           )}
