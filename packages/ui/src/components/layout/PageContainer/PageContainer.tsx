@@ -67,22 +67,22 @@ const PageContainerHeader = ({
     <div className={cn(
       'sticky top-0 z-30 shrink-0',
       'bg-background/80 backdrop-blur-md border-b border-border-subtle/50',
-      'flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6',
+      'flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-5 lg:py-6',
       className
     )}>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         {backTo && (
-          <Button variant="ghost" onClick={backTo} className="px-2 -ml-2" aria-label="Volver">
+          <Button variant="ghost" onClick={backTo} className="px-2 -ml-2 shrink-0" aria-label="Volver">
             <Icon name="chevron-left" size="sm" />
           </Button>
         )}
-        <div>
-          <h2 className="text-2xl font-bold text-text-primary tracking-tight">{title}</h2>
-          {description && <p className="text-sm text-text-secondary mt-1">{description}</p>}
+        <div className="min-w-0">
+          <h2 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight truncate">{title}</h2>
+          {description && <p className="text-xs sm:text-sm text-text-secondary mt-0.5 truncate sm:whitespace-normal">{description}</p>}
         </div>
       </div>
       {actions && (
-        <div className="flex items-center gap-3 self-start sm:self-auto">{actions}</div>
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">{actions}</div>
       )}
     </div>
   );

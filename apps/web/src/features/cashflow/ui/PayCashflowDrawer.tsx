@@ -110,24 +110,20 @@ export function PayCashflowDrawer({
           </Drawer.Description>
         </Drawer.Header>
 
-        <Drawer.Body className="space-y-6 py-4">
-          {/* Card resumen del movimiento */}
-          <div className="p-4 rounded-2xl bg-surface-2/40 border border-border-subtle flex items-center justify-between">
-            <div className="space-y-1">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-surface text-[10px] font-bold text-text-secondary border border-border-subtle uppercase tracking-wider">
-                {event.source_type}
-              </span>
-              <p className="text-sm font-bold text-text-primary mt-1">
-                {event.description || 'Gasto proyectado'}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-text-muted">Monto a Pagar</p>
-              <p className="text-xl font-black text-amber-500">
-                {formatCurrency(amountNumber)}
-              </p>
-            </div>
-          </div>
+        <Drawer.Body className="space-y-5 py-4">
+          {/* Summary Card */}
+          <Drawer.SummaryCard
+            label={`Evento de Flujo — ${event.source_type}`}
+            title={event.description || 'Gasto proyectado'}
+            amountLabel="Monto a Pagar"
+            amount={formatCurrency(amountNumber)}
+            icon="calendar"
+            iconBgColor="#f59e0b"
+            badges={[
+              { text: event.source_type, variant: 'neutral' },
+              { text: new Date(event.date).toLocaleDateString(), variant: 'info', icon: 'calendar' },
+            ]}
+          />
 
           {/* Selector de cuenta */}
           <AccountSelect

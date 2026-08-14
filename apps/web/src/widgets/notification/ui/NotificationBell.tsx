@@ -55,7 +55,7 @@ export function NotificationBell() {
         )}
       </Dropdown.Trigger>
       
-      <Dropdown.Content align="start" className="w-80 max-h-96 overflow-y-auto p-0">
+      <Dropdown.Content align="end" className="w-[calc(100vw-2rem)] sm:w-80 max-h-96 overflow-y-auto overflow-x-hidden p-0">
         <div className="p-3 border-b border-border-subtle bg-surface/50 backdrop-blur-md sticky top-0 z-10 flex justify-between items-center">
           <h3 className="font-medium text-sm text-text-primary">Notificaciones</h3>
           {unreadCount > 0 && (

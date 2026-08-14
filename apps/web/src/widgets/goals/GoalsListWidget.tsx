@@ -73,9 +73,9 @@ export function GoalsListWidget() {
         title="Metas de Ahorro"
         description="Empieza a ahorrar creando tu primera meta."
         actions={
-          <Button onClick={handleOpenCreate}>
-            <Icon name="plus" size="sm" className="mr-2" />
-            Nueva Meta
+          <Button onClick={handleOpenCreate} aria-label="Nueva Meta" size="sm" className="px-3 sm:px-4">
+            <Icon name="plus" size="sm" className="sm:mr-2" />
+            <span className="hidden sm:inline">Nueva Meta</span>
           </Button>
         }
       />

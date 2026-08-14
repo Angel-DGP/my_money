@@ -113,10 +113,12 @@ export function ProductServicesTab() {
           <Button
             onClick={handleOpenCreate}
             variant="primary"
-            className="w-full sm:w-auto"
+            size="sm"
+            className="px-3 sm:px-4"
+            aria-label="Nuevo Comercio"
           >
-            <Icon name="plus" size="xs" className="mr-1.5" />
-            Nuevo Comercio
+            <Icon name="plus" size="sm" className="sm:mr-2" />
+            <span className="hidden sm:inline">Nuevo Comercio</span>
           </Button>
         }
       />

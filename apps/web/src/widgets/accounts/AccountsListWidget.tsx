@@ -83,9 +83,9 @@ export function AccountsListWidget() {
         title="Mis Cuentas"
         description="Gestiona tus cuentas bancarias, tarjetas y efectivo con vista detallada."
         actions={
-          <Button onClick={handleOpenCreate}>
-            <Icon name="plus" size="sm" className="mr-2" />
-            Nueva Cuenta
+          <Button onClick={handleOpenCreate} aria-label="Nueva Cuenta" size="sm" className="px-3 sm:px-4">
+            <Icon name="plus" size="sm" className="sm:mr-2" />
+            <span className="hidden sm:inline">Nueva Cuenta</span>
           </Button>
         }
       />

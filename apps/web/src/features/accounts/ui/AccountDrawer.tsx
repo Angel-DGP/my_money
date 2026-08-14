@@ -38,6 +38,7 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
       type: 'CHECKING',
       initial_balance: '0',
       color: '#3b82f6',
+      icon: 'coins',
       institution_id: '',
       specific_type: '',
     },
@@ -55,6 +56,7 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
         type: (account.type as AccountFormData['type']) || 'CHECKING',
         initial_balance: account.current_balance?.value || '0',
         color: account.color || '#3b82f6',
+        icon: account.icon || 'coins',
         institution_id: account.institution_id || '',
         specific_type: account.specific_type || '',
       });
@@ -64,6 +66,7 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
         type: 'CHECKING',
         initial_balance: '0',
         color: '#3b82f6',
+        icon: 'coins',
         institution_id: '',
         specific_type: '',
       });
@@ -80,6 +83,7 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
           data: {
             name: data.name,
             color: data.color || undefined,
+            icon: data.icon || undefined,
             type: data.type,
             institution_id: data.institution_id || undefined,
             specific_type: data.specific_type || undefined,
@@ -92,6 +96,7 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
           type: data.type,
           initial_balance: data.initial_balance || '0',
           color: data.color || undefined,
+          icon: data.icon || undefined,
           currency: 'USD',
           institution_id: data.institution_id || undefined,
           specific_type: data.specific_type || undefined,
@@ -141,12 +146,35 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
 
           <form id="account-drawer-form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden">
             <Drawer.Body className="space-y-6">
+              {/* Summary Card for isView */}
+              {isView && account && (
+                <Drawer.SummaryCard
+                  label="Cuenta Registrada"
+                  title={account.name}
+                  amountLabel="Balance Actual"
+                  amount={`$${account.current_balance?.value || '0'}`}
+                  icon={(account.icon as React.ComponentProps<typeof Icon>['name']) || 'wallet'}
+                  iconBgColor={account.color || '#3b82f6'}
+                  badges={[
+                    { text: account.type, variant: 'neutral' },
+                    ...(account.institution_id && institutions?.find((i) => i.id === account.institution_id)
+                      ? [
+                          {
+                            text: institutions.find((i) => i.id === account.institution_id)!.name,
+                            variant: 'primary' as const,
+                          },
+                        ]
+                      : []),
+                  ]}
+                />
+              )}
+
               {/* Selector de Tipo en Segmented Control */}
               <div className="space-y-2">
                 <Label required>Tipo de Cuenta</Label>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                   {[
-                    { type: 'CHECKING' as const, label: 'Corriente', icon: 'credit-card' as const },
+                    { type: 'CHECKING' as const, label: 'Corriente', icon: 'coins' as const },
                     { type: 'SAVINGS' as const, label: 'Ahorros', icon: 'piggy-bank' as const },
                     { type: 'CASH' as const, label: 'Efectivo', icon: 'wallet' as const },
                     { type: 'CREDIT' as const, label: 'Crédito', icon: 'credit-card' as const },
@@ -156,7 +184,10 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
                       key={item.type}
                       type="button"
                       disabled={isView || isEdit}
-                      onClick={() => setValue('type', item.type, { shouldValidate: true })}
+                      onClick={() => {
+                        setValue('type', item.type, { shouldValidate: true });
+                        setValue('icon', item.icon);
+                      }}
                       className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-medium transition-all ${
                         selectedType === item.type
                           ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-950/40 dark:text-primary-300 font-semibold shadow-sm'

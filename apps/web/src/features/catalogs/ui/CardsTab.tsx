@@ -155,21 +155,25 @@ export function CardsTab() {
             {activeTab === 'cards' && (
               <Button
                 variant="primary"
+                size="sm"
+                className="px-3 sm:px-4"
                 onClick={handleOpenCreateCard}
-                className="w-full sm:w-auto"
+                aria-label="Nueva Tarjeta"
               >
-                <Icon name="plus" size="xs" className="mr-1.5" />
-                Nueva Tarjeta
+                <Icon name="plus" size="sm" className="sm:mr-2" />
+                <span className="hidden sm:inline">Nueva Tarjeta</span>
               </Button>
             )}
             {activeTab === 'brands' && (
               <Button
                 variant="primary"
+                size="sm"
+                className="px-3 sm:px-4"
                 onClick={() => brandsListRef.current?.openCreate()}
-                className="w-full sm:w-auto"
+                aria-label="Nueva Marca"
               >
-                <Icon name="plus" size="xs" className="mr-1.5" />
-                Nueva Marca
+                <Icon name="plus" size="sm" className="sm:mr-2" />
+                <span className="hidden sm:inline">Nueva Marca</span>
               </Button>
             )}
           </>

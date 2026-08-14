@@ -50,9 +50,9 @@ export function BudgetsListWidget() {
         title="Presupuestos"
         description="Establece límites para mantener tus gastos bajo control."
         actions={
-          <Button onClick={handleOpenCreate}>
-            <Icon name="plus" size="sm" className="mr-2" />
-            Nuevo Presupuesto
+          <Button onClick={handleOpenCreate} aria-label="Nuevo Presupuesto" size="sm" className="px-3 sm:px-4">
+            <Icon name="plus" size="sm" className="sm:mr-2" />
+            <span className="hidden sm:inline">Nuevo Presupuesto</span>
           </Button>
         }
       />

@@ -60,7 +60,7 @@ export function MainLayout() {
   };
 
   return (
-    <div className="h-screen bg-surface flex overflow-hidden">
+    <div className="h-[100dvh] bg-surface flex overflow-hidden">
       <GlobalSearchWidget />
       
       {/* Mobile Sidebar Overlay */}
@@ -76,7 +76,7 @@ export function MainLayout() {
         "fixed inset-y-0 left-0 z-50 w-72 bg-background border-r border-border-subtle flex flex-col transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:w-64",
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        {/* Sidebar Header: Logo + NotificationBell */}
+        {/* Sidebar Header: Logo + NotificationBell (desktop only) */}
         <div className="h-16 flex items-center justify-between px-5 border-b border-border-subtle shrink-0">
           <Link to="/" onClick={closeMobileMenu} className="flex items-center gap-2.5 min-w-0">
             <div className="flex items-center justify-center w-8 h-8 shrink-0 rounded-lg bg-primary-600 text-white">
@@ -86,7 +86,9 @@ export function MainLayout() {
           </Link>
 
           <div className="flex items-center gap-1 shrink-0">
-            <NotificationBell />
+            <div className="hidden md:flex">
+              <NotificationBell />
+            </div>
             {/* Close button (mobile only) */}
             <Button variant="ghost" className="md:hidden p-2" onClick={closeMobileMenu} aria-label="Cerrar menú">
               <Icon name="x" size="sm" />

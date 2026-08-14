@@ -104,9 +104,9 @@ export function TransactionsPage() {
         title="Transacciones"
         description={activeAccount ? `Movimientos de la cuenta: ${activeAccount.name}` : "Historial completo de tus movimientos"}
         actions={
-          <Button onClick={handleOpenCreate}>
-            <Icon name="plus" size="sm" className="mr-2" />
-            Nueva Transacción
+          <Button onClick={handleOpenCreate} aria-label="Nueva Transacción" size="sm" className="px-3 sm:px-4">
+            <Icon name="plus" size="sm" className="sm:mr-2" />
+            <span className="hidden sm:inline">Nueva Transacción</span>
           </Button>
         }
       />
@@ -226,18 +226,6 @@ export function TransactionsPage() {
             />
           </>
         )}
-
-        {/* Floating Action Button (FAB) para Mobile */}
-        <div className="fixed bottom-6 right-6 sm:hidden z-30">
-          <button
-            type="button"
-            onClick={handleOpenCreate}
-            className="w-14 h-14 rounded-full bg-primary-600 hover:bg-primary-700 text-white shadow-xl flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-primary-500/30 active:scale-95 transition-all"
-            aria-label="Registrar nueva transacción"
-          >
-            <Icon name="plus" size="md" />
-          </button>
-        </div>
       </PageContainer.Body>
 
       {/* ─── DRAWER DE TRANSACCIONES (Crear / Editar / Recibo) ──────────────── */}

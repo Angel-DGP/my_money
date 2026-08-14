@@ -290,11 +290,13 @@ DrawerBody.displayName = 'Drawer.Body';
 
 export interface DrawerFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
 
+import { DrawerSummaryCard } from './DrawerSummaryCard';
+
 export const DrawerFooter = ({ className, ...props }: DrawerFooterProps) => {
   return (
     <div
       className={cn(
-        'px-6 py-4 bg-surface-2/40 border-t border-border-subtle shrink-0 flex items-center justify-between gap-3',
+        'px-6 py-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] bg-surface-2/40 border-t border-border-subtle shrink-0 flex items-center justify-between gap-3',
         className
       )}
       {...props}
@@ -314,5 +316,6 @@ export const Drawer = {
   Description: DrawerDescription,
   Body: DrawerBody,
   Footer: DrawerFooter,
+  SummaryCard: DrawerSummaryCard,
   Close: DrawerTrigger,
 };

@@ -108,9 +108,9 @@ export function InstitutionsTab() {
         title="Bancos e Instituciones"
         description="Administra los bancos y billeteras donde tienes cuentas y tarjetas."
         actions={
-          <Button onClick={handleOpenCreate} variant="primary" className="w-full sm:w-auto">
-            <Icon name="plus" size="xs" className="mr-1.5" />
-            Nueva Institución
+          <Button onClick={handleOpenCreate} variant="primary" size="sm" className="px-3 sm:px-4" aria-label="Nueva Institución">
+            <Icon name="plus" size="sm" className="sm:mr-2" />
+            <span className="hidden sm:inline">Nueva Institución</span>
           </Button>
         }
       />
