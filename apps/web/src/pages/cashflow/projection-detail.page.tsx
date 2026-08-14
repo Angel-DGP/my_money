@@ -40,7 +40,7 @@ export function ProjectionDetailPage() {
     accountId,
   );
   const unpayEvent = useUnpayCashflowEvent();
-  const projection = projections?.[0]; // There should only be one month in the result
+  const projection = projections?.find((p) => p.month === month) || projections?.[0];
 
   const formatMonth = (monthStr: string) => {
     return dayjs(monthStr + "-01").format("MMMM YYYY");

@@ -84,7 +84,7 @@ export function SubscriptionDrawer({
           ? new Date(subscription.next_billing_date).toISOString().split('T')[0] as string
           : (new Date().toISOString().split('T')[0] as string),
         billing_cycle: (subscription?.billing_cycle as 'MONTHLY' | 'YEARLY') || 'MONTHLY',
-        duration_months: 12,
+        duration_months: subscription?.duration_months || 12,
       });
     }
   }, [open, subscription, reset]);

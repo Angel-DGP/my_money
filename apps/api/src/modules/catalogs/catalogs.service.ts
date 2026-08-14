@@ -137,11 +137,34 @@ export class CatalogsService {
 
   // --- Subscriptions ---
   async getSubscriptions(userId: string) {
-    return this.prisma.subscription.findMany({
+    const subscriptions = await this.prisma.subscription.findMany({
       where: { user_id: userId },
       include: { card: true, category: true },
       orderBy: { next_billing_date: 'asc' },
     });
+
+    const subIds = subscriptions.map((s) => s.id);
+    if (subIds.length === 0) return [];
+
+    const eventCounts = await this.prisma.cashflowEvent.groupBy({
+      by: ['reference_id'],
+      where: {
+        user_id: userId,
+        source_type: 'SUBSCRIPTION',
+        reference_id: { in: subIds },
+      },
+      _count: { id: true },
+    });
+
+    const countMap = new Map<string, number>();
+    eventCounts.forEach((c) => {
+      if (c.reference_id) countMap.set(c.reference_id, c._count.id);
+    });
+
+    return subscriptions.map((s) => ({
+      ...s,
+      duration_months: countMap.get(s.id) || 12,
+    }));
   }
 
   async createSubscription(userId: string, data: { category_id: string; card_id?: string; name: string; amount: number; currency?: string; billing_cycle: string; next_billing_date: string; url?: string; duration_months?: number }) {
@@ -159,33 +182,42 @@ export class CatalogsService {
       },
     });
 
-    if (data.duration_months && data.duration_months > 0) {
-      const eventsToCreate = [];
-      const currentDate = new Date(data.next_billing_date);
+    const months = data.duration_months && data.duration_months > 0 ? data.duration_months : 12;
+    const eventsToCreate = [];
+    const dateParts = data.next_billing_date.split('-').map(Number);
+    const yearStr = dateParts[0] || new Date().getFullYear();
+    const monthStr = dateParts[1] || (new Date().getMonth() + 1);
+    const dayStr = dateParts[2] || new Date().getDate();
 
-      for (let i = 0; i < data.duration_months; i++) {
-        eventsToCreate.push({
-          user_id: userId,
-          amount: data.amount,
-          type: "EXPENSE",
-          date: new Date(currentDate),
-          source_type: "SUBSCRIPTION",
-          reference_id: subscription.id,
-          description: `Suscripción: ${data.name}`,
-          status: "PENDING",
-        });
-
-        if (data.billing_cycle === 'YEARLY') {
-          currentDate.setFullYear(currentDate.getFullYear() + 1);
-        } else {
-          currentDate.setMonth(currentDate.getMonth() + 1);
-        }
+    for (let i = 0; i < months; i++) {
+      let y = yearStr;
+      let m = (monthStr - 1) + i;
+      if (data.billing_cycle === 'YEARLY') {
+        y = yearStr + i;
+        m = monthStr - 1;
       }
+      const eventDate = new Date(Date.UTC(y, m, dayStr, 12, 0, 0));
 
+      eventsToCreate.push({
+        user_id: userId,
+        amount: data.amount,
+        type: 'EXPENSE',
+        date: eventDate,
+        source_type: 'SUBSCRIPTION',
+        reference_id: subscription.id,
+        description: `Suscripción: ${data.name}`,
+        status: 'PENDING',
+      });
+    }
+
+    if (eventsToCreate.length > 0) {
       await this.prisma.cashflowEvent.createMany({ data: eventsToCreate });
     }
 
-    return subscription;
+    return {
+      ...subscription,
+      duration_months: months,
+    };
   }
 
   async updateSubscription(userId: string, id: string, data: UpdateSubscriptionDto) {
@@ -209,13 +241,80 @@ export class CatalogsService {
     if (data.next_billing_date !== undefined) updateData.next_billing_date = new Date(data.next_billing_date);
     if (data.url !== undefined) updateData.url = data.url;
 
-    return this.prisma.subscription.update({
+    const subscription = await this.prisma.subscription.update({
       where: { id, user_id: userId },
       data: updateData,
     });
+
+    if (data.name || data.amount !== undefined) {
+      await this.prisma.cashflowEvent.updateMany({
+        where: {
+          user_id: userId,
+          reference_id: id,
+          source_type: 'SUBSCRIPTION',
+          status: 'PENDING',
+        },
+        data: {
+          ...(data.name ? { description: `Suscripción: ${data.name}` } : {}),
+          ...(data.amount !== undefined ? { amount: data.amount } : {}),
+        },
+      });
+    }
+
+    if (data.duration_months && data.duration_months > 0) {
+      await this.prisma.cashflowEvent.deleteMany({
+        where: {
+          user_id: userId,
+          reference_id: id,
+          source_type: 'SUBSCRIPTION',
+          status: 'PENDING',
+        },
+      });
+
+      const nextDate = new Date(subscription.next_billing_date);
+      const eventsToCreate = [];
+      const yearStr = nextDate.getUTCFullYear();
+      const monthStr = nextDate.getUTCMonth();
+      const dayStr = nextDate.getUTCDate();
+
+      for (let i = 0; i < data.duration_months; i++) {
+        let y = yearStr;
+        let m = monthStr + i;
+        if (subscription.billing_cycle === 'YEARLY') {
+          y = yearStr + i;
+          m = monthStr;
+        }
+        const eventDate = new Date(Date.UTC(y, m, dayStr, 12, 0, 0));
+
+        eventsToCreate.push({
+          user_id: userId,
+          amount: subscription.amount,
+          type: 'EXPENSE',
+          date: eventDate,
+          source_type: 'SUBSCRIPTION',
+          reference_id: id,
+          description: `Suscripción: ${subscription.name}`,
+          status: 'PENDING',
+        });
+      }
+
+      if (eventsToCreate.length > 0) {
+        await this.prisma.cashflowEvent.createMany({ data: eventsToCreate });
+      }
+    }
+
+    return subscription;
   }
 
   async deleteSubscription(userId: string, id: string) {
+    await this.prisma.cashflowEvent.deleteMany({
+      where: {
+        user_id: userId,
+        reference_id: id,
+        source_type: 'SUBSCRIPTION',
+      },
+    });
+
     return this.prisma.subscription.delete({
       where: { id, user_id: userId },
     });

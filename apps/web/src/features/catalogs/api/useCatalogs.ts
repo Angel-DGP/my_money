@@ -127,6 +127,7 @@ export const useCreateSubscription = () => {
     mutationFn: CatalogsService.createSubscription,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
+      queryClient.invalidateQueries({ queryKey: ['projections'] });
     },
   });
 };
@@ -137,6 +138,7 @@ export const useUpdateSubscription = () => {
     mutationFn: ({ id, data }: { id: string; data: unknown }) => CatalogsService.updateSubscription(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
+      queryClient.invalidateQueries({ queryKey: ['projections'] });
     },
   });
 };
@@ -147,6 +149,7 @@ export const useDeleteSubscription = () => {
     mutationFn: CatalogsService.deleteSubscription,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
+      queryClient.invalidateQueries({ queryKey: ['projections'] });
     },
   });
 };

@@ -138,4 +138,8 @@ export class UpdateSubscriptionDto {
   @IsOptional()
   @IsString()
   url?: string;
+
+  @IsOptional()
+  @IsNumber()
+  duration_months?: number;
 }

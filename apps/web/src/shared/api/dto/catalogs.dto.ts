@@ -40,6 +40,7 @@ export interface SubscriptionDto {
   url?: string | null;
   status: string;
   card?: CardDto | null;
+  duration_months?: number;
 }
 
 export interface ProductServiceDto {
