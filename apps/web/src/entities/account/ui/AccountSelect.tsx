@@ -19,9 +19,10 @@ export interface AccountSelectProps {
   noneLabel?: string | undefined;
   className?: string | undefined;
   excludeId?: string | undefined;
+  searchable?: boolean | undefined;
 }
 
-const getAccountIcon = (type: AccountType): IconName => {
+const getAccountFallbackIcon = (type: AccountType): IconName => {
   switch (type) {
     case 'CASH':
       return 'wallet';
@@ -78,6 +79,7 @@ export function AccountSelect({
   noneLabel = 'Sin cuenta',
   className = '',
   excludeId,
+  searchable,
 }: AccountSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -96,6 +98,8 @@ export function AccountSelect({
       return true;
     });
   }, [accounts, excludeId, excludeCash, filterType]);
+
+  const isSearchable = searchable ?? availableAccounts.length >= 4;
 
   // Selected item
   const selectedAccount = useMemo(() => {
@@ -132,12 +136,12 @@ export function AccountSelect({
 
   // Focus search input on open
   useEffect(() => {
-    if (isOpen && availableAccounts.length > 4) {
+    if (isOpen && isSearchable) {
       setTimeout(() => {
         searchInputRef.current?.focus();
       }, 50);
     }
-  }, [isOpen, availableAccounts.length]);
+  }, [isOpen, isSearchable]);
 
   const handleSelect = (accId: string) => {
     onChange?.(accId);
@@ -170,16 +174,20 @@ export function AccountSelect({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
+        <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
           {selectedAccount ? (
             <>
               <div
-                className="w-5 h-5 rounded flex items-center justify-center shrink-0"
+                className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 shadow-sm"
                 style={{
-                  color: selectedAccount.color || '#3b82f6',
+                  backgroundColor: selectedAccount.color || '#3b82f6',
                 }}
               >
-                <Icon name={getAccountIcon(selectedAccount.type)} size="xs" />
+                <Icon
+                  name={(selectedAccount.icon as IconName) || getAccountFallbackIcon(selectedAccount.type)}
+                  size="xs"
+                  className="text-white drop-shadow-sm scale-90"
+                />
               </div>
               <span className="font-medium text-text-primary truncate">
                 {selectedAccount.name}
@@ -222,25 +230,26 @@ export function AccountSelect({
       {/* Error Message */}
       {error && <p className="text-xs text-error-500">{error}</p>}
 
-      {/* Dropdown Menu - using standard SelectContent styling */}
+      {/* Dropdown Menu - matching core Select search & options */}
       {isOpen && (
         <div className="absolute top-[calc(100%+4px)] z-50 max-h-64 w-full flex flex-col rounded-xl border border-border-subtle bg-surface shadow-2xl animate-in fade-in zoom-in-95 duration-100 overflow-hidden">
-          {/* Search bar if multiple accounts */}
-          {availableAccounts.length > 4 && (
-            <div className="p-2 border-b border-border-subtle">
+          {/* Search bar matching SelectSearch.tsx */}
+          {isSearchable && (
+            <div className="p-2 border-b border-border-subtle sticky top-0 bg-surface/90 dark:bg-surface-2/90 z-10 backdrop-blur-md">
               <div className="relative">
                 <Icon
                   name="search"
-                  size="xs"
-                  className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
+                  size="sm"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted h-3.5 w-3.5 pointer-events-none"
                 />
                 <input
                   ref={searchInputRef}
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
                   placeholder="Buscar cuenta..."
-                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-surface-2 border border-border-subtle rounded-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  className="w-full bg-background/50 border border-border-subtle rounded-md pl-8 pr-3 py-1.5 text-xs outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all text-text-primary placeholder:text-text-muted"
                 />
               </div>
             </div>
@@ -273,6 +282,7 @@ export function AccountSelect({
                 const isSelected = value === acc.id;
                 const balNum = parseFloat(acc.current_balance?.value || '0');
                 const isCredit = acc.type === 'CREDIT';
+                const accIcon = (acc.icon as IconName) || getAccountFallbackIcon(acc.type);
 
                 return (
                   <div
@@ -286,14 +296,18 @@ export function AccountSelect({
                         : 'text-text-primary hover:bg-surface-2'
                     }`}
                   >
-                    <div className="flex items-center gap-2 min-w-0 mr-2">
+                    <div className="flex items-center gap-2.5 min-w-0 mr-2">
                       <div
-                        className="w-5 h-5 rounded flex items-center justify-center shrink-0"
+                        className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 shadow-sm"
                         style={{
-                          color: acc.color || '#3b82f6',
+                          backgroundColor: acc.color || '#3b82f6',
                         }}
                       >
-                        <Icon name={getAccountIcon(acc.type)} size="xs" />
+                        <Icon
+                          name={accIcon}
+                          size="xs"
+                          className="text-white drop-shadow-sm scale-90"
+                        />
                       </div>
                       <span className="truncate">{acc.name}</span>
                       <span className="text-[11px] text-text-muted font-normal shrink-0">
