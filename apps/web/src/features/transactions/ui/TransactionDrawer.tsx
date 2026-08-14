@@ -244,6 +244,46 @@ export function TransactionDrawer({
     }
   };
 
+  const handleProductChange = (prodId: string) => {
+    setValue('product_id', prodId);
+    if (prodId && prodId !== 'none') {
+      const prod = products.find((p) => p.id === prodId);
+      if (prod) {
+        if (prod.category_id) {
+          setValue('category_id', prod.category_id);
+        }
+        const currentDesc = watch('description');
+        if (!currentDesc || currentDesc.trim() === '') {
+          setValue('description', prod.name);
+        }
+      }
+    }
+  };
+
+  const handleSubscriptionChange = (subId: string) => {
+    setValue('subscription_id', subId);
+    if (subId && subId !== 'none') {
+      const sub = subscriptions.find((s) => s.id === subId);
+      if (sub) {
+        if (sub.category_id) {
+          setValue('category_id', sub.category_id);
+        }
+        if (sub.card_id) {
+          setValue('card_id', sub.card_id);
+          setValue('payment_method', 'CARD');
+        }
+        const currentDesc = watch('description');
+        if (!currentDesc || currentDesc.trim() === '' || currentDesc.startsWith('Suscripción:')) {
+          setValue('description', `Suscripción: ${sub.name}`);
+        }
+        const currentAmount = watch('amount');
+        if (!currentAmount || Number(currentAmount) === 0) {
+          setValue('amount', parseFloat(sub.amount));
+        }
+      }
+    }
+  };
+
   const handleDeleteConfirm = async () => {
     if (!transaction) return;
     try {
@@ -712,7 +752,12 @@ export function TransactionDrawer({
 
                               <div className="space-y-2">
                                 <Label htmlFor="drawer-sub-id">Suscripción Relacionada</Label>
-                                <Select id="drawer-sub-id" disabled={isPending} {...register('subscription_id')}>
+                                <Select
+                                  id="drawer-sub-id"
+                                  disabled={isPending}
+                                  value={watch('subscription_id') || 'none'}
+                                  onChange={(e) => handleSubscriptionChange(e.target.value)}
+                                >
                                   <option value="none">Ninguna</option>
                                   {subscriptions.map((s) => (
                                     <option key={s.id} value={s.id}>{s.name} ({s.amount})</option>
@@ -721,8 +766,13 @@ export function TransactionDrawer({
                               </div>
 
                               <div className="space-y-2">
-                                <Label htmlFor="drawer-prod-id">Producto / Comercio</Label>
-                                <Select id="drawer-prod-id" disabled={isPending} {...register('product_id')}>
+                                <Label htmlFor="drawer-prod-id">Producto / Comercio (Compra Frecuente)</Label>
+                                <Select
+                                  id="drawer-prod-id"
+                                  disabled={isPending}
+                                  value={watch('product_id') || 'none'}
+                                  onChange={(e) => handleProductChange(e.target.value)}
+                                >
                                   <option value="none">Ninguno</option>
                                   {products.map((p) => (
                                     <option key={p.id} value={p.id}>{p.name}</option>
