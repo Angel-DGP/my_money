@@ -27,6 +27,7 @@ const NAV_ITEMS = [
     subItems: [
       { path: '/catalogs/institutions', label: 'Bancos e Instituciones' },
       { path: '/catalogs/cards', label: 'Mis Tarjetas' },
+      { path: '/catalogs/categories', label: 'Categorías' },
       { path: '/catalogs/subscriptions', label: 'Suscripciones' },
       { path: '/catalogs/products', label: 'Compras Frecuentes' },
     ]

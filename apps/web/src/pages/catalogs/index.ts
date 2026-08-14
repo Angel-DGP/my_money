@@ -14,3 +14,4 @@ export { InstitutionsTab as InstitutionsPage } from '../../features/catalogs/ui/
 export { CardsTab as CardsPage } from '../../features/catalogs/ui/CardsTab';
 export { SubscriptionsTab as SubscriptionsPage } from '../../features/catalogs/ui/SubscriptionsTab';
 export { ProductServicesTab as ProductServicesPage } from '../../features/catalogs/ui/ProductServicesTab';
+export { CategoriesTab as CategoriesCatalogPage } from '../../features/catalogs/ui/CategoriesTab';

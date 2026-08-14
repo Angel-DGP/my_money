@@ -6,8 +6,8 @@ export interface Subcategory {
   type: CategoryType;
   is_system: boolean;
   parent_id: string;
-  icon?: string;
-  color?: string;
+  icon?: string | undefined;
+  color?: string | undefined;
 }
 
 export interface Category {
@@ -15,18 +15,23 @@ export interface Category {
   name: string;
   type: CategoryType;
   is_system: boolean;
-  icon?: string;
-  color?: string;
-  parent_id?: string;
-  subcategories?: Subcategory[];
+  icon?: string | undefined;
+  color?: string | undefined;
+  parent_id?: string | null | undefined;
+  subcategories?: Subcategory[] | undefined;
 }
 
 export interface CreateCategoryDto {
   name: string;
   type: CategoryType;
-  parent_id?: string;
-  icon?: string;
-  color?: string;
+  parent_id?: string | null | undefined;
+  icon?: string | undefined;
+  color?: string | undefined;
 }
 
-export interface UpdateCategoryDto extends Omit<Partial<CreateCategoryDto>, 'type'> {}
+export interface UpdateCategoryDto {
+  name?: string | undefined;
+  parent_id?: string | null | undefined;
+  icon?: string | undefined;
+  color?: string | undefined;
+}

@@ -7,4 +7,5 @@ export * from './InstitutionsTab';
 export * from './CardsTab';
 export * from './SubscriptionsTab';
 export * from './ProductServicesTab';
+export * from './CategoriesTab';
 export * from './CardBrandsList';

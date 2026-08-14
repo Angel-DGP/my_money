@@ -1,11 +1,10 @@
-import { useCategoriesQuery, useDeleteCategory } from '@entities/category';
-import type { Category } from '@entities/category';
-import { CategoriesTable, CategoryDrawer } from '@features/categories';
-import { Button, Icon, toast, PageContainer, AlertDialog } from '@mymoney/ui';
 import { useState } from 'react';
-import { QueryState } from '@shared/ui/QueryState';
+import { useCategoriesQuery, useDeleteCategory, type Category } from '@entities/category';
+import { Button, Icon, PageContainer, AlertDialog, toast } from '@mymoney/ui';
+import { QueryState } from '../../../shared/ui/QueryState';
+import { CategoriesTable, CategoryDrawer } from '../../categories';
 
-export function CategoriesListWidget() {
+export function CategoriesTab() {
   const categoriesQuery = useCategoriesQuery();
   const deleteCategory = useDeleteCategory();
 
@@ -20,20 +19,20 @@ export function CategoriesListWidget() {
     setDrawerOpen(true);
   };
 
-  const handleView = (category: Category) => {
-    setSelectedCategory(category);
-    setIsViewMode(true);
-    setDrawerOpen(true);
-  };
-
-  const handleEdit = (category: Category) => {
-    setSelectedCategory(category);
+  const handleOpenEdit = (cat: Category) => {
+    setSelectedCategory(cat);
     setIsViewMode(false);
     setDrawerOpen(true);
   };
 
-  const handleDelete = (category: Category) => {
-    if (category.is_system) {
+  const handleOpenView = (cat: Category) => {
+    setSelectedCategory(cat);
+    setIsViewMode(true);
+    setDrawerOpen(true);
+  };
+
+  const handleDelete = (cat: Category) => {
+    if (cat.is_system) {
       toast({
         title: 'Acción no permitida',
         description: 'No puedes eliminar una categoría del sistema.',
@@ -41,14 +40,14 @@ export function CategoriesListWidget() {
       });
       return;
     }
-    setCategoryToDelete(category);
+    setCategoryToDelete(cat);
   };
 
   return (
     <PageContainer className="max-w-7xl">
       <PageContainer.Header
         title="Categorías"
-        description="Administra las categorías para clasificar tus transacciones."
+        description="Administra las categorías y subcategorías para clasificar tus transacciones."
         actions={
           <Button onClick={handleOpenCreate}>
             <Icon name="plus" size="sm" className="mr-2" />
@@ -56,6 +55,7 @@ export function CategoriesListWidget() {
           </Button>
         }
       />
+
       <PageContainer.Body variant="transparent">
         <QueryState
           data={categoriesQuery.data}
@@ -63,22 +63,22 @@ export function CategoriesListWidget() {
           isError={categoriesQuery.isError}
           error={categoriesQuery.error}
           emptyTitle="No hay categorías"
-          emptyDescription="Comienza creando tu primera categoría."
+          emptyDescription="Comienza creando tu primera categoría personalizada."
           emptyIcon="tag"
           onRetry={categoriesQuery.refetch}
         >
           {(categories) => (
             <CategoriesTable
               categories={categories}
-              onView={handleView}
-              onEdit={handleEdit}
+              onView={handleOpenView}
+              onEdit={handleOpenEdit}
               onDelete={handleDelete}
             />
           )}
         </QueryState>
       </PageContainer.Body>
 
-      {/* ─── DRAWER DE CATEGORÍA ───────────────────────────────────────────── */}
+      {/* ─── DRAWER DE CATEGORÍA (Creación / Edición / Detalle) ─────────────── */}
       <CategoryDrawer
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
@@ -86,7 +86,7 @@ export function CategoriesListWidget() {
         isView={isViewMode}
       />
 
-      {/* ─── DIÁLOGO DE ELIMINACIÓN ────────────────────────────────────────── */}
+      {/* ─── DIÁLOGO DE CONFIRMACIÓN DE ELIMINACIÓN ──────────────────────────── */}
       <AlertDialog
         open={!!categoryToDelete}
         onOpenChange={(open) => !open && setCategoryToDelete(null)}
@@ -102,7 +102,7 @@ export function CategoriesListWidget() {
                 setCategoryToDelete(null);
                 toast({
                   title: 'Categoría eliminada',
-                  description: 'La categoría ha sido eliminada.',
+                  description: 'La categoría ha sido eliminada con éxito.',
                   variant: 'success',
                 });
               },
