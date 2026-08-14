@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useAccountsQuery } from '../model/queries';
 import type { Account, AccountType } from '../types/account.types';
-import { Icon, Badge, type IconName } from '@mymoney/ui';
+import { Icon, Label, type IconName } from '@mymoney/ui';
 
 export interface AccountSelectProps {
   id?: string | undefined;
@@ -146,57 +146,47 @@ export function AccountSelect({
   };
 
   return (
-    <div className={`relative ${className}`} ref={containerRef}>
+    <div className={`flex flex-col gap-1.5 w-full relative ${className}`} ref={containerRef}>
       {label && (
-        <label
-          htmlFor={id}
-          className="block text-xs font-semibold text-text-primary uppercase tracking-wider mb-1.5"
-        >
+        <Label htmlFor={id} required={required}>
           {label}
-          {required && <span className="text-error-500 ml-0.5">*</span>}
-        </label>
+        </Label>
       )}
 
-      {/* Trigger Button */}
+      {/* Trigger Button - standard h-10 with clean borders */}
       <button
         type="button"
         id={id}
         name={name}
         disabled={disabled || isLoading}
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full min-h-[44px] px-3.5 py-2 flex items-center justify-between text-left text-sm rounded-xl border bg-surface-2 transition-all outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed ${
-          error
-            ? 'border-error-500 bg-error-500/5'
-            : isOpen
-            ? 'border-primary-500 ring-2 ring-primary-500/20 shadow-sm'
-            : 'border-border-subtle hover:border-border-strong hover:bg-surface-3'
+        className={`flex h-10 w-full items-center justify-between rounded-lg border bg-background/50 backdrop-blur-sm px-3.5 py-2 text-sm text-text-primary transition-all shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:border-primary-500 disabled:cursor-not-allowed disabled:opacity-50 ${
+          isOpen
+            ? 'border-primary-500 ring-1 ring-primary-500'
+            : error
+            ? 'border-error-500'
+            : 'border-border-subtle hover:border-border-strong'
         }`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
+        <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
           {selectedAccount ? (
             <>
               <div
-                className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border"
+                className="w-5 h-5 rounded flex items-center justify-center shrink-0"
                 style={{
-                  backgroundColor: selectedAccount.color ? `${selectedAccount.color}15` : 'rgba(59, 130, 246, 0.1)',
-                  borderColor: selectedAccount.color ? `${selectedAccount.color}30` : 'rgba(59, 130, 246, 0.2)',
                   color: selectedAccount.color || '#3b82f6',
                 }}
               >
                 <Icon name={getAccountIcon(selectedAccount.type)} size="xs" />
               </div>
-              <div className="flex flex-col min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="font-semibold text-text-primary truncate">
-                    {selectedAccount.name}
-                  </span>
-                  <Badge variant="neutral" size="sm" className="text-[10px] py-0 px-1.5 shrink-0">
-                    {getAccountTypeLabel(selectedAccount.type)}
-                  </Badge>
-                </div>
-              </div>
+              <span className="font-medium text-text-primary truncate">
+                {selectedAccount.name}
+              </span>
+              <span className="text-[11px] text-text-muted shrink-0">
+                ({getAccountTypeLabel(selectedAccount.type)})
+              </span>
             </>
           ) : (
             <span className="text-text-muted truncate">
@@ -221,23 +211,23 @@ export function AccountSelect({
           )}
           <Icon
             name="chevron-down"
-            size="xs"
-            className={`text-text-muted transition-transform duration-200 ${
-              isOpen ? 'transform rotate-180 text-primary-500' : ''
+            size="sm"
+            className={`text-text-secondary transition-transform duration-200 ${
+              isOpen ? 'rotate-180 text-primary-500' : ''
             }`}
           />
         </div>
       </button>
 
       {/* Error Message */}
-      {error && <p className="text-xs text-error-500 mt-1">{error}</p>}
+      {error && <p className="text-xs text-error-500">{error}</p>}
 
-      {/* Dropdown Menu */}
+      {/* Dropdown Menu - using standard SelectContent styling */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1.5 py-1.5 bg-surface-1 border border-border-strong rounded-xl shadow-xl backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-100 max-h-72 flex flex-col">
+        <div className="absolute top-[calc(100%+4px)] z-50 max-h-64 w-full flex flex-col rounded-xl border border-border-subtle bg-surface shadow-2xl animate-in fade-in zoom-in-95 duration-100 overflow-hidden">
           {/* Search bar if multiple accounts */}
           {availableAccounts.length > 4 && (
-            <div className="px-2.5 pb-2 pt-1 border-b border-border-subtle">
+            <div className="p-2 border-b border-border-subtle">
               <div className="relative">
                 <Icon
                   name="search"
@@ -257,27 +247,26 @@ export function AccountSelect({
           )}
 
           {/* Options List */}
-          <div className="overflow-y-auto flex-1 p-1 space-y-0.5" role="listbox">
+          <div className="overflow-auto p-1.5 max-h-[220px] custom-scrollbar space-y-0.5" role="listbox">
             {allowNone && (
-              <button
-                type="button"
-                onClick={() => handleSelect('none')}
-                className={`w-full px-3 py-2 text-left text-xs rounded-lg flex items-center justify-between transition-colors ${
-                  !value || value === 'none'
-                    ? 'bg-primary-500/10 text-primary-500 font-medium'
-                    : 'text-text-secondary hover:bg-surface-2 hover:text-text-primary'
-                }`}
+              <div
                 role="option"
                 aria-selected={!value || value === 'none'}
+                onClick={() => handleSelect('none')}
+                className={`relative flex w-full cursor-pointer select-none items-center justify-between rounded-lg px-3 py-2 text-sm outline-none transition-colors my-0.5 ${
+                  !value || value === 'none'
+                    ? 'bg-primary-500/15 text-primary-600 dark:text-primary-400 font-semibold'
+                    : 'text-text-primary hover:bg-surface-2'
+                }`}
               >
                 <span>{noneLabel}</span>
-                {(!value || value === 'none') && <Icon name="check" size="xs" />}
-              </button>
+                {(!value || value === 'none') && <Icon name="check" size="sm" className="text-primary-500" />}
+              </div>
             )}
 
             {filteredAccounts.length === 0 ? (
-              <div className="px-3 py-4 text-center text-xs text-text-muted">
-                No se encontraron cuentas
+              <div className="p-2 text-sm text-text-muted text-center py-4">
+                No hay resultados
               </div>
             ) : (
               filteredAccounts.map((acc: Account) => {
@@ -286,44 +275,35 @@ export function AccountSelect({
                 const isCredit = acc.type === 'CREDIT';
 
                 return (
-                  <button
+                  <div
                     key={acc.id}
-                    type="button"
-                    onClick={() => handleSelect(acc.id)}
-                    className={`w-full px-3 py-2.5 text-left text-xs rounded-lg flex items-center justify-between transition-colors ${
-                      isSelected
-                        ? 'bg-primary-500/10 text-text-primary font-medium'
-                        : 'text-text-secondary hover:bg-surface-2 hover:text-text-primary'
-                    }`}
                     role="option"
                     aria-selected={isSelected}
+                    onClick={() => handleSelect(acc.id)}
+                    className={`relative flex w-full cursor-pointer select-none items-center justify-between rounded-lg px-3 py-2 text-sm outline-none transition-colors my-0.5 ${
+                      isSelected
+                        ? 'bg-primary-500/15 text-primary-600 dark:text-primary-400 font-semibold'
+                        : 'text-text-primary hover:bg-surface-2'
+                    }`}
                   >
-                    <div className="flex items-center gap-2.5 min-w-0 mr-2">
+                    <div className="flex items-center gap-2 min-w-0 mr-2">
                       <div
-                        className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 border"
+                        className="w-5 h-5 rounded flex items-center justify-center shrink-0"
                         style={{
-                          backgroundColor: acc.color ? `${acc.color}15` : 'rgba(59, 130, 246, 0.1)',
-                          borderColor: acc.color ? `${acc.color}30` : 'rgba(59, 130, 246, 0.2)',
                           color: acc.color || '#3b82f6',
                         }}
                       >
                         <Icon name={getAccountIcon(acc.type)} size="xs" />
                       </div>
-                      <div className="flex flex-col min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-semibold text-text-primary truncate">
-                            {acc.name}
-                          </span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-surface-3 text-text-muted font-normal">
-                            {getAccountTypeLabel(acc.type)}
-                          </span>
-                        </div>
-                      </div>
+                      <span className="truncate">{acc.name}</span>
+                      <span className="text-[11px] text-text-muted font-normal shrink-0">
+                        ({getAccountTypeLabel(acc.type)})
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
                       <span
-                        className={`font-semibold ${
+                        className={`text-xs font-semibold ${
                           isCredit
                             ? 'text-text-secondary'
                             : balNum < 0
@@ -333,9 +313,9 @@ export function AccountSelect({
                       >
                         {formatBalance(acc.current_balance?.value, acc.currency)}
                       </span>
-                      {isSelected && <Icon name="check" size="xs" className="text-primary-500 shrink-0" />}
+                      {isSelected && <Icon name="check" size="sm" className="text-primary-500 shrink-0" />}
                     </div>
-                  </button>
+                  </div>
                 );
               })
             )}
