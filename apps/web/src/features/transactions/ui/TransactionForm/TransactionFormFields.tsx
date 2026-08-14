@@ -1,6 +1,6 @@
 import { Input, Select, Icon, Checkbox } from "@mymoney/ui";
 import { useAccountsQuery, type Account } from "@entities/account";
-import { useCategoriesQuery, type Category } from "@entities/category";
+import { CategorySelect } from "../../../categories";
 import {
   useCards,
   useSubscriptions,
@@ -21,16 +21,12 @@ export function TransactionFormFields({
   } = form;
 
   const { data: accounts = [] } = useAccountsQuery();
-  const { data: categories = [] } = useCategoriesQuery();
   const { data: cards = [] } = useCards();
   const { data: subscriptions = [] } = useSubscriptions();
   const { data: products = [] } = useProductServices();
 
   const selectedType = watch("type");
   const selectedCardId = watch("card_id");
-  const filteredCategories = categories.filter(
-    (c: Category) => c.type === selectedType,
-  );
 
   const selectedCard = cards.find((c) => c.id === selectedCardId);
   const isCreditCard = selectedCard?.type === "CREDIT";
@@ -177,21 +173,17 @@ export function TransactionFormFields({
               </div>
 
               <div className="col-span-12 md:col-span-6 space-y-2">
-                <Select
+                <CategorySelect
                   id="category_id"
                   label="Categoría (Opcional)"
+                  value={watch("category_id") || "none"}
+                  onChange={(val: string) => setValue("category_id", val || "none", { shouldValidate: true })}
+                  filterType={selectedType === "EXPENSE" ? "EXPENSE" : "INCOME"}
+                  allowNone={true}
+                  noneLabel="Ninguna"
                   disabled={isView}
                   error={errors.category_id?.message as string}
-                  {...register("category_id")}
-                  placeholder="Seleccionar categoría..."
-                >
-                  <option value="none">Ninguna</option>
-                  {filteredCategories.map((cat: Category) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </Select>
+                />
               </div>
             </>
           ) : (

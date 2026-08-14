@@ -35,10 +35,11 @@ export interface Transaction {
     icon?: string;
   } | null;
   category?: {
-    id?: string;
-    name?: string;
-    icon?: string;
-  } | null;
+    id?: string | undefined;
+    name?: string | undefined;
+    icon?: string | undefined;
+    color?: string | undefined;
+  } | null | undefined;
 }
 
 export interface CreateTransactionDto {

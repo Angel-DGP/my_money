@@ -44,7 +44,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     const hasError = !!error;
 
     return (
-      <SelectContext.Provider value={{ ...select, hasError, id, name, required, disabled, placeholder: props.placeholder, searchable: props.searchable ?? false }}>
+      <SelectContext.Provider value={{ ...select, hasError, id, name, required, disabled, placeholder: props.placeholder, searchable: props.searchable ?? (select.options.length >= 6) }}>
         <div className={cn('flex flex-col gap-1.5 w-full', className)} ref={containerRef}>
           {label && (
             <label htmlFor={id} className="text-sm font-medium text-text-primary">

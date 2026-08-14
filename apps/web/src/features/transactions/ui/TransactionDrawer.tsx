@@ -15,6 +15,7 @@ import {
 } from '@entities/transaction';
 import { useAccountsQuery } from '@entities/account';
 import { useCategoriesQuery, useCreateCategory } from '@entities/category';
+import { CategorySelect } from '../../categories';
 import { useCards, useSubscriptions, useProductServices } from '../../catalogs/api/useCatalogs';
 import {
   Drawer,
@@ -488,23 +489,21 @@ export function TransactionDrawer({
                         <button
                           type="button"
                           onClick={() => setCategoryModalOpen(true)}
-                          className="text-xs text-primary-500 hover:text-primary-600 font-medium hover:underline flex items-center gap-1"
+                          className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-500 font-medium hover:underline flex items-center gap-1"
                         >
-                          <Icon name="plus" size="xs" /> Nueva Categoría
+                          <Icon name="plus" size="xs" /> Nueva
                         </button>
                       </div>
-                      <Select
+                      <CategorySelect
                         id="drawer-category-id"
+                        value={watch('category_id') || 'none'}
+                        onChange={(val) => setValue('category_id', val || 'none', { shouldValidate: true })}
+                        filterType={selectedType === 'EXPENSE' ? 'EXPENSE' : 'INCOME'}
+                        allowNone={true}
+                        noneLabel="Sin Categoría"
                         disabled={isPending}
-                        {...register('category_id')}
-                      >
-                        <option value="none">Sin Categoría</option>
-                        {categories
-                          ?.filter((c) => selectedType === 'EXPENSE' ? c.type !== 'INCOME' : c.type !== 'EXPENSE')
-                          .map((cat) => (
-                            <option key={cat.id} value={cat.id}>{cat.name}</option>
-                          ))}
-                      </Select>
+                        error={errors.category_id?.message as string}
+                      />
                     </div>
                   </div>
                 )}

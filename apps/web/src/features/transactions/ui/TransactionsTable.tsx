@@ -74,9 +74,13 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
       header: 'Categoría',
       cell: (t) => (
         t.category ? (
-          <Badge variant="neutral" className="gap-1">
-            {t.category.icon && <Icon name={t.category.icon as IconName} size="xs" />}
-            {t.category.name}
+          <Badge variant="neutral" className="gap-1.5 font-medium">
+            <span
+              className="w-2 h-2 rounded-full shrink-0"
+              style={{ backgroundColor: t.category.color || '#8b5cf6' }}
+            />
+            {t.category.icon && <Icon name={t.category.icon as IconName} size="xs" className="text-text-muted" />}
+            <span>{t.category.name}</span>
           </Badge>
         ) : (
           <span className="text-text-muted text-sm">---</span>
@@ -109,14 +113,32 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
       align: 'right',
       sticky: 'right',
       cell: (t) => (
-        <div className="flex justify-center gap-1">
-          <button type="button" onClick={(e) => { e.stopPropagation(); onView(t); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+        <div className="flex justify-end items-center gap-1">
+          <button 
+            type="button" 
+            title="Ver detalle"
+            aria-label="Ver detalle"
+            onClick={(e) => { e.stopPropagation(); onView(t); }} 
+            className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-500/10 rounded-lg transition-colors"
+          >
             <Icon name="eye" size="sm" />
           </button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(t); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+          <button 
+            type="button" 
+            title="Editar transacción"
+            aria-label="Editar transacción"
+            onClick={(e) => { e.stopPropagation(); onEdit(t); }} 
+            className="p-1.5 text-text-muted hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
+          >
             <Icon name="edit" size="sm" />
           </button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(t); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
+          <button 
+            type="button" 
+            title="Eliminar transacción"
+            aria-label="Eliminar transacción"
+            onClick={(e) => { e.stopPropagation(); onDelete(t); }} 
+            className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-500/10 rounded-lg transition-colors"
+          >
             <Icon name="trash" size="sm" />
           </button>
         </div>

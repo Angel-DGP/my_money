@@ -59,10 +59,10 @@ export function useSelect(
     }
     React.Children.forEach(children, (child) => {
       if (React.isValidElement(child) && child.type === 'option') {
-        const optionChild = child as React.ReactElement<any>;
+        const optionChild = child as React.ReactElement<React.ComponentProps<'option'>>;
         opts.push({
-          value: optionChild.props.value as string,
-          label: optionChild.props.children,
+          value: (optionChild.props.value as string) ?? '',
+          label: optionChild.props.children as React.ReactNode,
           disabled: optionChild.props.disabled,
         });
       }

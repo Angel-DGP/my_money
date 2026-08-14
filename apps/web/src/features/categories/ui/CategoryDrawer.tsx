@@ -23,6 +23,7 @@ import {
   type UpdateCategoryDto,
   type CategoryType,
 } from '@entities/category';
+import { CategorySelect } from './CategorySelect';
 
 interface CategoryDrawerProps {
   open: boolean;
@@ -238,18 +239,21 @@ export function CategoryDrawer({
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="cat-parent">Categoría Padre (Opcional)</Label>
-                  <Select
+                  <CategorySelect
                     id="cat-parent"
+                    label="Categoría Padre (Opcional)"
                     value={parentId}
-                    onChange={(e) => {
-                      const val = e.target.value;
+                    onChange={(val) => {
                       setParentId(val);
                       if (val && val !== 'none') {
                         const parent = categories.find((c) => c.id === val);
                         if (parent) setType(parent.type);
                       }
                     }}
+                    filterType={type}
+                    allowNone={true}
+                    noneLabel="Ninguna (Categoría principal)"
+                    excludeId={category?.id}
                     disabled={
                       isView ||
                       (isEdit &&
@@ -257,21 +261,7 @@ export function CategoryDrawer({
                         category.subcategories.length > 0) ||
                       isPending
                     }
-                  >
-                    <option value="none">Ninguna (Categoría principal)</option>
-                    {categories
-                      .filter(
-                        (c) =>
-                          c.id !== category?.id &&
-                          !c.parent_id &&
-                          (parentId && parentId !== 'none' ? true : c.type === type)
-                      )
-                      .map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name} ({c.type === 'INCOME' ? 'Ingreso' : 'Gasto'})
-                        </option>
-                      ))}
-                  </Select>
+                  />
                 </div>
               </div>
 

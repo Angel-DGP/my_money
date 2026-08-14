@@ -23,7 +23,7 @@ export function IconPicker({ value, onChange, className, disabled = false }: Ico
             No se encontró ningún icono con ese nombre.
           </CommandEmpty>
           <CommandGroup className="px-1 py-1">
-            <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-1.5 pt-1">
+            <div className="icon-picker-grid grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-1.5 pt-1">
               {iconsList.map((iconName) => {
                 const isSelected = value === iconName;
                 return (
@@ -34,7 +34,7 @@ export function IconPicker({ value, onChange, className, disabled = false }: Ico
                       onChange(currentValue as IconName);
                     }}
                     className={cn(
-                      'flex flex-col items-center justify-center p-2 rounded-xl cursor-pointer transition-all duration-150',
+                      'flex items-center justify-center aspect-square rounded-xl cursor-pointer transition-all duration-150',
                       'hover:bg-surface-2 hover:text-text-primary text-text-muted',
                       isSelected &&
                         'bg-primary-500/15 text-primary-600 dark:text-primary-400 font-semibold ring-2 ring-primary-500/50 shadow-sm scale-105'

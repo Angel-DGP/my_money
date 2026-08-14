@@ -1,7 +1,8 @@
 import { Input, Label, Select, Checkbox, Icon } from '@mymoney/ui';
+import { CategorySelect } from '../../../categories';
 import type { BudgetFormFieldsProps } from './BudgetForm.types';
 
-export function BudgetFormFields({ form, categories, isEdit, isView, isLoading }: BudgetFormFieldsProps) {
+export function BudgetFormFields({ form, isEdit, isView, isLoading }: BudgetFormFieldsProps) {
   const { register, formState: { errors } } = form;
 
   return (
@@ -21,19 +22,16 @@ export function BudgetFormFields({ form, categories, isEdit, isView, isLoading }
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
           <div className="col-span-12 md:col-span-6 space-y-2">
-            <Select
+            <CategorySelect
               id="category_id"
               label="Categoría"
+              value={form.watch('category_id')}
+              onChange={(val) => form.setValue('category_id', val, { shouldValidate: true })}
+              filterType="EXPENSE"
               disabled={isView || isEdit || isLoading}
               required
-              {...register('category_id')}
-              placeholder="Seleccionar categoría..."
-            >
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </Select>
-            {errors.category_id && <p className="text-error-500 text-xs">{errors.category_id.message}</p>}
+              error={errors.category_id?.message}
+            />
           </div>
 
           <div className="col-span-12 md:col-span-6 space-y-2">

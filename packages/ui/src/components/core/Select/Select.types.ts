@@ -3,7 +3,7 @@ import type { ReactNode, SelectHTMLAttributes } from 'react';
 export interface SelectOption {
   value: string;
   label: ReactNode;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'onChange' | 'disabled' | 'required' | 'id' | 'name'> {
@@ -16,9 +16,9 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
   required?: boolean | undefined;
   searchable?: boolean | undefined;
   disabled?: boolean | undefined;
-  onValueChange?: (value: any) => void;
-  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  options?: Array<{ label: string; value: string; disabled?: boolean }>;
+  onValueChange?: ((value: string) => void) | undefined;
+  onChange?: ((e: React.ChangeEvent<HTMLSelectElement>) => void) | undefined;
+  options?: Array<{ label: string; value: string; disabled?: boolean | undefined }> | undefined;
 }
 
 export interface SelectContextValue {
