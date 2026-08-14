@@ -132,9 +132,10 @@ export function ProductServiceDrawer({
             <div className="space-y-1.5">
               <CategorySelect
                 id="prod-category"
-                label="Categoría Principal"
+                label="Categoría Principal (Gasto)"
                 value={categoryIdValue || ''}
                 disabled={isView || isPending}
+                filterType="EXPENSE"
                 onChange={(val) =>
                   setValue('category_id', val, { shouldValidate: true })
                 }

@@ -15,6 +15,7 @@ export class TransactionCreatedHandler {
   ) {}
 
   @OnEvent('TransactionCreatedEvent')
+  @OnEvent('TransactionCreated')
   async handleTransactionCreated(event: TransactionCreatedEvent) {
     // 1. Generate deferred events for EXPENSE transactions with installments
     if (event.transactionType === 'EXPENSE' && event.installment) {
@@ -38,18 +39,17 @@ export class TransactionCreatedHandler {
     }
 
     // 2. If transaction has a subscriptionId, mark corresponding month's cashflow event as PAID
-    if (event.subscriptionId) {
+    if (event.subscriptionId && event.subscriptionId !== 'none') {
       try {
         const txDate = new Date(event.date);
-        const startOfMonth = new Date(txDate.getFullYear(), txDate.getMonth(), 1);
-        const endOfMonth = new Date(txDate.getFullYear(), txDate.getMonth() + 1, 0);
+        const startOfMonth = new Date(Date.UTC(txDate.getUTCFullYear(), txDate.getUTCMonth(), 1, 0, 0, 0, 0));
+        const endOfMonth = new Date(Date.UTC(txDate.getUTCFullYear(), txDate.getUTCMonth() + 1, 0, 23, 59, 59, 999));
 
-        await this.prisma.cashflowEvent.updateMany({
+        const updated = await this.prisma.cashflowEvent.updateMany({
           where: {
             user_id: event.userId,
             reference_id: event.subscriptionId,
             source_type: 'SUBSCRIPTION',
-            status: 'PENDING',
             date: { gte: startOfMonth, lte: endOfMonth },
           },
           data: {
@@ -57,6 +57,28 @@ export class TransactionCreatedHandler {
             account_id: event.accountId,
           },
         });
+
+        if (updated.count === 0) {
+          const sub = await this.prisma.subscription.findUnique({
+            where: { id: event.subscriptionId },
+          });
+          if (sub) {
+            await this.prisma.cashflowEvent.create({
+              data: {
+                user_id: event.userId,
+                amount: new Prisma.Decimal(event.amount.value),
+                type: 'EXPENSE',
+                date: new Date(event.date),
+                source_type: 'SUBSCRIPTION',
+                reference_id: event.subscriptionId,
+                description: `Suscripción: ${sub.name}`,
+                status: 'PAID',
+                account_id: event.accountId,
+              },
+            });
+          }
+        }
+
         this.logger.log(`Marked subscription event as PAID for subscription ${event.subscriptionId}`);
       } catch (err) {
         this.logger.error('Failed to update subscription cashflow event status', err);

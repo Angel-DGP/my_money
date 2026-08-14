@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { transactionSchema } from './TransactionForm/TransactionForm.schema';
@@ -17,6 +17,7 @@ import { useAccountsQuery } from '@entities/account';
 import { useCategoriesQuery, useCreateCategory } from '@entities/category';
 import { CategorySelect } from '../../categories';
 import { useCards, useSubscriptions, useProductServices } from '../../catalogs/api/useCatalogs';
+import type { CardDto } from '../../../shared/api/dto/catalogs.dto';
 import {
   Drawer,
   Button,
@@ -58,6 +59,7 @@ export function TransactionDrawer({
   // Inline Category creation modal
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [newCatName, setNewCatName] = useState('');
+  const [newCatParentId, setNewCatParentId] = useState('none');
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const { data: accounts } = useAccountsQuery();
@@ -223,6 +225,39 @@ export function TransactionDrawer({
     }
   };
 
+  const currentAccountId = watch('account_id');
+  const selectedAccount = useMemo(() => accounts?.find((a) => a.id === currentAccountId) || null, [accounts, currentAccountId]);
+  const isCashAccount = selectedAccount?.type === 'CASH';
+
+  const availableCards = useMemo(() => {
+    if (!cards || cards.length === 0 || isCashAccount) return [];
+    if (selectedAccount?.institution_id) {
+      const matching = cards.filter((c) => c.institution_id === selectedAccount.institution_id);
+      if (matching.length > 0) return matching;
+    }
+    return cards;
+  }, [cards, selectedAccount, isCashAccount]);
+
+  const handleAccountSelectChange = (accId: string) => {
+    setValue('account_id', accId, { shouldValidate: true });
+    const acc = accounts?.find((a) => a.id === accId);
+    if (acc?.type === 'CASH') {
+      setValue('payment_method', 'CASH');
+      setValue('card_id', 'none');
+      setShowInstallments(false);
+    } else if (acc?.type === 'CREDIT') {
+      setValue('payment_method', 'CARD');
+      const matchingCard = cards.find((c) => c.institution_id === acc.institution_id);
+      if (matchingCard) {
+        setValue('card_id', matchingCard.id);
+      }
+    } else {
+      if (watch('payment_method') === 'CASH') {
+        setValue('payment_method', 'TRANSFER');
+      }
+    }
+  };
+
   const handleQuickCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCatName.trim()) return;
@@ -232,10 +267,12 @@ export function TransactionDrawer({
         type: selectedType === 'INCOME' ? 'INCOME' : 'EXPENSE',
         icon: 'tag',
         color: '#3b82f6',
+        parent_id: newCatParentId && newCatParentId !== 'none' ? newCatParentId : undefined,
       });
       await refetchCategories();
       setValue('category_id', res.id, { shouldValidate: true });
       setNewCatName('');
+      setNewCatParentId('none');
       setCategoryModalOpen(false);
       toast({ title: 'Categoría creada', description: 'Categoría asignada a la transacción.', variant: 'success' });
     } catch (err) {
@@ -550,7 +587,8 @@ export function TransactionDrawer({
                         id="drawer-account-id"
                         disabled={isPending}
                         error={errors.account_id?.message as string}
-                        {...register('account_id')}
+                        value={watch('account_id') || ''}
+                        onChange={(e) => handleAccountSelectChange(e.target.value)}
                       >
                         <option value="">Seleccionar cuenta...</option>
                         {accounts?.map((acc) => (
@@ -652,8 +690,8 @@ export function TransactionDrawer({
                       </div>
                     )}
 
-                    {/* Switch Cuotas / Diferidos (solo Gasto) */}
-                    {selectedType === 'EXPENSE' && (
+                    {/* Switch Cuotas / Diferidos (solo Gasto y NO cuenta de efectivo) */}
+                    {selectedType === 'EXPENSE' && !isCashAccount && (
                       <>
                         <div className="p-3.5 rounded-xl bg-surface-2/30 border border-border-subtle">
                           <Switch
@@ -729,26 +767,56 @@ export function TransactionDrawer({
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3 p-4 rounded-xl bg-surface-2/20 border border-border-subtle animate-in fade-in duration-200">
                           <div className="space-y-2">
                             <Label htmlFor="drawer-payment-method">Método de Pago</Label>
-                            <Select id="drawer-payment-method" disabled={isPending} {...register('payment_method')}>
-                              <option value="none">Ninguno</option>
-                              <option value="CASH">Efectivo</option>
-                              <option value="CARD">Tarjeta</option>
-                              <option value="TRANSFER">Transferencia</option>
-                              <option value="APP">Billetera / App</option>
-                            </Select>
+                            {isCashAccount ? (
+                              <Select id="drawer-payment-method" disabled value="CASH">
+                                <option value="CASH">Efectivo</option>
+                              </Select>
+                            ) : (
+                              <Select
+                                id="drawer-payment-method"
+                                disabled={isPending}
+                                value={watch('payment_method') || 'none'}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setValue('payment_method', val);
+                                  if (val !== 'CARD') {
+                                    setValue('card_id', 'none');
+                                  }
+                                }}
+                              >
+                                <option value="none">Ninguno</option>
+                                <option value="TRANSFER">Transferencia</option>
+                                <option value="CARD">Tarjeta</option>
+                                <option value="APP">Billetera / App</option>
+                                <option value="CASH">Efectivo</option>
+                              </Select>
+                            )}
                           </div>
 
                           {selectedType === 'EXPENSE' && (
                             <>
-                              <div className="space-y-2">
-                                <Label htmlFor="drawer-card-id">Tarjeta Usada</Label>
-                                <Select id="drawer-card-id" disabled={isPending} {...register('card_id')}>
-                                  <option value="none">Ninguna</option>
-                                  {cards.map((c) => (
-                                    <option key={c.id} value={c.id}>{c.name} (*{c.last_four})</option>
-                                  ))}
-                                </Select>
-                              </div>
+                              {!isCashAccount && availableCards.length > 0 && (
+                                <div className="space-y-2">
+                                  <Label htmlFor="drawer-card-id">Tarjeta Usada</Label>
+                                  <Select
+                                    id="drawer-card-id"
+                                    disabled={isPending}
+                                    value={watch('card_id') || 'none'}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      setValue('card_id', val);
+                                      if (val && val !== 'none') {
+                                        setValue('payment_method', 'CARD');
+                                      }
+                                    }}
+                                  >
+                                    <option value="none">Ninguna</option>
+                                    {availableCards.map((c: CardDto) => (
+                                      <option key={c.id} value={c.id}>{c.name} (*{c.last_four})</option>
+                                    ))}
+                                  </Select>
+                                </div>
+                              )}
 
                               <div className="space-y-2">
                                 <Label htmlFor="drawer-sub-id">Suscripción Relacionada</Label>
@@ -838,6 +906,24 @@ export function TransactionDrawer({
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="quick-cat-parent">Categoría Padre (Opcional)</Label>
+                  <Select
+                    id="quick-cat-parent"
+                    value={newCatParentId}
+                    onChange={(e) => setNewCatParentId(e.target.value)}
+                  >
+                    <option value="none">Ninguna (Categoría Principal)</option>
+                    {categories
+                      ?.filter((c) => c.type === (selectedType === 'INCOME' ? 'INCOME' : 'EXPENSE') && !c.parent_id)
+                      .map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
                   <Label>Tipo</Label>
                   <Badge variant={selectedType === 'INCOME' ? 'primary' : 'neutral'} size="md">
                     {selectedType === 'INCOME' ? 'Ingreso' : 'Gasto'}
@@ -858,8 +944,9 @@ export function TransactionDrawer({
                     type="submit"
                     size="sm"
                     disabled={createCategory.isPending || !newCatName.trim()}
+                    loading={createCategory.isPending}
                   >
-                    {createCategory.isPending ? 'Guardando...' : 'Crear y Asignar'}
+                    Crear y Asignar
                   </Button>
                 </div>
               </form>
