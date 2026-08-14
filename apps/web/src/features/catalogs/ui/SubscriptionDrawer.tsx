@@ -98,7 +98,7 @@ export function SubscriptionDrawer({
         billing_cycle: data.billing_cycle,
         next_billing_date: data.next_billing_date,
         currency: 'USD',
-        card_id: data.card_id || undefined,
+        card_id: data.card_id ? data.card_id : null,
         duration_months: data.duration_months ? Number(data.duration_months) : 12,
       };
       if (subscription?.id) {

@@ -14,9 +14,9 @@ import {
   type CreateTransferDto,
 } from '@entities/transaction';
 import { useAccountsQuery } from '@entities/account';
-import { useCategoriesQuery, useCreateCategory } from '@entities/category';
+import { useCategoriesQuery, useCreateCategory, type Category } from '@entities/category';
 import { CategorySelect } from '../../categories';
-import { useCards, useSubscriptions, useProductServices } from '../../catalogs/api/useCatalogs';
+import { useCards, useProductServices } from '../../catalogs/api/useCatalogs';
 import type { CardDto } from '../../../shared/api/dto/catalogs.dto';
 import {
   Drawer,
@@ -65,7 +65,6 @@ export function TransactionDrawer({
   const { data: accounts } = useAccountsQuery();
   const { data: categories, refetch: refetchCategories } = useCategoriesQuery();
   const { data: cards = [] } = useCards();
-  const { data: subscriptions = [] } = useSubscriptions();
   const { data: products = [] } = useProductServices();
 
   const createTransaction = useCreateTransaction();
@@ -88,7 +87,6 @@ export function TransactionDrawer({
       to_account_id: '',
       payment_method: 'none',
       card_id: 'none',
-      subscription_id: 'none',
       product_id: 'none',
       is_third_party: false,
       third_party_owner: '',
@@ -152,7 +150,6 @@ export function TransactionDrawer({
         to_account_id: accounts?.[1]?.id || accounts?.[0]?.id || '',
         payment_method: 'none',
         card_id: 'none',
-        subscription_id: 'none',
         product_id: 'none',
         is_third_party: false,
         third_party_owner: '',
@@ -345,30 +342,6 @@ export function TransactionDrawer({
     }
   };
 
-  const handleSubscriptionChange = (subId: string) => {
-    setValue('subscription_id', subId);
-    if (subId && subId !== 'none') {
-      const sub = subscriptions.find((s) => s.id === subId);
-      if (sub) {
-        if (sub.category_id) {
-          setValue('category_id', sub.category_id);
-        }
-        if (sub.card_id) {
-          setValue('card_id', sub.card_id);
-          setValue('payment_method', 'CARD');
-        }
-        const currentDesc = watch('description');
-        if (!currentDesc || currentDesc.trim() === '' || currentDesc.startsWith('Suscripción:')) {
-          setValue('description', `Suscripción: ${sub.name}`);
-        }
-        const currentAmount = watch('amount');
-        if (!currentAmount || Number(currentAmount) === 0) {
-          setValue('amount', parseFloat(sub.amount));
-        }
-      }
-    }
-  };
-
   const handleDeleteConfirm = async () => {
     if (!transaction) return;
     try {
@@ -482,7 +455,7 @@ export function TransactionDrawer({
                         <Icon name="tag" size="sm" className="text-text-muted" /> Categoría
                       </span>
                       <Badge variant="neutral">
-                        {transaction.category?.name || categories?.find(c => c.id === transaction.category_id)?.name || 'Categoría'}
+                        {transaction.category?.name || categories?.find((c: Category) => c.id === transaction.category_id)?.name || 'Categoría'}
                       </Badge>
                     </div>
                   )}
@@ -873,26 +846,6 @@ export function TransactionDrawer({
                               )}
 
                               <div className="space-y-2">
-                                <Label htmlFor="drawer-sub-id">Suscripción Relacionada</Label>
-                                <Select
-                                  id="drawer-sub-id"
-                                  disabled={isPending}
-                                  value={watch('subscription_id') || 'none'}
-                                  onChange={(e) => handleSubscriptionChange(e.target.value)}
-                                >
-                                  <option value="none">Ninguna</option>
-                                  {subscriptions.map((s) => {
-                                    const isDone = !!s.is_completed || s.status === 'CANCELLED';
-                                    return (
-                                      <option key={s.id} value={s.id} disabled={isDone}>
-                                        {s.name} (${s.amount}) {isDone ? '— [COMPLETADA / PAGADA]' : ''}
-                                      </option>
-                                    );
-                                  })}
-                                </Select>
-                              </div>
-
-                              <div className="space-y-2">
                                 <Label htmlFor="drawer-prod-id">Producto / Comercio (Compra Frecuente)</Label>
                                 <Select
                                   id="drawer-prod-id"
@@ -973,8 +926,8 @@ export function TransactionDrawer({
                   >
                     <option value="none">Ninguna (Categoría Principal)</option>
                     {categories
-                      ?.filter((c) => c.type === (selectedType === 'INCOME' ? 'INCOME' : 'EXPENSE') && !c.parent_id)
-                      .map((c) => (
+                      ?.filter((c: Category) => c.type === (selectedType === 'INCOME' ? 'INCOME' : 'EXPENSE') && !c.parent_id)
+                      .map((c: Category) => (
                         <option key={c.id} value={c.id}>
                           {c.name}
                         </option>

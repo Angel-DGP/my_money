@@ -10,6 +10,7 @@ import {
 } from '@mymoney/ui';
 import { QueryState } from '../../../shared/ui/QueryState';
 import { SubscriptionDrawer } from './SubscriptionDrawer';
+import { PaySubscriptionDrawer } from './PaySubscriptionDrawer';
 import type { SubscriptionDto } from '../../../shared/api/dto/catalogs.dto';
 
 const formatCurrency = (value: number, currency: string) => {
@@ -24,6 +25,7 @@ export function SubscriptionsTab() {
   const deleteSubscription = useDeleteSubscription();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [payDrawerOpen, setPayDrawerOpen] = useState(false);
   const [selectedSub, setSelectedSub] = useState<SubscriptionDto | null>(null);
   const [isViewMode, setIsViewMode] = useState(false);
   const [subToDelete, setSubToDelete] = useState<SubscriptionDto | null>(null);
@@ -46,13 +48,35 @@ export function SubscriptionsTab() {
     setDrawerOpen(true);
   };
 
+  const handleOpenPay = (sub: SubscriptionDto) => {
+    setSelectedSub(sub);
+    setPayDrawerOpen(true);
+  };
+
   const columns: ColumnDef<SubscriptionDto>[] = [
     {
       key: 'name',
       header: 'Servicio',
       sortable: true,
       className: 'font-medium',
-      cell: (sub) => sub.name,
+      cell: (sub) => (
+        <div className="flex flex-col">
+          <span className="font-semibold text-text-primary">{sub.name}</span>
+          {sub.duration_months && (
+            <span className="text-xs text-text-muted">
+              {sub.is_completed ? (
+                <span className="text-emerald-500 font-medium">Completada ({sub.duration_months} meses)</span>
+              ) : (
+                <span>
+                  {sub.pending_months !== undefined
+                    ? `${sub.pending_months} de ${sub.duration_months} meses pendientes`
+                    : `${sub.duration_months} meses proyectados`}
+                </span>
+              )}
+            </span>
+          )}
+        </div>
+      ),
     },
     {
       key: 'amount',
@@ -84,11 +108,12 @@ export function SubscriptionsTab() {
       header: 'Tarjeta Asoc.',
       cell: (sub) =>
         sub.card ? (
-          <span className="text-xs text-text-secondary">
+          <span className="text-xs text-text-secondary flex items-center gap-1">
+            <Icon name="credit-card" size="xs" />
             {sub.card.name} (•••• {sub.card.last_four})
           </span>
         ) : (
-          <span className="text-text-muted text-xs">Sin tarjeta</span>
+          <span className="text-text-muted text-xs">Sin tarjeta (Efectivo)</span>
         ),
     },
     {
@@ -97,7 +122,23 @@ export function SubscriptionsTab() {
       align: 'right',
       sticky: 'right',
       cell: (sub) => (
-        <div className="flex items-center justify-end gap-1">
+        <div className="flex items-center justify-end gap-1.5">
+          <Button
+            size="xs"
+            variant="secondary"
+            disabled={sub.is_completed}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenPay(sub);
+            }}
+            className={`text-xs px-2.5 py-1 rounded-lg ${
+              sub.is_completed ? 'opacity-40' : 'text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10'
+            }`}
+            title={sub.is_completed ? 'Suscripción pagada en su totalidad' : 'Pagar próximo mes'}
+          >
+            <Icon name="credit-card" size="xs" className="mr-1" />
+            {sub.is_completed ? 'Pagada' : 'Pagar Mes'}
+          </Button>
           <button
             type="button"
             onClick={(e) => {
@@ -182,6 +223,13 @@ export function SubscriptionsTab() {
           onOpenChange={setDrawerOpen}
           subscription={selectedSub}
           isView={isViewMode}
+        />
+
+        {/* Pay Subscription Drawer */}
+        <PaySubscriptionDrawer
+          open={payDrawerOpen}
+          onOpenChange={setPayDrawerOpen}
+          subscription={selectedSub}
         />
 
         {/* Delete Dialog */}

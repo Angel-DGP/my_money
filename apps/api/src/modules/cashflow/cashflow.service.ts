@@ -281,6 +281,44 @@ export class CashflowService {
     return CashflowEventDto.fromPrisma(updatedEvent!);
   }
 
+  async paySubscriptionNextMonth(
+    userId: string,
+    subscriptionId: string,
+    dto: { accountId: string; date?: string },
+  ): Promise<CashflowEventDto> {
+    const subscription = await this.prisma.subscription.findUnique({
+      where: { id: subscriptionId, user_id: userId },
+    });
+    if (!subscription) throw new NotFoundException('Suscripción no encontrada');
+
+    let pendingEvent = await this.prisma.cashflowEvent.findFirst({
+      where: {
+        user_id: userId,
+        reference_id: subscriptionId,
+        source_type: 'SUBSCRIPTION',
+        status: 'PENDING',
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    if (!pendingEvent) {
+      pendingEvent = await this.prisma.cashflowEvent.create({
+        data: {
+          user_id: userId,
+          amount: subscription.amount,
+          type: 'EXPENSE',
+          date: dto.date ? new Date(dto.date) : new Date(),
+          source_type: 'SUBSCRIPTION',
+          reference_id: subscription.id,
+          description: `Suscripción: ${subscription.name}`,
+          status: 'PENDING',
+        },
+      });
+    }
+
+    return this.payEvent(userId, pendingEvent.id, dto);
+  }
+
   async unpayEvent(userId: string, id: string): Promise<CashflowEventDto> {
     const event = await this.prisma.cashflowEvent.findFirst({
       where: { id, user_id: userId },

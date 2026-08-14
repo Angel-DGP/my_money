@@ -91,4 +91,13 @@ export class CashflowController {
   ) {
     return this.cashflowService.unpayEvent(req.user.id, id);
   }
+
+  @Post('subscriptions/:id/pay')
+  paySubscription(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() dto: PayCashflowEventDto,
+  ) {
+    return this.cashflowService.paySubscriptionNextMonth(req.user.id, id, dto);
+  }
 }

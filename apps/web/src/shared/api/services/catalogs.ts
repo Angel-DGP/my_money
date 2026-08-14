@@ -69,6 +69,10 @@ export const CatalogsService = {
   async deleteSubscription(id: string): Promise<void> {
     await apiClient.delete(`/catalogs/subscriptions/${id}`);
   },
+  async paySubscriptionMonth(id: string, payload: { accountId: string; date?: string }): Promise<unknown> {
+    const response = await apiClient.post(`/cashflow/subscriptions/${id}/pay`, payload);
+    return response.data;
+  },
 
   // Product Services
   async getProductServices(): Promise<ProductServiceDto[]> {

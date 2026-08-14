@@ -154,6 +154,21 @@ export const useDeleteSubscription = () => {
   });
 };
 
+export const usePaySubscriptionMonth = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: { accountId: string; date?: string } }) =>
+      CatalogsService.paySubscriptionMonth(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
+      queryClient.invalidateQueries({ queryKey: ['projections'] });
+      queryClient.invalidateQueries({ queryKey: ['cashflow'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    },
+  });
+};
+
 export const useProductServices = () => {
   return useQuery({
     queryKey: ['product-services'],
