@@ -156,6 +156,7 @@ export class Transaction {
       date: transaction.date.toISOString(),
       description: transaction.description,
       transferPairId: transaction.transferPairId,
+      subscriptionId: transaction.subscriptionId,
       installment: transaction.installment ? {
         totalInstallments: transaction.installment.totalInstallments,
         interestRate: transaction.installment.interestRate,

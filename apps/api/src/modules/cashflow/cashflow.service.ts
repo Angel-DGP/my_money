@@ -1,14 +1,29 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException, BadRequestException, Inject } from "@nestjs/common";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 import { PrismaService } from "../../prisma/prisma.service";
 import { CreateSalaryDto } from "./dto/create-salary.dto";
 import { GetProjectionsQueryDto } from "./dto/get-projections.dto";
 import { Prisma } from "@mymoney/db";
 import { CashflowEventDto } from "./dto/cashflow-event.dto";
 import { CashflowMonthProjectionDto, GroupedCashflowMonth } from "./dto/cashflow-month-projection.dto";
+import { Money, Currency, BalanceDelta, DomainEvent, UNIT_OF_WORK, IUnitOfWork } from "@mymoney/shared";
+import { IAccountRepository, ACCOUNT_REPOSITORY } from "../accounts/domain/interfaces/account.repository.interface";
+import { ITransactionRepository, TRANSACTION_REPOSITORY } from "../transactions/domain/transaction.repository.interface";
+import { Transaction } from "../transactions/domain/transaction.entity";
+import { TransactionType } from "../transactions/domain/transaction-type.enum";
 
 @Injectable()
 export class CashflowService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(ACCOUNT_REPOSITORY)
+    private readonly accountRepository: IAccountRepository,
+    @Inject(TRANSACTION_REPOSITORY)
+    private readonly transactionRepository: ITransactionRepository,
+    @Inject(UNIT_OF_WORK)
+    private readonly unitOfWork: IUnitOfWork,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   async getProjections(userId: string, query: GetProjectionsQueryDto): Promise<CashflowMonthProjectionDto[]> {
     const { startDate, endDate, accountId } = query;
@@ -153,11 +168,138 @@ export class CashflowService {
     return CashflowEventDto.fromPrisma(updated);
   }
 
+  async updateEventStatus(
+    userId: string,
+    id: string,
+    status: 'PENDING' | 'PAID' | 'OVERDUE' | 'CANCELLED',
+  ): Promise<CashflowEventDto> {
+    const event = await this.prisma.cashflowEvent.findFirst({
+      where: { id, user_id: userId },
+    });
+    if (!event) throw new NotFoundException('Cashflow event not found');
+
+    const updated = await this.prisma.cashflowEvent.update({
+      where: { id },
+      data: { status },
+    });
+
+    return CashflowEventDto.fromPrisma(updated);
+  }
+
+  async payEvent(
+    userId: string,
+    id: string,
+    dto: { accountId: string; date?: string },
+  ): Promise<CashflowEventDto> {
+    const event = await this.prisma.cashflowEvent.findFirst({
+      where: { id, user_id: userId },
+    });
+    if (!event) throw new NotFoundException('Cashflow event not found');
+
+    const account = await this.accountRepository.findById(dto.accountId, userId);
+    if (!account) throw new NotFoundException('Cuenta de origen no encontrada');
+
+    const amountMoney = Money.of(event.amount.toNumber(), account.currency as Currency);
+
+    if (event.type === 'EXPENSE' && account.currentBalance.value.lt(amountMoney.value)) {
+      throw new BadRequestException(
+        `Saldo insuficiente en ${account.name}. Saldo disponible: ${account.currentBalance.value.toFixed(2)} ${account.currency}`
+      );
+    }
+
+    // Determine category, subscription, card
+    let categoryId: string | null = null;
+    let subscriptionId: string | null = null;
+    let cardId: string | null = null;
+
+    if (event.source_type === 'SUBSCRIPTION' && event.reference_id) {
+      const sub = await this.prisma.subscription.findUnique({
+        where: { id: event.reference_id },
+      });
+      if (sub) {
+        categoryId = sub.category_id;
+        subscriptionId = sub.id;
+        cardId = sub.card_id;
+      }
+    } else if (event.source_type === 'INSTALLMENT' && event.reference_id) {
+      const parentTx = await this.prisma.transaction.findUnique({
+        where: { id: event.reference_id },
+      });
+      if (parentTx) {
+        categoryId = parentTx.category_id;
+        cardId = parentTx.card_id;
+      }
+    }
+
+    const txDate = dto.date ? new Date(dto.date) : new Date(event.date);
+
+    // Create domain transaction
+    const transaction = Transaction.create({
+      userId,
+      accountId: account.id,
+      categoryId,
+      type: event.type as TransactionType,
+      amount: amountMoney,
+      description: event.description || (event.type === 'EXPENSE' ? 'Gasto diferido/suscripción' : 'Sueldo'),
+      date: txDate,
+      transferPairId: null,
+      isRecurring: event.source_type === 'SUBSCRIPTION' || event.source_type === 'SALARY',
+      isThirdParty: false,
+      thirdPartyOwner: null,
+      thirdPartyNote: null,
+      paymentMethod: cardId ? 'CARD' : 'TRANSFER',
+      cardId,
+      subscriptionId,
+      productId: null,
+      installment: null,
+    });
+
+    const delta = event.type === 'INCOME'
+      ? BalanceDelta.increase(amountMoney)
+      : BalanceDelta.decrease(amountMoney);
+
+    const balanceChangeEvent = account.applyBalanceDelta(delta, 'TRANSACTION_CREATED');
+
+    await this.unitOfWork.execute(async () => {
+      await this.transactionRepository.save(transaction);
+      await this.accountRepository.save(account);
+      await this.prisma.cashflowEvent.update({
+        where: { id },
+        data: {
+          status: 'PAID',
+          account_id: account.id,
+        },
+      });
+    });
+
+    // Emit domain events
+    transaction.getDomainEvents().forEach((e: DomainEvent) => this.eventEmitter.emit(e.constructor.name, e));
+    this.eventEmitter.emit(balanceChangeEvent.constructor.name, balanceChangeEvent);
+    transaction.clearDomainEvents();
+
+    const updatedEvent = await this.prisma.cashflowEvent.findUnique({ where: { id } });
+    return CashflowEventDto.fromPrisma(updatedEvent!);
+  }
+
+  async unpayEvent(userId: string, id: string): Promise<CashflowEventDto> {
+    const event = await this.prisma.cashflowEvent.findFirst({
+      where: { id, user_id: userId },
+    });
+    if (!event) throw new NotFoundException('Cashflow event not found');
+
+    const updated = await this.prisma.cashflowEvent.update({
+      where: { id },
+      data: { status: 'PENDING' },
+    });
+
+    return CashflowEventDto.fromPrisma(updated);
+  }
+
   async deleteSalaryEvent(userId: string, id: string) {
     const event = await this.prisma.cashflowEvent.findFirst({
       where: { id, user_id: userId, source_type: "SALARY" },
     });
-    if (!event) throw new Error("Salary event not found");
+    if (!event) throw new NotFoundException("Salary event not found");
 
     await this.prisma.cashflowEvent.delete({ where: { id } });
     return { message: "Salary event deleted" };

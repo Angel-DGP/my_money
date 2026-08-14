@@ -29,7 +29,6 @@ import {
   NumberInput,
   Icon,
   Badge,
-  Amount,
   toast,
   Dialog,
   AlertDialog,
@@ -285,23 +284,57 @@ export function TransactionDrawer({
             /* ─── MODO RECIBO / LECTURA ───────────────────────────────────────── */
             <div className="flex flex-col flex-1 overflow-hidden">
               <Drawer.Body className="space-y-6">
-                {/* Header del recibo con Monto Grande */}
-                <div className="p-6 rounded-2xl bg-surface-2/40 border border-border-subtle text-center space-y-2">
-                  <Badge
-                    variant={transaction.type === 'INCOME' ? 'primary' : 'neutral'}
-                    size="md"
-                    className="inline-flex"
-                  >
-                    {transaction.type === 'INCOME' ? 'Ingreso' : transaction.type === 'EXPENSE' ? 'Gasto' : 'Transferencia'}
-                  </Badge>
-                  <div className={`text-4xl font-black tracking-tight ${
-                    transaction.type === 'INCOME' ? 'text-success-600' : 'text-text-primary'
+                {/* Header del recibo con Icono Temático y Monto Limpio */}
+                <div className="p-6 rounded-2xl bg-surface-2/40 border border-border-subtle text-center flex flex-col items-center space-y-3">
+                  {/* Icono temático según tipo */}
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-xs ${
+                    transaction.type === 'INCOME'
+                      ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+                      : transaction.type === 'EXPENSE'
+                      ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                      : 'bg-blue-500/10 text-blue-500 border border-blue-500/20'
                   }`}>
-                    {transaction.type === 'INCOME' ? '+' : '-'}<Amount value={parseFloat(transaction.amount?.value || '0')} />
+                    <Icon
+                      name={
+                        transaction.type === 'INCOME'
+                          ? 'trending-up'
+                          : transaction.type === 'EXPENSE'
+                          ? 'trending-down'
+                          : 'arrow-left-right'
+                      }
+                      size="md"
+                    />
                   </div>
-                  <p className="text-sm font-medium text-text-primary mt-1">
+
+                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider ${
+                    transaction.type === 'INCOME'
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                      : transaction.type === 'EXPENSE'
+                      ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                      : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                  }`}>
+                    {transaction.type === 'INCOME' ? 'Ingreso' : transaction.type === 'EXPENSE' ? 'Gasto' : 'Transferencia'}
+                  </span>
+
+                  <div className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${
+                    transaction.type === 'INCOME'
+                      ? 'text-emerald-500'
+                      : transaction.type === 'EXPENSE'
+                      ? 'text-rose-500'
+                      : 'text-text-primary'
+                  }`}>
+                    {transaction.type === 'INCOME' ? '+' : '-'}
+                    {new Intl.NumberFormat('es-CO', {
+                      style: 'currency',
+                      currency: transaction.amount?.currency || 'USD',
+                      maximumFractionDigits: 2,
+                    }).format(parseFloat(transaction.amount?.value || '0'))}
+                  </div>
+
+                  <p className="text-sm font-semibold text-text-primary mt-1 max-w-sm">
                     {transaction.description || 'Sin descripción'}
                   </p>
+
                   <p className="text-xs text-text-muted">
                     {new Date(transaction.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>

@@ -10,6 +10,7 @@ export interface TransactionCreatedEventProps extends Omit<DomainEventProps, 'ag
   date: string;
   description?: string | null;
   transferPairId: string | null;
+  subscriptionId?: string | null;
   installment?: {
     totalInstallments: number;
     interestRate: number | null;
@@ -28,6 +29,7 @@ export class TransactionCreatedEvent extends DomainEvent {
   public readonly date: string;
   public readonly description: string | null;
   public readonly transferPairId: string | null;
+  public readonly subscriptionId?: string | null;
   public readonly installment?: {
     totalInstallments: number;
     interestRate: number | null;
@@ -45,6 +47,7 @@ export class TransactionCreatedEvent extends DomainEvent {
     this.date = props.date;
     this.description = props.description ?? null;
     this.transferPairId = props.transferPairId;
+    this.subscriptionId = props.subscriptionId ?? null;
     this.installment = props.installment ?? null;
   }
 }

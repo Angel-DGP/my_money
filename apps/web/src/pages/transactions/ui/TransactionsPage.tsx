@@ -8,7 +8,6 @@ import { useState, useMemo } from 'react';
 
 export function TransactionsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [page, setPage] = useState(1);
 
   const accountIdParam = searchParams.get('accountId') || searchParams.get('account_id') || '';
   const typeParam = searchParams.get('type') || '';
@@ -28,19 +27,17 @@ export function TransactionsPage() {
   });
 
   const queryParams = useMemo(() => ({
-    page,
-    limit: 15,
+    limit: 100,
     account_id: accountIdParam || undefined,
     type: typeParam || undefined,
     category_id: categoryIdParam || undefined,
-  }), [page, accountIdParam, typeParam, categoryIdParam]);
+  }), [accountIdParam, typeParam, categoryIdParam]);
 
   const { data, isLoading, isError } = useTransactionsQuery(queryParams);
   const deleteTransaction = useDeleteTransaction();
   const [txToDelete, setTxToDelete] = useState<Transaction | null>(null);
 
   const handleAccountChange = (val: string) => {
-    setPage(1);
     const newParams = new URLSearchParams(searchParams);
     if (val && val !== 'all') {
       newParams.set('accountId', val);
@@ -52,7 +49,6 @@ export function TransactionsPage() {
   };
 
   const handleTypeChange = (val: string) => {
-    setPage(1);
     const newParams = new URLSearchParams(searchParams);
     if (val && val !== 'all') {
       newParams.set('type', val);
@@ -63,7 +59,6 @@ export function TransactionsPage() {
   };
 
   const handleCategoryChange = (val: string) => {
-    setPage(1);
     const newParams = new URLSearchParams(searchParams);
     if (val && val !== 'all') {
       newParams.set('categoryId', val);
@@ -75,7 +70,6 @@ export function TransactionsPage() {
   };
 
   const handleClearFilters = () => {
-    setPage(1);
     setSearchParams(new URLSearchParams());
   };
 
@@ -230,57 +224,6 @@ export function TransactionsPage() {
               onConfirm={handleDeleteConfirm}
               isLoading={deleteTransaction.isPending}
             />
-
-            {(() => {
-              const meta = data?.meta;
-              if (!meta || meta.total_pages <= 1) return null;
-              return (
-                <div className="flex items-center justify-between mt-6 px-4 py-3 bg-surface-1 border border-border-subtle rounded-xl">
-                  <div className="flex flex-1 justify-between sm:hidden">
-                    <Button
-                      variant="outline"
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      disabled={!meta.has_previous}
-                    >
-                      Anterior
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setPage((p) => Math.min(meta.total_pages, p + 1))}
-                      disabled={!meta.has_next}
-                    >
-                      Siguiente
-                    </Button>
-                  </div>
-                  <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                    <div>
-                      <Text variant="muted" className="text-sm">
-                        Mostrando página <span className="font-semibold text-text-primary">{meta.current_page}</span> de{' '}
-                        <span className="font-semibold text-text-primary">{meta.total_pages}</span> ({meta.total_items} transacciones)
-                      </Text>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        disabled={!meta.has_previous}
-                      >
-                        <Icon name="chevron-left" size="sm" className="mr-1" /> Anterior
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPage((p) => Math.min(meta.total_pages, p + 1))}
-                        disabled={!meta.has_next}
-                      >
-                        Siguiente <Icon name="chevron-right" size="sm" className="ml-1" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
           </>
         )}
 

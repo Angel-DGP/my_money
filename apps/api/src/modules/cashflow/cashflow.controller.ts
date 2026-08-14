@@ -18,6 +18,20 @@ class UpdateSalaryEventDto {
   description?: string;
 }
 
+class UpdateCashflowEventStatusDto {
+  @IsString()
+  status!: 'PENDING' | 'PAID' | 'OVERDUE' | 'CANCELLED';
+}
+
+class PayCashflowEventDto {
+  @IsString()
+  accountId!: string;
+
+  @IsOptional()
+  @IsString()
+  date?: string;
+}
+
 @Controller({ path: 'cashflow', version: '1' })
 @UseGuards(JwtAuthGuard)
 export class CashflowController {
@@ -50,5 +64,31 @@ export class CashflowController {
   @Delete('salaries/:id')
   deleteSalary(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     return this.cashflowService.deleteSalaryEvent(req.user.id, id);
+  }
+
+  @Patch('events/:id/status')
+  updateEventStatus(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() dto: UpdateCashflowEventStatusDto,
+  ) {
+    return this.cashflowService.updateEventStatus(req.user.id, id, dto.status);
+  }
+
+  @Post('events/:id/pay')
+  payEvent(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() dto: PayCashflowEventDto,
+  ) {
+    return this.cashflowService.payEvent(req.user.id, id, dto);
+  }
+
+  @Post('events/:id/unpay')
+  unpayEvent(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+  ) {
+    return this.cashflowService.unpayEvent(req.user.id, id);
   }
 }

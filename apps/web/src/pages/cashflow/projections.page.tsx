@@ -169,10 +169,20 @@ export function ProjectionsPage() {
                   const balance = income - expense;
                   const isAlert = balance < 0;
 
+                  const paidExpense = proj.events
+                    ?.filter((e) => e.type === 'EXPENSE' && e.status === 'PAID')
+                    .reduce((acc, e) => acc + parseFloat(e.amount), 0) || 0;
+                  const pendingExpense = expense - paidExpense;
+
                   return (
-                    <Card key={proj.month} className={`flex flex-col ${isAlert ? 'border-error-500/50 bg-error-50/10' : ''}`}>
+                    <Card
+                      key={proj.month}
+                      className={`flex flex-col rounded-2xl border border-border-subtle bg-surface hover:border-border transition-all shadow-xs ${
+                        isAlert ? 'border-rose-500/40 bg-rose-500/[0.02]' : ''
+                      }`}
+                    >
                       <CardHeader className="pb-2 border-b border-border-subtle flex flex-row items-center justify-between">
-                        <h3 className="font-semibold text-lg text-text-primary capitalize">
+                        <h3 className="font-bold text-lg text-text-primary capitalize">
                           {formatMonth(proj.month)}
                         </h3>
                         {isAlert && (
@@ -181,28 +191,40 @@ export function ProjectionsPage() {
                           </Badge>
                         )}
                       </CardHeader>
-                      <CardBody className="pt-4 space-y-4">
+                      <CardBody className="pt-4 space-y-3">
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-text-secondary flex items-center gap-2">
-                            <Icon name="trending-up" size="xs" className="text-success-500" /> Ingresos:
+                            <Icon name="trending-up" size="xs" className="text-emerald-500" /> Ingresos:
                           </span>
-                          <Amount value={income} currency="USD" className="font-medium text-success-600" />
+                          <Amount value={income} currency="USD" className="font-semibold text-emerald-500" />
                         </div>
                         <div className="flex justify-between items-center text-sm">
                           <span className="text-text-secondary flex items-center gap-2">
-                            <Icon name="trending-down" size="xs" className="text-error-500" /> Gastos / Cuotas:
+                            <Icon name="trending-down" size="xs" className="text-rose-500" /> Gastos / Cuotas:
                           </span>
-                          <Amount value={expense} currency="USD" className="font-medium text-error-600" />
+                          <Amount value={expense} currency="USD" className="font-semibold text-rose-500" />
                         </div>
+
+                        {paidExpense > 0 && (
+                          <div className="flex items-center justify-between text-xs px-2.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
+                            <span className="flex items-center gap-1 font-semibold">
+                              <Icon name="check" size="xs" /> Pagado: <Amount value={paidExpense} currency="USD" className="font-bold text-amber-500" />
+                            </span>
+                            <span className="font-medium text-rose-500">
+                              Pendiente: <Amount value={pendingExpense} currency="USD" className="font-bold text-rose-500" />
+                            </span>
+                          </div>
+                        )}
+
                         <div className="flex justify-between items-center text-sm font-semibold border-t border-border-subtle pt-3 mt-1">
                           <span className="text-text-primary">Disponible:</span>
-                          <Amount value={balance} currency="USD" className={isAlert ? 'text-error-600' : 'text-text-primary'} />
+                          <Amount value={balance} currency="USD" className={isAlert ? 'text-rose-500 font-bold' : 'text-text-primary font-bold'} />
                         </div>
 
                         <div className="mt-4 pt-3 border-t border-border-subtle">
                           <Button
                             variant="secondary"
-                            className="w-full"
+                            className="w-full rounded-xl"
                             onClick={() =>
                               navigate(
                                 `/projections/${proj.month}${selectedAccountId ? `?accountId=${selectedAccountId}` : ''}`,

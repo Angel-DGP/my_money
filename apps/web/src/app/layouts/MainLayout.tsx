@@ -32,7 +32,6 @@ const NAV_ITEMS = [
       { path: '/catalogs/products', label: 'Compras Frecuentes' },
     ]
   },
-  { path: '/automations', label: 'Automatizaciones', icon: 'zap' as const },
   { path: '/settings', label: 'Configuración', icon: 'settings' as const },
 ];
 

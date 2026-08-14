@@ -29,5 +29,20 @@ export const CashflowService = {
   registerSalary: async (payload: { amount: number, startDate: string, months: number, accountId: string, description?: string }) => {
     const { data } = await apiClient.post('/cashflow/salaries', payload);
     return data;
+  },
+
+  updateEventStatus: async (id: string, status: 'PENDING' | 'PAID' | 'OVERDUE' | 'CANCELLED') => {
+    const { data } = await apiClient.patch(`/cashflow/events/${id}/status`, { status });
+    return data;
+  },
+
+  payEvent: async (id: string, payload: { accountId: string; date?: string }) => {
+    const { data } = await apiClient.post(`/cashflow/events/${id}/pay`, payload);
+    return data;
+  },
+
+  unpayEvent: async (id: string) => {
+    const { data } = await apiClient.post(`/cashflow/events/${id}/unpay`);
+    return data;
   }
 };
