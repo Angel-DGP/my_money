@@ -25,4 +25,11 @@ export class AccountException extends BusinessRuleViolationException {
       'Account is already active.'
     );
   }
+
+  static insufficientFunds(accountName: string, currentBalance: number, amount: number, currency: string): AccountException {
+    return new AccountException(
+      'ACC_INSUFFICIENT_FUNDS',
+      `Saldo insuficiente en ${accountName}. Saldo disponible: $${currentBalance.toFixed(2)} ${currency}, Monto solicitado: $${amount.toFixed(2)} ${currency}.`
+    );
+  }
 }

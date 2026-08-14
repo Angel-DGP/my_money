@@ -41,6 +41,8 @@ export interface SubscriptionDto {
   status: string;
   card?: CardDto | null;
   duration_months?: number;
+  pending_months?: number;
+  is_completed?: boolean;
 }
 
 export interface ProductServiceDto {

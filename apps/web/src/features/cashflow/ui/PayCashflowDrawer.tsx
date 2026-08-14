@@ -46,6 +46,18 @@ export function PayCashflowDrawer({
       return;
     }
 
+    if (selectedAccount && selectedAccount.type !== 'CREDIT') {
+      const avail = parseFloat(selectedAccount.current_balance?.value || '0');
+      if (amountNumber > avail) {
+        toast({
+          title: 'Saldo insuficiente',
+          description: `La cuenta ${selectedAccount.name} solo tiene ${formatCurrency(avail, selectedAccount.currency)} disponibles.`,
+          variant: 'error',
+        });
+        return;
+      }
+    }
+
     try {
       await payEvent.mutateAsync({
         id: event.id,

@@ -166,6 +166,35 @@ export function TransactionDrawer({
 
   const onSubmit = async (data: TransactionFormData) => {
     try {
+      // Validar fondos si la cuenta origen no es crédito
+      if (data.type === 'EXPENSE') {
+        const acc = accounts?.find((a) => a.id === data.account_id);
+        if (acc && acc.type !== 'CREDIT') {
+          const avail = parseFloat(acc.current_balance?.value || '0');
+          if (data.amount > avail) {
+            toast({
+              title: 'Saldo insuficiente',
+              description: `La cuenta ${acc.name} solo dispone de $${avail.toFixed(2)} ${acc.currency}.`,
+              variant: 'error',
+            });
+            return;
+          }
+        }
+      } else if (data.type === 'TRANSFER') {
+        const acc = accounts?.find((a) => a.id === data.from_account_id);
+        if (acc && acc.type !== 'CREDIT') {
+          const avail = parseFloat(acc.current_balance?.value || '0');
+          if (data.amount > avail) {
+            toast({
+              title: 'Saldo insuficiente',
+              description: `La cuenta de origen ${acc.name} solo dispone de $${avail.toFixed(2)} ${acc.currency}.`,
+              variant: 'error',
+            });
+            return;
+          }
+        }
+      }
+
       if (isEdit && transaction) {
         await updateTransaction.mutateAsync({
           id: transaction.id,
@@ -219,9 +248,14 @@ export function TransactionDrawer({
         }
       }
       onOpenChange(false);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error saving transaction', error);
-      toast({ title: 'Error', description: 'No se pudo guardar la transacción.', variant: 'error' });
+      const err = error as { response?: { data?: { message?: string } } };
+      toast({
+        title: 'Error al registrar',
+        description: err.response?.data?.message || 'No se pudo guardar la transacción.',
+        variant: 'error',
+      });
     }
   };
 
@@ -847,9 +881,14 @@ export function TransactionDrawer({
                                   onChange={(e) => handleSubscriptionChange(e.target.value)}
                                 >
                                   <option value="none">Ninguna</option>
-                                  {subscriptions.map((s) => (
-                                    <option key={s.id} value={s.id}>{s.name} ({s.amount})</option>
-                                  ))}
+                                  {subscriptions.map((s) => {
+                                    const isDone = !!s.is_completed || s.status === 'CANCELLED';
+                                    return (
+                                      <option key={s.id} value={s.id} disabled={isDone}>
+                                        {s.name} (${s.amount}) {isDone ? '— [COMPLETADA / PAGADA]' : ''}
+                                      </option>
+                                    );
+                                  })}
                                 </Select>
                               </div>
 

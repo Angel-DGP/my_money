@@ -336,6 +336,7 @@ export class Transaction {
       transactionType: this.type,
       date: this.date.toISOString(),
       deletedBy,
+      subscriptionId: this.subscriptionId,
       occurredAt: new Date(),
     }));
   }

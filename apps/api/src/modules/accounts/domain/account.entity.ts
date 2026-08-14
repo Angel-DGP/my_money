@@ -121,6 +121,17 @@ export class Account {
       throw AccountException.currencyMismatch(this.currency, delta.amount.currency);
     }
 
+    if (delta.direction === 'DECREASE' && this.type !== 'CREDIT') {
+      if (this._currentBalance.value.lt(delta.amount.value)) {
+        throw AccountException.insufficientFunds(
+          this.name,
+          this._currentBalance.value.toNumber(),
+          delta.amount.value.toNumber(),
+          this.currency
+        );
+      }
+    }
+
     const previousBalance = this._currentBalance;
     this._currentBalance = delta.applyTo(this._currentBalance);
 

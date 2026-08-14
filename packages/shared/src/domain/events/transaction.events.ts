@@ -163,6 +163,7 @@ export interface TransactionDeletedEventProps extends Omit<DomainEventProps, 'ag
   transactionType: 'INCOME' | 'EXPENSE' | 'TRANSFER';
   date: string;
   deletedBy: string;
+  subscriptionId?: string | null;
 }
 
 export class TransactionDeletedEvent extends DomainEvent {
@@ -175,6 +176,7 @@ export class TransactionDeletedEvent extends DomainEvent {
   public readonly transactionType: 'INCOME' | 'EXPENSE' | 'TRANSFER';
   public readonly date: string;
   public readonly deletedBy: string;
+  public readonly subscriptionId?: string | null;
 
   constructor(props: TransactionDeletedEventProps) {
     super({ ...props, aggregateId: props.transactionId });
@@ -186,5 +188,6 @@ export class TransactionDeletedEvent extends DomainEvent {
     this.transactionType = props.transactionType;
     this.date = props.date;
     this.deletedBy = props.deletedBy;
+    this.subscriptionId = props.subscriptionId ?? null;
   }
 }

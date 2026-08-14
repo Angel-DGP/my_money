@@ -161,10 +161,34 @@ export class CatalogsService {
       if (c.reference_id) countMap.set(c.reference_id, c._count.id);
     });
 
-    return subscriptions.map((s) => ({
-      ...s,
-      duration_months: countMap.get(s.id) || 12,
-    }));
+    const pendingEventCounts = await this.prisma.cashflowEvent.groupBy({
+      by: ['reference_id'],
+      where: {
+        user_id: userId,
+        source_type: 'SUBSCRIPTION',
+        reference_id: { in: subIds },
+        status: 'PENDING',
+      },
+      _count: { id: true },
+    });
+
+    const pendingMap = new Map<string, number>();
+    pendingEventCounts.forEach((c) => {
+      if (c.reference_id) pendingMap.set(c.reference_id, c._count.id);
+    });
+
+    return subscriptions.map((s) => {
+      const totalMonths = countMap.get(s.id) ?? 12;
+      const pendingMonths = pendingMap.get(s.id) ?? 0;
+      const isCompleted = countMap.has(s.id) && pendingMonths === 0;
+
+      return {
+        ...s,
+        duration_months: totalMonths,
+        pending_months: pendingMonths,
+        is_completed: isCompleted,
+      };
+    });
   }
 
   async createSubscription(userId: string, data: { category_id: string; card_id?: string; name: string; amount: number; currency?: string; billing_cycle: string; next_billing_date: string; url?: string; duration_months?: number }) {
