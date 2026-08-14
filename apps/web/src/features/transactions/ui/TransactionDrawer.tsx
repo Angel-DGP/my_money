@@ -13,7 +13,7 @@ import {
   type UpdateTransactionDto,
   type CreateTransferDto,
 } from '@entities/transaction';
-import { useAccountsQuery } from '@entities/account';
+import { useAccountsQuery, AccountSelect } from '@entities/account';
 import { useCategoriesQuery, useCreateCategory, type Category } from '@entities/category';
 import { CategorySelect } from '../../categories';
 import { useCards, useProductServices } from '../../catalogs/api/useCatalogs';
@@ -567,57 +567,41 @@ export function TransactionDrawer({
                 {selectedType === 'TRANSFER' ? (
                   /* ─── TRANSFERENCIA ─────────────────────────────────────────── */
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="drawer-from-acc" required>Cuenta Origen</Label>
-                      <Select
-                        id="drawer-from-acc"
-                        disabled={isPending}
-                        error={errors.from_account_id?.message as string}
-                        {...register('from_account_id')}
-                      >
-                        <option value="">Seleccionar cuenta...</option>
-                        {accounts?.map((acc) => (
-                          <option key={acc.id} value={acc.id}>{acc.name} ({acc.type})</option>
-                        ))}
-                      </Select>
-                    </div>
+                    <AccountSelect
+                      id="drawer-from-acc"
+                      label="Cuenta Origen"
+                      required
+                      disabled={isPending}
+                      error={errors.from_account_id?.message as string}
+                      value={watch('from_account_id') || ''}
+                      onChange={(val) => setValue('from_account_id', val, { shouldValidate: true })}
+                      excludeId={watch('to_account_id')}
+                    />
 
-                    <div className="space-y-2">
-                      <Label htmlFor="drawer-to-acc" required>Cuenta Destino</Label>
-                      <Select
-                        id="drawer-to-acc"
-                        disabled={isPending}
-                        error={errors.to_account_id?.message as string}
-                        {...register('to_account_id')}
-                      >
-                        <option value="">Seleccionar cuenta...</option>
-                        {accounts?.map((acc) => (
-                          <option key={acc.id} value={acc.id}>{acc.name} ({acc.type})</option>
-                        ))}
-                      </Select>
-                    </div>
+                    <AccountSelect
+                      id="drawer-to-acc"
+                      label="Cuenta Destino"
+                      required
+                      disabled={isPending}
+                      error={errors.to_account_id?.message as string}
+                      value={watch('to_account_id') || ''}
+                      onChange={(val) => setValue('to_account_id', val, { shouldValidate: true })}
+                      excludeId={watch('from_account_id')}
+                    />
                   </div>
                 ) : (
                   /* ─── GASTO O INGRESO ───────────────────────────────────────── */
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <div className="h-5 flex items-center">
-                        <Label htmlFor="drawer-account-id" required>
-                          {selectedType === 'INCOME' ? 'Cuenta Destino' : 'Cuenta de Origen'}
-                        </Label>
-                      </div>
-                      <Select
+                      <AccountSelect
                         id="drawer-account-id"
+                        label={selectedType === 'INCOME' ? 'Cuenta Destino' : 'Cuenta de Origen'}
+                        required
                         disabled={isPending}
                         error={errors.account_id?.message as string}
                         value={watch('account_id') || ''}
-                        onChange={(e) => handleAccountSelectChange(e.target.value)}
-                      >
-                        <option value="">Seleccionar cuenta...</option>
-                        {accounts?.map((acc) => (
-                          <option key={acc.id} value={acc.id}>{acc.name} ({acc.type})</option>
-                        ))}
-                      </Select>
+                        onChange={(val) => handleAccountSelectChange(val)}
+                      />
                     </div>
 
                     <div className="space-y-1.5">

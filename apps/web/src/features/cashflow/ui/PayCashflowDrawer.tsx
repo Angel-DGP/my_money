@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Drawer, Button, Select, Label, DatePicker, Icon, toast } from '@mymoney/ui';
-import { useAccountsQuery } from '@entities/account';
+import { Drawer, Button, DatePicker, Icon, toast } from '@mymoney/ui';
+import { useAccountsQuery, AccountSelect } from '@entities/account';
 import { usePayCashflowEvent, useUpdateCashflowEventStatus } from '../api/useCashflow';
 import type { CashflowEvent } from '../../../shared/api/services/cashflow';
 
@@ -130,38 +130,14 @@ export function PayCashflowDrawer({
           </div>
 
           {/* Selector de cuenta */}
-          <div className="space-y-2">
-            <Label htmlFor="pay-drawer-account" required>
-              Cuenta de Pago / Débito
-            </Label>
-            <Select
-              id="pay-drawer-account"
-              value={accountId}
-              onChange={(e) => setAccountId(e.target.value)}
-              disabled={isPending}
-            >
-              {accounts.map((acc) => (
-                <option key={acc.id} value={acc.id}>
-                  {acc.name} — Saldo: {formatCurrency(parseFloat(acc.current_balance?.value || '0'), acc.currency)}
-                </option>
-              ))}
-            </Select>
-            {selectedAccount && (
-              <div className="text-xs text-text-muted flex items-center justify-between pt-1 px-1">
-                <span>Disponible después del pago:</span>
-                <span className={`font-semibold ${
-                  parseFloat(selectedAccount.current_balance?.value || '0') - amountNumber < 0
-                    ? 'text-rose-500'
-                    : 'text-text-primary'
-                }`}>
-                  {formatCurrency(
-                    parseFloat(selectedAccount.current_balance?.value || '0') - amountNumber,
-                    selectedAccount.currency
-                  )}
-                </span>
-              </div>
-            )}
-          </div>
+          <AccountSelect
+            id="pay-drawer-account"
+            label="Cuenta de Pago / Débito"
+            required
+            value={accountId}
+            onChange={(val) => setAccountId(val)}
+            disabled={isPending}
+          />
 
           {/* Fecha de pago */}
           <div className="space-y-2">

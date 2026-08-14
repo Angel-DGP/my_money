@@ -12,6 +12,7 @@ import {
   Icon,
   toast,
 } from '@mymoney/ui';
+import { useAccountsQuery, AccountSelect } from '@entities/account';
 import {
   useCreateCard,
   useUpdateCard,
@@ -55,6 +56,7 @@ export function CardDrawer({
 }: CardDrawerProps) {
   const { data: institutions = [] } = useInstitutions();
   const { data: brands = [] } = useCardBrands();
+  const { data: accounts = [] } = useAccountsQuery();
   const createCard = useCreateCard();
   const updateCard = useUpdateCard();
   const isEditing = !!card && !isView;
@@ -62,6 +64,7 @@ export function CardDrawer({
   // Inline sub-drawers
   const [showNewInstitution, setShowNewInstitution] = useState(false);
   const [showNewBrand, setShowNewBrand] = useState(false);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>('');
 
   const {
     register,
@@ -88,8 +91,30 @@ export function CardDrawer({
   const institutionIdValue = watch('institution_id');
   const brandIdValue = watch('brand_id');
 
+  const handleAccountLink = (accId: string) => {
+    setSelectedAccountId(accId);
+    if (accId && accId !== 'none') {
+      const acc = accounts.find((a) => a.id === accId);
+      if (acc) {
+        if (acc.institution_id) {
+          setValue('institution_id', acc.institution_id, { shouldValidate: true });
+        }
+        if (acc.type === 'CREDIT') {
+          setValue('type', 'CREDIT', { shouldValidate: true });
+        } else if (acc.type === 'CHECKING' || acc.type === 'SAVINGS') {
+          setValue('type', 'DEBIT', { shouldValidate: true });
+        }
+        const currentName = watch('name');
+        if (!currentName || currentName.trim() === '') {
+          setValue('name', `Tarjeta ${acc.name}`);
+        }
+      }
+    }
+  };
+
   useEffect(() => {
     if (open) {
+      setSelectedAccountId('');
       reset({
         institution_id: card?.institution_id || '',
         brand_id: card?.brand_id || '',
@@ -150,6 +175,26 @@ export function CardDrawer({
             className="flex flex-col flex-1 overflow-hidden"
           >
             <Drawer.Body className="space-y-5">
+              {/* Vincular a Cuenta Bancaria */}
+              {!isView && (
+                <div className="space-y-1.5 p-3 rounded-xl bg-surface-2/60 border border-border-subtle">
+                  <AccountSelect
+                    id="card-linked-account"
+                    label="Vincular a Cuenta Bancaria (Opcional)"
+                    excludeCash={true}
+                    allowNone={true}
+                    noneLabel="Ninguna (Tarjeta no vinculada)"
+                    placeholder="Seleccionar cuenta bancaria o de crédito..."
+                    value={selectedAccountId}
+                    onChange={handleAccountLink}
+                    disabled={isPending}
+                  />
+                  <p className="text-[11px] text-text-muted mt-1">
+                    Filtra únicamente cuentas bancarias (no efectivo). Al seleccionar una cuenta, auto-completa el banco emisor y el tipo de tarjeta.
+                  </p>
+                </div>
+              )}
+
               {/* Alias */}
               <div className="space-y-1.5">
                 <Label htmlFor="card-name" required>

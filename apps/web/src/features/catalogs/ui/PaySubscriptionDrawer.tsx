@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Drawer, Button, Select, Label, DatePicker, Icon, toast } from '@mymoney/ui';
-import { useAccountsQuery } from '@entities/account';
+import { Drawer, Button, Label, DatePicker, Icon, toast } from '@mymoney/ui';
+import { useAccountsQuery, AccountSelect } from '@entities/account';
 import { useCards } from '../api/useCatalogs';
 import { usePaySubscriptionMonth } from '../api/useCatalogs';
 import type { SubscriptionDto } from '../../../shared/api/dto/catalogs.dto';
@@ -151,45 +151,14 @@ export function PaySubscriptionDrawer({
 
           {/* Form Fields */}
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="pay-sub-account" required>
-                Cuenta de Origen / Débito
-              </Label>
-              <Select
-                id="pay-sub-account"
-                value={accountId}
-                onChange={(e) => setAccountId(e.target.value)}
-                disabled={isPending}
-              >
-                {accounts.map((acc) => {
-                  const bal = parseFloat(acc.current_balance?.value || '0');
-                  const isCredit = acc.type === 'CREDIT';
-                  return (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.name} ({acc.type === 'CASH' ? 'Efectivo' : acc.type}) — Saldo: {formatCurrency(bal, acc.currency)} {isCredit ? '(Crédito)' : ''}
-                    </option>
-                  );
-                })}
-              </Select>
-              {selectedAccount && (
-                <p className="text-xs text-text-muted flex items-center justify-between pt-1 px-0.5">
-                  <span>Saldo disponible en cuenta:</span>
-                  <span
-                    className={`font-semibold ${
-                      selectedAccount.type !== 'CREDIT' &&
-                      amountNumber > parseFloat(selectedAccount.current_balance?.value || '0')
-                        ? 'text-error-500'
-                        : 'text-text-primary'
-                    }`}
-                  >
-                    {formatCurrency(
-                      parseFloat(selectedAccount.current_balance?.value || '0'),
-                      selectedAccount.currency
-                    )}
-                  </span>
-                </p>
-              )}
-            </div>
+            <AccountSelect
+              id="pay-sub-account"
+              label="Cuenta de Origen / Débito"
+              required
+              value={accountId}
+              onChange={(val: string) => setAccountId(val)}
+              disabled={isPending}
+            />
 
             <div className="space-y-2">
               <Label htmlFor="pay-sub-date" required>
