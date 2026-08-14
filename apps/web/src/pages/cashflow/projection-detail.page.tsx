@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
-import { PageContainer, Card, Icon, Button, toast } from "@mymoney/ui";
+import { PageContainer, Card, Icon, toast } from "@mymoney/ui";
 import { useProjections, useUnpayCashflowEvent, PayCashflowDrawer } from "../../features/cashflow";
 import type { CashflowEvent } from "../../shared/api/services/cashflow";
 import dayjs from "dayjs";
@@ -207,7 +207,7 @@ export function ProjectionDetailPage() {
                       <th className="py-3 px-4">Origen</th>
                       <th className="py-3 px-4">Estado</th>
                       <th className="py-3 px-4 text-right">Monto</th>
-                      <th className="py-3 px-4 text-right w-36 sticky right-0 z-10 bg-surface shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.1)]">Acción</th>
+                      <th className="py-3 px-4 text-right w-24 sticky right-0 z-10 bg-surface shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.1)]">Acciones</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border-subtle">
@@ -279,28 +279,30 @@ export function ProjectionDetailPage() {
                               </span>
                             </td>
                             <td className="py-3 px-4 text-right sticky right-0 z-10 bg-surface shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.1)]">
-                              {isPaid ? (
-                                <Button
-                                  size="xs"
-                                  variant="ghost"
-                                  disabled={unpayEvent.isPending}
-                                  onClick={() => handleUnpay(event)}
-                                  className="text-text-muted hover:text-text-primary text-xs inline-flex items-center gap-1"
-                                >
-                                  <Icon name="refresh-cw" size="xs" />
-                                  Desmarcar
-                                </Button>
-                              ) : (
-                                <Button
-                                  size="xs"
-                                  variant="outline"
-                                  onClick={() => handleOpenPayModal(event)}
-                                  className="text-amber-500 border-amber-500/40 hover:bg-amber-500/10 hover:border-amber-500 text-xs font-semibold inline-flex items-center gap-1 shadow-xs"
-                                >
-                                  <Icon name="credit-card" size="xs" />
-                                  Pagar
-                                </Button>
-                              )}
+                              <div className="flex items-center justify-end gap-1">
+                                {isPaid ? (
+                                  <button
+                                    type="button"
+                                    disabled={unpayEvent.isPending}
+                                    onClick={() => handleUnpay(event)}
+                                    className="p-1.5 text-text-muted hover:text-amber-500 hover:bg-amber-500/10 rounded-lg transition-colors"
+                                    title="Desmarcar / Volver a Pendiente"
+                                    aria-label="Desmarcar"
+                                  >
+                                    <Icon name="refresh-cw" size="sm" />
+                                  </button>
+                                ) : !isIncome ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenPayModal(event)}
+                                    className="p-1.5 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-lg transition-colors"
+                                    title="Pagar Cuota de este Mes"
+                                    aria-label="Pagar Cuota"
+                                  >
+                                    <Icon name="credit-card" size="sm" />
+                                  </button>
+                                ) : null}
+                              </div>
                             </td>
                           </tr>
                         );

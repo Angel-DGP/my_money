@@ -113,13 +113,13 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
       align: 'right',
       sticky: 'right',
       cell: (t) => (
-        <div className="flex flex-wrap sm:flex-nowrap justify-end items-center gap-1 max-w-[58px] sm:max-w-none ml-auto">
+        <div className="flex items-center justify-end gap-1">
           <button 
             type="button" 
             title="Ver detalle"
             aria-label="Ver detalle"
             onClick={(e) => { e.stopPropagation(); onView(t); }} 
-            className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-500/10 rounded-lg transition-colors"
+            className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-surface-2 rounded-lg transition-colors"
           >
             <Icon name="eye" size="sm" />
           </button>
@@ -128,7 +128,7 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
             title="Editar transacción"
             aria-label="Editar transacción"
             onClick={(e) => { e.stopPropagation(); onEdit(t); }} 
-            className="p-1.5 text-text-muted hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
+            className="p-1.5 text-text-muted hover:text-primary-600 dark:hover:text-primary-400 hover:bg-surface-2 rounded-lg transition-colors"
           >
             <Icon name="edit" size="sm" />
           </button>
@@ -137,7 +137,7 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
             title="Eliminar transacción"
             aria-label="Eliminar transacción"
             onClick={(e) => { e.stopPropagation(); onDelete(t); }} 
-            className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-500/10 rounded-lg transition-colors"
+            className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-lg transition-colors"
           >
             <Icon name="trash" size="sm" />
           </button>
