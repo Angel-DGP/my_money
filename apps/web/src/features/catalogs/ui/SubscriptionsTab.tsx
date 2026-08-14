@@ -122,25 +122,23 @@ export function SubscriptionsTab() {
       align: 'right',
       sticky: 'right',
       cell: (sub) => (
-        <div className="flex items-center justify-end gap-1.5">
-          <Button
-            size="xs"
-            variant="secondary"
+        <div className="flex items-center justify-end gap-1">
+          <button
+            type="button"
+            aria-label="Pagar Cuota"
             disabled={sub.is_completed}
             onClick={(e) => {
               e.stopPropagation();
               handleOpenPay(sub);
             }}
-            className={`text-xs px-2.5 py-1 rounded-lg ${
-              sub.is_completed ? 'opacity-40' : 'text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10'
-            }`}
-            title={sub.is_completed ? 'Suscripción pagada en su totalidad' : 'Pagar próximo mes'}
+            className="p-1.5 text-text-muted hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            title={sub.is_completed ? 'Suscripción pagada en su totalidad' : 'Pagar Próximo Mes'}
           >
-            <Icon name="credit-card" size="xs" className="mr-1" />
-            {sub.is_completed ? 'Pagada' : 'Pagar Mes'}
-          </Button>
+            <Icon name="credit-card" size="sm" />
+          </button>
           <button
             type="button"
+            aria-label="Ver Detalle"
             onClick={(e) => {
               e.stopPropagation();
               handleOpenView(sub);
@@ -152,6 +150,7 @@ export function SubscriptionsTab() {
           </button>
           <button
             type="button"
+            aria-label="Editar"
             onClick={(e) => {
               e.stopPropagation();
               handleOpenEdit(sub);
@@ -163,6 +162,7 @@ export function SubscriptionsTab() {
           </button>
           <button
             type="button"
+            aria-label="Eliminar"
             onClick={(e) => {
               e.stopPropagation();
               setSubToDelete(sub);
