@@ -75,20 +75,20 @@ export const LoginPage = () => {
             <h1 className="text-3xl font-bold text-text-primary tracking-tight">Iniciar Sesión</h1>
             <p className="mt-2 text-sm text-text-secondary">Ingresa tus credenciales para continuar</p>
           </div>
-          
+
           <FormLayout onSubmit={handleSubmit(onSubmit)}>
             <div className="col-span-12 space-y-1.5">
               <Label htmlFor="email">Correo Electrónico</Label>
-              <Input 
-                id="email" 
-                type="email" 
+              <Input
+                id="email"
+                type="email"
                 {...register('email')}
                 error={errors.email?.message}
                 placeholder="demo@mymoney.app"
                 leftIcon="mail"
               />
             </div>
-            
+
             <div className="col-span-12 space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Contraseña</Label>
@@ -96,9 +96,9 @@ export const LoginPage = () => {
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>
-              <Input 
-                id="password" 
-                type="password" 
+              <Input
+                id="password"
+                type="password"
                 {...register('password')}
                 error={errors.password?.message}
                 placeholder="••••••••"
@@ -119,12 +119,6 @@ export const LoginPage = () => {
             <Link to="/register" className="font-semibold text-blue-600 hover:text-blue-500">
               Regístrate ahora
             </Link>
-          </div>
-
-          <div className="mt-12 rounded-lg bg-surface-2 p-4 text-xs text-text-secondary text-center border border-border-subtle">
-            <p className="font-medium text-text-primary mb-1">Credenciales de Demostración</p>
-            <p>Email: <b>demo@mymoney.app</b></p>
-            <p>Contraseña: <b>demo</b></p>
           </div>
         </div>
       </div>
