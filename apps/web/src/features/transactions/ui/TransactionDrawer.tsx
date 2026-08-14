@@ -229,6 +229,20 @@ export function TransactionDrawer({
   const selectedAccount = useMemo(() => accounts?.find((a) => a.id === currentAccountId) || null, [accounts, currentAccountId]);
   const isCashAccount = selectedAccount?.type === 'CASH';
 
+  const currentCardId = watch('card_id');
+  const selectedCard = useMemo(() => cards.find((c) => c.id === currentCardId) || null, [cards, currentCardId]);
+
+  // Only Credit accounts or selecting a Credit Card allows installment deferrals
+  const isCreditInstrument = selectedAccount?.type === 'CREDIT' || selectedCard?.type === 'CREDIT';
+  const canDeferInstallments = selectedType === 'EXPENSE' && isCreditInstrument;
+
+  useEffect(() => {
+    if (!canDeferInstallments && showInstallments) {
+      setShowInstallments(false);
+      setValue('installment', undefined);
+    }
+  }, [canDeferInstallments, showInstallments, setValue]);
+
   const availableCards = useMemo(() => {
     if (!cards || cards.length === 0 || isCashAccount) return [];
     if (selectedAccount?.institution_id) {
@@ -579,10 +593,12 @@ export function TransactionDrawer({
                 ) : (
                   /* ─── GASTO O INGRESO ───────────────────────────────────────── */
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="drawer-account-id" required>
-                        {selectedType === 'INCOME' ? 'Cuenta Destino' : 'Cuenta de Origen'}
-                      </Label>
+                    <div className="space-y-1.5">
+                      <div className="h-5 flex items-center">
+                        <Label htmlFor="drawer-account-id" required>
+                          {selectedType === 'INCOME' ? 'Cuenta Destino' : 'Cuenta de Origen'}
+                        </Label>
+                      </div>
                       <Select
                         id="drawer-account-id"
                         disabled={isPending}
@@ -597,13 +613,13 @@ export function TransactionDrawer({
                       </Select>
                     </div>
 
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                    <div className="space-y-1.5">
+                      <div className="h-5 flex items-center justify-between">
                         <Label htmlFor="drawer-category-id">Categoría</Label>
                         <button
                           type="button"
                           onClick={() => setCategoryModalOpen(true)}
-                          className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-500 font-medium hover:underline flex items-center gap-1"
+                          className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-500 font-semibold hover:underline flex items-center gap-1"
                         >
                           <Icon name="plus" size="xs" /> Nueva
                         </button>
@@ -624,10 +640,12 @@ export function TransactionDrawer({
 
                 {/* Fecha y Descripción */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
+                    <div className="h-5 flex items-center">
+                      <Label htmlFor="drawer-tx-date" required>Fecha</Label>
+                    </div>
                     <DatePicker
                       id="drawer-tx-date"
-                      label="Fecha"
                       value={watch('date')}
                       onChange={(d) => setValue('date', d, { shouldValidate: true })}
                       disabled={isPending}
@@ -636,8 +654,10 @@ export function TransactionDrawer({
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="drawer-tx-desc" required>Descripción</Label>
+                  <div className="space-y-1.5">
+                    <div className="h-5 flex items-center">
+                      <Label htmlFor="drawer-tx-desc" required>Descripción</Label>
+                    </div>
                     <Input
                       id="drawer-tx-desc"
                       placeholder="Ej: Supermercado, Salario quincena..."
@@ -690,10 +710,10 @@ export function TransactionDrawer({
                       </div>
                     )}
 
-                    {/* Switch Cuotas / Diferidos (solo Gasto y NO cuenta de efectivo) */}
-                    {selectedType === 'EXPENSE' && !isCashAccount && (
+                    {/* Switch Cuotas / Diferidos (solo Gasto y solo para instrumentos de Crédito) */}
+                    {canDeferInstallments && (
                       <>
-                        <div className="p-3.5 rounded-xl bg-surface-2/30 border border-border-subtle">
+                        <div className="p-3.5 rounded-xl bg-surface-2/30 border border-border-subtle animate-in fade-in duration-200">
                           <Switch
                             id="drawer-tx-installments"
                             label="¿Pago a cuotas (Diferido)?"

@@ -165,12 +165,12 @@ export function CategorySelect({
         type="button"
         disabled={disabled || isLoading}
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-sm transition-all duration-150 ${
+        className={`flex h-10 w-full items-center justify-between rounded-lg border bg-background/50 backdrop-blur-sm px-4 py-2 text-sm text-text-primary transition-all shadow-sm ${
           hasError
             ? 'border-error-500 ring-1 ring-error-500/30'
             : isOpen
-            ? 'border-primary-500 ring-2 ring-primary-500/20 bg-surface'
-            : 'border-border-subtle hover:border-text-secondary/40 bg-surface'
+            ? 'border-primary-500 ring-1 ring-primary-500'
+            : 'border-border-subtle hover:border-border-strong'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       >
         <div className="flex items-center gap-2.5 min-w-0 overflow-hidden">
