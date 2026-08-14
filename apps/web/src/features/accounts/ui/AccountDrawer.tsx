@@ -3,9 +3,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { accountSchema } from './AccountForm/AccountForm.schema';
 import type { AccountFormData } from './AccountForm/AccountForm.types';
-import { useCreateAccount, useUpdateAccount, type Account } from '@entities/account';
+import { useCreateAccount, useUpdateAccount, type Account, type Currency } from '@entities/account';
 import { Drawer, Button, Input, Label, Select, MoneyInput, Icon, toast, Dialog } from '@mymoney/ui';
 import { useInstitutions, useCreateInstitution } from '../../catalogs/api/useCatalogs';
+import { formatApiErrorMessage } from '../../../shared/utils/formatApiError';
 
 interface AccountDrawerProps {
   open: boolean;
@@ -36,6 +37,7 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
     defaultValues: {
       name: '',
       type: 'CHECKING',
+      currency: 'USD',
       initial_balance: '0',
       color: '#3b82f6',
       icon: 'coins',
@@ -54,6 +56,7 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
       reset({
         name: account.name || '',
         type: (account.type as AccountFormData['type']) || 'CHECKING',
+        currency: account.currency || 'USD',
         initial_balance: account.current_balance?.value || '0',
         color: account.color || '#3b82f6',
         icon: account.icon || 'coins',
@@ -64,6 +67,7 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
       reset({
         name: '',
         type: 'CHECKING',
+        currency: 'USD',
         initial_balance: '0',
         color: '#3b82f6',
         icon: 'coins',
@@ -85,6 +89,7 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
             color: data.color || undefined,
             icon: data.icon || undefined,
             type: data.type,
+            currency: (data.currency as Currency) || 'USD',
             institution_id: data.institution_id || undefined,
             specific_type: data.specific_type || undefined,
           },
@@ -94,10 +99,10 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
         await createAccount.mutateAsync({
           name: data.name,
           type: data.type,
+          currency: (data.currency as Currency) || 'USD',
           initial_balance: data.initial_balance || '0',
           color: data.color || undefined,
           icon: data.icon || undefined,
-          currency: 'USD',
           institution_id: data.institution_id || undefined,
           specific_type: data.specific_type || undefined,
         });
@@ -106,7 +111,10 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
       onOpenChange(false);
     } catch (error) {
       console.error('Error saving account', error);
-      toast({ title: 'Error', description: 'No se pudo guardar la cuenta.', variant: 'error' });
+      const msg = formatApiErrorMessage(
+        (error as { response?: { data?: unknown } })?.response?.data || error
+      );
+      toast({ title: 'Error al guardar', description: msg || 'No se pudo guardar la cuenta.', variant: 'error' });
     }
   };
 
@@ -212,6 +220,28 @@ export function AccountDrawer({ open, onOpenChange, account, isView = false }: A
                   required
                   {...register('name')}
                 />
+              </div>
+
+              {/* Moneda */}
+              <div className="space-y-2">
+                <Label htmlFor="drawer-acc-currency" required>Moneda Principal</Label>
+                <Select
+                  id="drawer-acc-currency"
+                  disabled={isView || isEdit || isLoading}
+                  {...register('currency')}
+                >
+                  <option value="USD">USD ($) - Dólar Estadounidense</option>
+                  <option value="EUR">EUR (€) - Euro</option>
+                  <option value="COP">COP ($) - Peso Colombiano</option>
+                  <option value="MXN">MXN ($) - Peso Mexicano</option>
+                  <option value="ARS">ARS ($) - Peso Argentino</option>
+                  <option value="CLP">CLP ($) - Peso Chileno</option>
+                  <option value="PEN">PEN (S/) - Sol Peruano</option>
+                  <option value="BRL">BRL (R$) - Real Brasileño</option>
+                </Select>
+                {errors.currency && (
+                  <p className="text-xs text-error-500">{errors.currency.message}</p>
+                )}
               </div>
 
               {/* Balance inicial (solo creación) */}

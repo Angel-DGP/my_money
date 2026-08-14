@@ -63,7 +63,7 @@ export function AccountFormFields({ form, isEdit, isView, isLoading }: AccountFo
             {errors.name && <p className="text-error-500 text-xs">{errors.name.message}</p>}
           </div>
 
-          <div className="col-span-12 md:col-span-4 space-y-2">
+          <div className="col-span-12 md:col-span-3 space-y-2">
             <Select 
               id="type"
               label="Tipo General"
@@ -81,7 +81,27 @@ export function AccountFormFields({ form, isEdit, isView, isLoading }: AccountFo
             {errors.type && <p className="text-error-500 text-xs">{errors.type.message}</p>}
           </div>
 
-          <div className="col-span-12 md:col-span-4 space-y-2">
+          <div className="col-span-12 md:col-span-3 space-y-2">
+            <Label htmlFor="currency" required>Moneda</Label>
+            <Select
+              id="currency"
+              disabled={isView || isEdit || isLoading}
+              required
+              {...register('currency')}
+            >
+              <option value="USD">USD ($) - Dólar</option>
+              <option value="EUR">EUR (€) - Euro</option>
+              <option value="COP">COP ($) - Peso Col.</option>
+              <option value="MXN">MXN ($) - Peso Mex.</option>
+              <option value="ARS">ARS ($) - Peso Arg.</option>
+              <option value="CLP">CLP ($) - Peso Chl.</option>
+              <option value="PEN">PEN (S/) - Sol Per.</option>
+              <option value="BRL">BRL (R$) - Real Bra.</option>
+            </Select>
+            {errors.currency && <p className="text-error-500 text-xs">{errors.currency.message}</p>}
+          </div>
+
+          <div className="col-span-12 md:col-span-3 space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="institution_id">Institución (Opcional)</Label>
               <a
@@ -107,7 +127,7 @@ export function AccountFormFields({ form, isEdit, isView, isLoading }: AccountFo
             </Select>
           </div>
 
-          <div className="col-span-12 md:col-span-4 space-y-2">
+          <div className="col-span-12 md:col-span-3 space-y-2">
             <Label htmlFor="specific_type">Tipo Específico (Opcional)</Label>
             <Input 
               id="specific_type" 

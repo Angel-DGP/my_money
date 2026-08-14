@@ -11,3 +11,4 @@ export const accountSchema = z.object({
   icon: z.string().optional(),
 });
 
+
