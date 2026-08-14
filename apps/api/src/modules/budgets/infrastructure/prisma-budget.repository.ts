@@ -13,6 +13,12 @@ export class PrismaBudgetRepository implements IBudgetRepository {
     throw new Error('Method not implemented.');
   }
 
+  async delete(id: string, userId: string): Promise<void> {
+    await this.prisma.budget.deleteMany({
+      where: { id, user_id: userId },
+    });
+  }
+
   async save(budget: Budget): Promise<void> {
     await this.prisma.budget.upsert({
       where: { id: budget.id },

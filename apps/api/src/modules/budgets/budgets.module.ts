@@ -6,6 +6,7 @@ import { UpdateBudgetUseCase } from './application/use-cases/update-budget.use-c
 import { DeactivateBudgetUseCase } from './application/use-cases/deactivate-budget.use-case';
 import { GetBudgetByIdUseCase } from './application/use-cases/get-budget-by-id.use-case';
 import { ReactivateBudgetUseCase } from './application/use-cases/reactivate-budget.use-case';
+import { DeleteBudgetUseCase } from './application/use-cases/delete-budget.use-case';
 import { PrismaBudgetRepository } from './infrastructure/prisma-budget.repository';
 import { BUDGET_REPOSITORY } from './domain/budget.repository.interface';
 import { UpdateBudgetOnTransactionCreatedHandler } from './application/event-handlers/update-budget-on-transaction-created.handler';
@@ -27,6 +28,7 @@ import { PrismaModule } from '../../prisma/prisma.module';
     DeactivateBudgetUseCase,
     GetBudgetByIdUseCase,
     ReactivateBudgetUseCase,
+    DeleteBudgetUseCase,
     UpdateBudgetOnTransactionCreatedHandler,
     UpdateBudgetOnTransactionDeletedHandler,
     UpdateBudgetOnTransactionAmountChangedHandler,

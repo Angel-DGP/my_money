@@ -1,11 +1,12 @@
 import { AuthenticatedRequest } from '../../../common/interfaces/authenticated-request.interface';
-import { Controller, Get, Post, Patch,  Param, Body, Query,  Request, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, Request, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { CreateBudgetUseCase } from '../application/use-cases/create-budget.use-case';
 import { GetBudgetsUseCase } from '../application/use-cases/get-budgets.use-case';
 import { UpdateBudgetUseCase } from '../application/use-cases/update-budget.use-case';
 import { DeactivateBudgetUseCase } from '../application/use-cases/deactivate-budget.use-case';
 import { GetBudgetByIdUseCase } from '../application/use-cases/get-budget-by-id.use-case';
 import { ReactivateBudgetUseCase } from '../application/use-cases/reactivate-budget.use-case';
+import { DeleteBudgetUseCase } from '../application/use-cases/delete-budget.use-case';
 import { CreateBudgetDto } from './dtos/create-budget.dto';
 import { UpdateBudgetDto } from './dtos/update-budget.dto';
 import { BudgetDto } from './dtos/budget.dto';
@@ -22,7 +23,8 @@ export class BudgetsController {
     private readonly updateBudgetUseCase: UpdateBudgetUseCase,
     private readonly deactivateBudgetUseCase: DeactivateBudgetUseCase,
     private readonly getBudgetByIdUseCase: GetBudgetByIdUseCase,
-    private readonly reactivateBudgetUseCase: ReactivateBudgetUseCase
+    private readonly reactivateBudgetUseCase: ReactivateBudgetUseCase,
+    private readonly deleteBudgetUseCase: DeleteBudgetUseCase
   ) {}
 
   @Get()
@@ -72,5 +74,11 @@ export class BudgetsController {
   async reactivate(@Request() req: AuthenticatedRequest, @Param('id') id: string): Promise<ApiResponse<BudgetDto>> {
     const data = await this.reactivateBudgetUseCase.execute(req.user.id, id);
     return { data };
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Request() req: AuthenticatedRequest, @Param('id') id: string): Promise<void> {
+    await this.deleteBudgetUseCase.execute(req.user.id, id);
   }
 }
