@@ -207,7 +207,7 @@ export function ProjectionDetailPage() {
                       <th className="py-3 px-4">Origen</th>
                       <th className="py-3 px-4">Estado</th>
                       <th className="py-3 px-4 text-right">Monto</th>
-                      <th className="py-3 px-4 text-right w-24 sticky right-0 z-10 bg-surface shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.1)]">Acciones</th>
+                      <th className="py-3 px-4 text-center w-[124px] sticky right-0 z-10 bg-surface shadow-[-6px_0_14px_rgba(0,0,0,0.08)] dark:shadow-[-8px_0_16px_rgba(0,0,0,0.5)]">Acciones</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border-subtle">
@@ -278,8 +278,8 @@ export function ProjectionDetailPage() {
                                 {formatCurrency(parseFloat(event.amount))}
                               </span>
                             </td>
-                            <td className="py-3 px-4 text-right sticky right-0 z-10 bg-surface shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.1)]">
-                              <div className="flex items-center justify-end gap-1">
+                            <td className="py-3 px-4 text-center sticky right-0 z-10 bg-surface shadow-[-6px_0_14px_rgba(0,0,0,0.08)] dark:shadow-[-8px_0_16px_rgba(0,0,0,0.5)]">
+                              <div className="flex items-center justify-center gap-1">
                                 {isPaid ? (
                                   <button
                                     type="button"

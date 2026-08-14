@@ -110,10 +110,10 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
     {
       key: 'actions',
       header: 'Acciones',
-      align: 'right',
+      align: 'center',
       sticky: 'right',
       cell: (t) => (
-        <div className="flex items-center justify-end gap-1">
+        <div className="flex items-center justify-center gap-1">
           <button 
             type="button" 
             title="Ver detalle"

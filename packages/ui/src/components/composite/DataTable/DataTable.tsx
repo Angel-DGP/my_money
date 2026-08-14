@@ -253,14 +253,17 @@ export function DataTable<T>({
           <TableHeader>
             <TableRow>
               {columns.map((col) => {
+                const isActions = col.key === 'actions';
                 const stickyClass = col.sticky === 'right' 
-                  ? 'sticky right-0 bg-surface z-10 w-[96px] min-w-[96px] max-w-[100px] px-3 shadow-[-4px_0_12px_rgba(0,0,0,0.05)]' 
+                  ? 'sticky right-0 bg-surface z-10 w-[124px] min-w-[124px] max-w-[124px] px-4 shadow-[-6px_0_14px_rgba(0,0,0,0.08)] dark:shadow-[-8px_0_16px_rgba(0,0,0,0.5)]' 
                   : col.sticky === 'left' 
-                  ? 'sticky left-0 bg-surface z-10 w-[120px] min-w-[120px] max-w-[140px] px-3 shadow-[4px_0_12px_rgba(0,0,0,0.05)]' 
+                  ? 'sticky left-0 bg-surface z-10 w-[120px] min-w-[120px] max-w-[140px] px-4 shadow-[6px_0_14px_rgba(0,0,0,0.08)] dark:shadow-[8px_0_16px_rgba(0,0,0,0.5)]' 
                   : '';
                 
+                const colAlign = isActions ? 'center' : col.align;
+
                 return (
-                  <TableHead key={col.key} align={col.align} className={cn(stickyClass, col.className)}>
+                  <TableHead key={col.key} align={colAlign} className={cn(stickyClass, col.className)}>
                     {col.sortable ? (
                       <SortableHeader column={col.key} sort={sort} onToggle={toggleSort}>
                         {col.header}
@@ -268,7 +271,8 @@ export function DataTable<T>({
                     ) : (
                       <span className={cn(
                         "font-semibold text-text-secondary text-xs uppercase tracking-wider",
-                        col.align === 'right' && "block text-right"
+                        colAlign === 'center' && "block text-center",
+                        colAlign === 'right' && "block text-right"
                       )}>
                         {col.header}
                       </span>
@@ -293,14 +297,17 @@ export function DataTable<T>({
                   onClick={() => onRowClick?.(item)}
                 >
                   {columns.map((col) => {
+                    const isActions = col.key === 'actions';
                     const stickyClass = col.sticky === 'right' 
-                      ? 'sticky right-0 bg-surface z-10 w-[96px] min-w-[96px] max-w-[100px] px-3 shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover' 
+                      ? 'sticky right-0 bg-surface z-10 w-[124px] min-w-[124px] max-w-[124px] px-4 shadow-[-6px_0_14px_rgba(0,0,0,0.08)] dark:shadow-[-8px_0_16px_rgba(0,0,0,0.5)] group-hover:bg-surface-hover' 
                       : col.sticky === 'left' 
-                      ? 'sticky left-0 bg-surface z-10 w-[120px] min-w-[120px] max-w-[140px] px-3 shadow-[4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover' 
+                      ? 'sticky left-0 bg-surface z-10 w-[120px] min-w-[120px] max-w-[140px] px-4 shadow-[6px_0_14px_rgba(0,0,0,0.08)] dark:shadow-[8px_0_16px_rgba(0,0,0,0.5)] group-hover:bg-surface-hover' 
                       : '';
                       
+                    const colAlign = isActions ? 'center' : col.align;
+
                     return (
-                      <TableCell key={col.key} align={col.align} className={cn(stickyClass, col.className)}>
+                      <TableCell key={col.key} align={colAlign} className={cn(stickyClass, col.className)}>
                         {col.cell(item)}
                       </TableCell>
                     );
