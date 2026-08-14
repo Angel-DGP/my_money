@@ -150,16 +150,31 @@ export function CategoriesTable({ categories, onView, onEdit, onDelete }: Catego
                   </TableCell>
                   <TableCell className="sticky right-0 bg-surface z-10 w-[160px] min-w-[160px] max-w-[160px] px-2 shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover">
                     <div className="flex items-center justify-center gap-1">
-                      <button type="button" onClick={(e) => { e.stopPropagation(); onView(category); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+                      <button 
+                        type="button" 
+                        title="Ver detalle"
+                        onClick={(e) => { e.stopPropagation(); onView(category); }} 
+                        className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-500/10 rounded-lg transition-colors"
+                      >
                         <Icon name="eye" size="sm" />
                       </button>
                       {!category.is_system && (
-                        <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(category); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+                        <button 
+                          type="button" 
+                          title="Editar categoría"
+                          onClick={(e) => { e.stopPropagation(); onEdit(category); }} 
+                          className="p-1.5 text-text-muted hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
+                        >
                           <Icon name="edit" size="sm" />
                         </button>
                       )}
                       {!category.is_system && (
-                        <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(category); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
+                        <button 
+                          type="button" 
+                          title="Eliminar categoría"
+                          onClick={(e) => { e.stopPropagation(); onDelete(category); }} 
+                          className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-500/10 rounded-lg transition-colors"
+                        >
                           <Icon name="trash" size="sm" />
                         </button>
                       )}

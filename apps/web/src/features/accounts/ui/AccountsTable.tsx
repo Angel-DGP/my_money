@@ -30,10 +30,10 @@ export function AccountsTable({ accounts, onView, onEdit, onDelete }: AccountsTa
       cell: (account) => (
         <div className="flex items-center gap-3">
           <div 
-            className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ backgroundColor: account.color || '#E5E7EB' }}
+            className="w-8 h-8 rounded-full flex items-center justify-center shadow-sm shrink-0"
+            style={{ backgroundColor: account.color || '#3b82f6' }}
           >
-            <Icon name={(account.icon as IconName) || 'wallet'} size="sm" className="text-white mix-blend-difference" />
+            <Icon name={(account.icon as IconName) || 'wallet'} size="sm" className="text-white drop-shadow-sm" />
           </div>
           <span className="font-medium text-text-primary">{account.name}</span>
         </div>
@@ -58,23 +58,41 @@ export function AccountsTable({ accounts, onView, onEdit, onDelete }: AccountsTa
       align: 'right',
       sticky: 'right',
       cell: (account) => (
-        <div className="flex justify-center gap-1">
+        <div className="flex justify-end items-center gap-1">
           <button 
             type="button" 
             title="Ver transacciones de esta cuenta"
             aria-label="Ver transacciones"
             onClick={(e) => { e.stopPropagation(); navigate(`/transactions?accountId=${account.id}`); }} 
-            className="p-1.5 text-text-muted hover:text-secondary-500 hover:bg-secondary-50 dark:hover:bg-secondary-900/20 rounded-md transition-colors"
+            className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-500/10 rounded-lg transition-colors"
           >
             <Icon name="arrow-left-right" size="sm" />
           </button>
-          <button type="button" title="Ver detalle" aria-label="Ver detalle" onClick={(e) => { e.stopPropagation(); onView(account); }} className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors">
+          <button 
+            type="button" 
+            title="Ver detalle" 
+            aria-label="Ver detalle" 
+            onClick={(e) => { e.stopPropagation(); onView(account); }} 
+            className="p-1.5 text-text-muted hover:text-primary-500 hover:bg-primary-500/10 rounded-lg transition-colors"
+          >
             <Icon name="eye" size="sm" />
           </button>
-          <button type="button" title="Editar cuenta" aria-label="Editar cuenta" onClick={(e) => { e.stopPropagation(); onEdit(account); }} className="p-1.5 text-text-muted hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md transition-colors">
+          <button 
+            type="button" 
+            title="Editar cuenta" 
+            aria-label="Editar cuenta" 
+            onClick={(e) => { e.stopPropagation(); onEdit(account); }} 
+            className="p-1.5 text-text-muted hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
+          >
             <Icon name="edit" size="sm" />
           </button>
-          <button type="button" title="Eliminar cuenta" aria-label="Eliminar cuenta" onClick={(e) => { e.stopPropagation(); onDelete(account); }} className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-900/20 rounded-md transition-colors">
+          <button 
+            type="button" 
+            title="Eliminar cuenta" 
+            aria-label="Eliminar cuenta" 
+            onClick={(e) => { e.stopPropagation(); onDelete(account); }} 
+            className="p-1.5 text-text-muted hover:text-error-500 hover:bg-error-500/10 rounded-lg transition-colors"
+          >
             <Icon name="trash" size="sm" />
           </button>
         </div>

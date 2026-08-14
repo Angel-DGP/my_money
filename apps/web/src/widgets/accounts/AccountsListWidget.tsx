@@ -123,13 +123,13 @@ export function AccountsListWidget() {
                 <div className="flex items-start justify-between border-b border-border-subtle pb-4">
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm"
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm shrink-0"
                       style={{ backgroundColor: selectedAccount.color || '#3b82f6' }}
                     >
                       <Icon
                         name={(selectedAccount.icon as React.ComponentProps<typeof Icon>['name']) || 'wallet'}
                         size="md"
-                        className="text-white mix-blend-difference"
+                        className="text-white drop-shadow-sm"
                       />
                     </div>
                     <div>
@@ -251,22 +251,40 @@ export function AccountsListWidget() {
                   </div>
                 </div>
 
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   <span className="text-xs font-bold uppercase tracking-wider text-text-muted">Por Tipo de Cuenta</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.entries(balanceByType).map(([type, amount]) => (
-                      <div key={type} className="p-3 rounded-xl bg-surface-2/40 border border-border-subtle">
-                        <span className="text-xs text-text-muted font-medium block">{type}</span>
-                        <span className="text-sm font-bold text-text-primary mt-0.5 block">
-                          <Amount value={amount} />
-                        </span>
-                      </div>
-                    ))}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {Object.entries(balanceByType).map(([type, amount]) => {
+                      const typeLabels: Record<string, { label: string; icon: string; color: string }> = {
+                        CHECKING: { label: 'Cuenta Corriente', icon: 'building', color: 'text-blue-500 bg-blue-500/10' },
+                        SAVINGS: { label: 'Ahorros', icon: 'piggy-bank', color: 'text-emerald-500 bg-emerald-500/10' },
+                        CASH: { label: 'Efectivo', icon: 'wallet', color: 'text-amber-500 bg-amber-500/10' },
+                        CREDIT: { label: 'Tarjeta de Crédito', icon: 'credit-card', color: 'text-purple-500 bg-purple-500/10' },
+                        INVESTMENT: { label: 'Inversión', icon: 'trending-up', color: 'text-cyan-500 bg-cyan-500/10' },
+                      };
+                      const conf = typeLabels[type] || { label: type, icon: 'wallet', color: 'text-primary-500 bg-primary-500/10' };
+                      return (
+                        <div key={type} className="p-3 rounded-xl bg-surface-2/60 border border-border-subtle flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${conf.color} shrink-0`}>
+                              <Icon name={conf.icon as React.ComponentProps<typeof Icon>['name']} size="sm" />
+                            </div>
+                            <span className="text-xs font-semibold text-text-secondary">{conf.label}</span>
+                          </div>
+                          <span className="text-sm font-bold text-text-primary">
+                            <Amount value={amount} />
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-surface-2/20 border border-border-subtle text-xs text-text-muted">
-                  💡 <span className="font-medium text-text-secondary">Tip:</span> Haz clic en cualquier cuenta de la tabla para ver su ficha técnica e historial de movimientos en tiempo real.
+                <div className="p-3.5 rounded-xl bg-surface-2/30 border border-border-subtle text-xs text-text-muted flex items-start gap-2.5">
+                  <span className="text-base shrink-0">💡</span>
+                  <p className="leading-relaxed">
+                    <span className="font-semibold text-text-secondary">Tip:</span> Haz clic en cualquier cuenta de la tabla para ver su ficha técnica e historial de movimientos en tiempo real.
+                  </p>
                 </div>
               </div>
             )}
