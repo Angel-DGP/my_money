@@ -254,19 +254,22 @@ export function DataTable<T>({
             <TableRow>
               {columns.map((col) => {
                 const stickyClass = col.sticky === 'right' 
-                  ? 'sticky right-0 bg-surface z-10 w-[160px] min-w-[160px] max-w-[160px] px-2 shadow-[-4px_0_12px_rgba(0,0,0,0.05)] text-center' 
+                  ? 'sticky right-0 bg-surface z-10 w-[96px] min-w-[96px] max-w-[100px] px-3 shadow-[-4px_0_12px_rgba(0,0,0,0.05)]' 
                   : col.sticky === 'left' 
-                  ? 'sticky left-0 bg-surface z-10 w-[160px] min-w-[160px] max-w-[160px] px-2 shadow-[4px_0_12px_rgba(0,0,0,0.05)]' 
+                  ? 'sticky left-0 bg-surface z-10 w-[120px] min-w-[120px] max-w-[140px] px-3 shadow-[4px_0_12px_rgba(0,0,0,0.05)]' 
                   : '';
                 
                 return (
-                  <TableHead key={col.key} align={col.key === 'actions' ? 'center' : col.align} className={cn(stickyClass, col.className)}>
+                  <TableHead key={col.key} align={col.align} className={cn(stickyClass, col.className)}>
                     {col.sortable ? (
                       <SortableHeader column={col.key} sort={sort} onToggle={toggleSort}>
                         {col.header}
                       </SortableHeader>
                     ) : (
-                      <span className="font-semibold text-text-secondary text-xs uppercase tracking-wider">
+                      <span className={cn(
+                        "font-semibold text-text-secondary text-xs uppercase tracking-wider",
+                        col.align === 'right' && "block text-right"
+                      )}>
                         {col.header}
                       </span>
                     )}
@@ -291,13 +294,13 @@ export function DataTable<T>({
                 >
                   {columns.map((col) => {
                     const stickyClass = col.sticky === 'right' 
-                      ? 'sticky right-0 bg-surface z-10 w-[160px] min-w-[160px] max-w-[160px] px-2 shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover text-center' 
+                      ? 'sticky right-0 bg-surface z-10 w-[96px] min-w-[96px] max-w-[100px] px-3 shadow-[-4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover' 
                       : col.sticky === 'left' 
-                      ? 'sticky left-0 bg-surface z-10 w-[160px] min-w-[160px] max-w-[160px] px-2 shadow-[4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover' 
+                      ? 'sticky left-0 bg-surface z-10 w-[120px] min-w-[120px] max-w-[140px] px-3 shadow-[4px_0_12px_rgba(0,0,0,0.05)] group-hover:bg-surface-hover' 
                       : '';
                       
                     return (
-                      <TableCell key={col.key} align={col.key === 'actions' ? 'center' : col.align} className={cn(stickyClass, col.className)}>
+                      <TableCell key={col.key} align={col.align} className={cn(stickyClass, col.className)}>
                         {col.cell(item)}
                       </TableCell>
                     );
