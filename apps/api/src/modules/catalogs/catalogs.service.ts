@@ -110,21 +110,35 @@ export class CatalogsService {
   }
 
   async createCard(userId: string, data: { institution_id: string; name: string; brand_id: string; type: string; last_four: string; base_interest_rate?: string | null; billing_day?: number | null; payment_day?: number | null }) {
+    const isCredit = data.type === 'CREDIT';
     return this.prisma.card.create({
       data: {
-        ...data,
-        base_interest_rate: data.base_interest_rate ? Number(data.base_interest_rate) : null,
+        institution_id: data.institution_id,
+        name: data.name,
+        brand_id: data.brand_id,
+        type: data.type,
+        last_four: data.last_four,
+        base_interest_rate: isCredit && data.base_interest_rate ? Number(data.base_interest_rate) : null,
+        billing_day: isCredit && data.billing_day ? Number(data.billing_day) : null,
+        payment_day: isCredit && data.payment_day ? Number(data.payment_day) : null,
         user_id: userId,
       },
     });
   }
 
   async updateCard(userId: string, id: string, data: { institution_id?: string; name?: string; brand_id?: string; type?: string; last_four?: string; base_interest_rate?: string | null; billing_day?: number | null; payment_day?: number | null }) {
+    const isCredit = data.type ? data.type === 'CREDIT' : true;
     return this.prisma.card.update({
       where: { id, user_id: userId },
       data: {
-        ...data,
-        base_interest_rate: data.base_interest_rate ? Number(data.base_interest_rate) : null,
+        ...(data.institution_id !== undefined && { institution_id: data.institution_id }),
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.brand_id !== undefined && { brand_id: data.brand_id }),
+        ...(data.type !== undefined && { type: data.type }),
+        ...(data.last_four !== undefined && { last_four: data.last_four }),
+        base_interest_rate: isCredit && data.base_interest_rate ? Number(data.base_interest_rate) : null,
+        billing_day: isCredit && data.billing_day ? Number(data.billing_day) : null,
+        payment_day: isCredit && data.payment_day ? Number(data.payment_day) : null,
       },
     });
   }
@@ -191,11 +205,11 @@ export class CatalogsService {
     });
   }
 
-  async createSubscription(userId: string, data: { category_id: string; card_id?: string; name: string; amount: number; currency?: string; billing_cycle: string; next_billing_date: string; url?: string; duration_months?: number }) {
+  async createSubscription(userId: string, data: { category_id: string; card_id?: string | null; name: string; amount: number; currency?: string; billing_cycle: string; next_billing_date: string; url?: string | null; duration_months?: number }) {
     const subscription = await this.prisma.subscription.create({
       data: {
         category_id: data.category_id,
-        card_id: data.card_id,
+        card_id: data.card_id || null,
         name: data.name,
         amount: data.amount,
         currency: data.currency || 'USD',

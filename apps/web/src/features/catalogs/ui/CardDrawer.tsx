@@ -34,9 +34,9 @@ const cardSchema = z.object({
     .string()
     .length(4, 'Deben ser exactamente 4 dígitos')
     .regex(/^\d+$/, 'Solo números'),
-  base_interest_rate: z.string().optional(),
-  billing_day: z.coerce.number().min(1).max(31).optional().or(z.literal('')),
-  payment_day: z.coerce.number().min(1).max(31).optional().or(z.literal('')),
+  base_interest_rate: z.string().optional().nullable(),
+  billing_day: z.coerce.number().min(1).max(31).optional().nullable().or(z.literal('')),
+  payment_day: z.coerce.number().min(1).max(31).optional().nullable().or(z.literal('')),
 });
 
 export type CardFormData = z.infer<typeof cardSchema>;
@@ -130,11 +130,23 @@ export function CardDrawer({
 
   const onSubmit = async (data: CardFormData) => {
     try {
+      const isCredit = data.type === 'CREDIT';
+      const payload = {
+        name: data.name.trim(),
+        institution_id: data.institution_id,
+        brand_id: data.brand_id,
+        type: data.type,
+        last_four: data.last_four,
+        base_interest_rate: isCredit && data.base_interest_rate ? String(data.base_interest_rate) : null,
+        billing_day: isCredit && data.billing_day ? Number(data.billing_day) : null,
+        payment_day: isCredit && data.payment_day ? Number(data.payment_day) : null,
+      };
+
       if (card?.id) {
-        await updateCard.mutateAsync({ id: card.id, data });
+        await updateCard.mutateAsync({ id: card.id, data: payload });
         toast({ title: 'Tarjeta actualizada', variant: 'success' });
       } else {
-        await createCard.mutateAsync(data);
+        await createCard.mutateAsync(payload);
         toast({ title: 'Tarjeta registrada exitosamente', variant: 'success' });
       }
       onOpenChange(false);

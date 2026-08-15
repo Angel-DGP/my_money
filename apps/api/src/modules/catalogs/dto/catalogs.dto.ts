@@ -1,4 +1,16 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsUUID, IsNumberString, Min, Max, IsDateString } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsUUID,
+  IsNumberString,
+  Min,
+  Max,
+  IsDateString,
+  ValidateIf,
+} from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateInstitutionDto {
   @IsString()
@@ -46,16 +58,22 @@ export class CreateCardDto {
   type!: string;
 
   @IsOptional()
+  @Transform(({ value }) => (value === '' || value === null || value === undefined ? null : String(value)))
+  @ValidateIf((o) => o.type !== 'DEBIT' && o.type !== 'PREPAID' && o.base_interest_rate !== null && o.base_interest_rate !== undefined)
   @IsNumberString()
   base_interest_rate?: string | null;
 
   @IsOptional()
+  @Transform(({ value }) => (value === '' || value === null || value === undefined ? null : Number(value)))
+  @ValidateIf((o) => o.type !== 'DEBIT' && o.type !== 'PREPAID' && o.billing_day !== null && o.billing_day !== undefined)
   @IsNumber()
   @Min(1)
   @Max(31)
   billing_day?: number | null;
 
   @IsOptional()
+  @Transform(({ value }) => (value === '' || value === null || value === undefined ? null : Number(value)))
+  @ValidateIf((o) => o.type !== 'DEBIT' && o.type !== 'PREPAID' && o.payment_day !== null && o.payment_day !== undefined)
   @IsNumber()
   @Min(1)
   @Max(31)
@@ -88,10 +106,12 @@ export class CreateSubscriptionDto {
   next_billing_date!: string;
 
   @IsOptional()
+  @Transform(({ value }) => (value === '' || value === null || value === undefined ? null : value))
   @IsUUID()
-  card_id?: string;
+  card_id?: string | null;
 
   @IsOptional()
+  @Transform(({ value }) => (value === '' || value === null || value === undefined ? null : Number(value)))
   @IsNumber()
   duration_months?: number;
 }
@@ -112,8 +132,9 @@ export class UpdateSubscriptionDto {
   category_id?: string;
 
   @IsOptional()
+  @Transform(({ value }) => (value === '' || value === null || value === undefined ? null : value))
   @IsUUID()
-  card_id?: string;
+  card_id?: string | null;
 
   @IsOptional()
   @IsString()
@@ -140,6 +161,7 @@ export class UpdateSubscriptionDto {
   url?: string;
 
   @IsOptional()
+  @Transform(({ value }) => (value === '' || value === null || value === undefined ? null : Number(value)))
   @IsNumber()
   duration_months?: number;
 }

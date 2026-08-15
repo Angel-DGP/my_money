@@ -25,9 +25,9 @@ const cardSchema = z.object({
     .string()
     .length(4, 'Deben ser exactamente 4 dígitos')
     .regex(/^\d+$/, 'Solo números'),
-  base_interest_rate: z.string().optional(),
-  billing_day: z.coerce.number().min(1).max(31).optional().or(z.literal('')),
-  payment_day: z.coerce.number().min(1).max(31).optional().or(z.literal('')),
+  base_interest_rate: z.string().optional().nullable(),
+  billing_day: z.coerce.number().min(1).max(31).optional().nullable().or(z.literal('')),
+  payment_day: z.coerce.number().min(1).max(31).optional().nullable().or(z.literal('')),
 });
 
 export type CardFormData = z.infer<typeof cardSchema>;
@@ -74,10 +74,25 @@ export function CardForm({
   const institution_id = watch('institution_id');
   const brand_id = watch('brand_id');
 
+  const handleFormSubmit = (data: CardFormData) => {
+    const isCredit = data.type === 'CREDIT';
+    const payload = {
+      name: data.name.trim(),
+      institution_id: data.institution_id,
+      brand_id: data.brand_id,
+      type: data.type,
+      last_four: data.last_four,
+      base_interest_rate: isCredit && data.base_interest_rate ? String(data.base_interest_rate) : null,
+      billing_day: isCredit && data.billing_day ? Number(data.billing_day) : null,
+      payment_day: isCredit && data.payment_day ? Number(data.payment_day) : null,
+    };
+    onSubmit(payload as unknown as CardFormData);
+  };
+
   return (
     <form
       id="cardform-form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(handleFormSubmit)}
       className="max-w-4xl mx-auto space-y-6"
     >
       <Card>
