@@ -15,6 +15,7 @@ import {
 } from '@mymoney/ui';
 import { useCards } from '../api/useCatalogs';
 import { CategorySelect } from '../../categories';
+import { getEcuadorTodayString } from '@shared/utils/date';
 
 const subscriptionSchema = z.object({
   name: z.string().min(2, 'El nombre es requerido'),
@@ -58,7 +59,7 @@ export function SubscriptionForm({
       amount: initialData?.amount || 0,
       category_id: initialData?.category_id || '',
       card_id: initialData?.card_id || '',
-      next_billing_date: initialData?.next_billing_date || '',
+      next_billing_date: initialData?.next_billing_date || getEcuadorTodayString(),
       billing_cycle: initialData?.billing_cycle || 'MONTHLY',
       duration_months: initialData?.duration_months || 12,
     },
@@ -172,7 +173,7 @@ export function SubscriptionForm({
             <div className="space-y-1.5">
               <DatePicker
                 id="sub-date"
-                label="Próxima fecha de cobro"
+                label={Number(watch('duration_months')) === 1 ? 'Fecha de Cobro / Suscripción' : 'Fecha de Inicio / Primer Cobro'}
                 disabled={isView || isLoading}
                 error={errors.next_billing_date?.message}
                 required

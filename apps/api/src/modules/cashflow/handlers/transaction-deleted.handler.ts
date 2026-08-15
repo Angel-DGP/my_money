@@ -12,10 +12,23 @@ export class TransactionDeletedHandler {
   @OnEvent('TransactionDeletedEvent')
   @OnEvent('TransactionDeleted')
   async handleTransactionDeleted(event: TransactionDeletedEvent) {
-    // 1. If transaction was a subscription payment, unmark the latest PAID event back to PENDING
+    // 1. If transaction was a subscription payment, unmark the PAID event in that month back to PENDING
     if (event.subscriptionId && event.subscriptionId !== 'none') {
       try {
-        const paidEvent = await this.prisma.cashflowEvent.findFirst({
+        const txDate = new Date(event.date);
+        const startOfMonth = new Date(Date.UTC(txDate.getUTCFullYear(), txDate.getUTCMonth(), 1, 0, 0, 0, 0));
+        const endOfMonth = new Date(Date.UTC(txDate.getUTCFullYear(), txDate.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+
+        const paidEvent = (await this.prisma.cashflowEvent.findFirst({
+          where: {
+            user_id: event.userId,
+            reference_id: event.subscriptionId,
+            source_type: 'SUBSCRIPTION',
+            status: 'PAID',
+            date: { gte: startOfMonth, lte: endOfMonth },
+          },
+          orderBy: { date: 'desc' },
+        })) || (await this.prisma.cashflowEvent.findFirst({
           where: {
             user_id: event.userId,
             reference_id: event.subscriptionId,
@@ -23,7 +36,7 @@ export class TransactionDeletedHandler {
             status: 'PAID',
           },
           orderBy: { date: 'desc' },
-        });
+        }));
 
         if (paidEvent) {
           await this.prisma.cashflowEvent.update({

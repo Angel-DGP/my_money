@@ -8,6 +8,7 @@ import {
   useSubscriptions,
   useUpdateSubscription,
 } from "../../features/catalogs/api/useCatalogs";
+import { splitDateAndTimeToEC, getEcuadorTodayString } from "@shared/utils/date";
 
 export function EditSubscriptionPage() {
   const { id } = useParams();
@@ -41,11 +42,11 @@ export function EditSubscriptionPage() {
       <PageContainer>
         <PageContainer.Header
           title="Editar Suscripción"
-          description="Cargando..."
+          description="Modifica los detalles de tu servicio recurrente."
         />
         <PageContainer.Body>
-          <div className="flex items-center justify-center p-12 text-text-secondary">
-            Cargando suscripción...
+          <div className="flex items-center justify-center py-12">
+            <span className="text-text-secondary">Cargando suscripción...</span>
           </div>
         </PageContainer.Body>
       </PageContainer>
@@ -57,11 +58,11 @@ export function EditSubscriptionPage() {
       <PageContainer>
         <PageContainer.Header
           title="Editar Suscripción"
-          description="Suscripción no encontrada."
+          description="Modifica los detalles de tu servicio recurrente."
         />
         <PageContainer.Body>
-          <div className="flex flex-col items-center justify-center p-12 text-text-secondary gap-4">
-            <p>La suscripción que intentas editar no existe o fue eliminada.</p>
+          <div className="flex flex-col items-center justify-center py-12 space-y-4">
+            <span className="text-text-secondary">Suscripción no encontrada</span>
             <button
               onClick={handleCancel}
               className="text-primary-500 hover:underline"
@@ -79,9 +80,8 @@ export function EditSubscriptionPage() {
     amount: Number(subscription.amount),
     category_id: subscription.category_id || "",
     next_billing_date: subscription.next_billing_date
-      ? new Date(subscription.next_billing_date).toISOString().split("T")[0] ||
-        ""
-      : "",
+      ? splitDateAndTimeToEC(subscription.next_billing_date).date
+      : getEcuadorTodayString(),
     billing_cycle: subscription.billing_cycle as "MONTHLY" | "YEARLY",
     card_id: subscription.card_id,
   };

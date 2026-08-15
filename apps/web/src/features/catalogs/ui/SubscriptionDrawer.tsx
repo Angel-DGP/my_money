@@ -17,6 +17,7 @@ import {
 import { useCards, useCreateSubscription, useUpdateSubscription } from '../api/useCatalogs';
 import { CategorySelect } from '../../categories';
 import type { SubscriptionDto } from '../../../shared/api/dto/catalogs.dto';
+import { getEcuadorTodayString, splitDateAndTimeToEC } from '@shared/utils/date';
 
 const subscriptionSchema = z.object({
   name: z.string().min(2, 'El nombre es requerido'),
@@ -62,7 +63,7 @@ export function SubscriptionDrawer({
       amount: '' as unknown as number,
       category_id: '',
       card_id: '',
-      next_billing_date: new Date().toISOString().split('T')[0] as string,
+      next_billing_date: getEcuadorTodayString(),
       billing_cycle: 'MONTHLY',
       duration_months: 12,
     },
@@ -72,6 +73,7 @@ export function SubscriptionDrawer({
   const cardIdValue = watch('card_id');
   const categoryIdValue = watch('category_id');
   const amountValue = watch('amount');
+  const durationMonthsValue = watch('duration_months');
 
   useEffect(() => {
     if (open) {
@@ -81,8 +83,8 @@ export function SubscriptionDrawer({
         category_id: subscription?.category_id || '',
         card_id: subscription?.card_id || '',
         next_billing_date: subscription?.next_billing_date
-          ? new Date(subscription.next_billing_date).toISOString().split('T')[0] as string
-          : (new Date().toISOString().split('T')[0] as string),
+          ? splitDateAndTimeToEC(subscription.next_billing_date).date
+          : getEcuadorTodayString(),
         billing_cycle: (subscription?.billing_cycle as 'MONTHLY' | 'YEARLY') || 'MONTHLY',
         duration_months: subscription?.duration_months || 12,
       });
@@ -217,7 +219,7 @@ export function SubscriptionDrawer({
               <div className="space-y-1.5">
                 <DatePicker
                   id="sub-date"
-                  label="Próxima Fecha de Cobro"
+                  label={Number(durationMonthsValue) === 1 ? 'Fecha de Cobro / Suscripción' : 'Fecha de Inicio / Primer Cobro'}
                   disabled={isView || isPending}
                   error={errors.next_billing_date?.message}
                   required

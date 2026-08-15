@@ -3,6 +3,7 @@ import { Drawer, Button, DatePicker, Icon, toast } from '@mymoney/ui';
 import { useAccountsQuery, AccountSelect } from '@entities/account';
 import { usePayCashflowEvent, useUpdateCashflowEventStatus } from '../api/useCashflow';
 import type { CashflowEvent } from '../../../shared/api/services/cashflow';
+import { splitDateAndTimeToEC, getEcuadorTodayString } from '@shared/utils/date';
 
 export interface PayCashflowDrawerProps {
   open: boolean;
@@ -22,13 +23,14 @@ export function PayCashflowDrawer({
   const updateStatus = useUpdateCashflowEventStatus();
 
   const [accountId, setAccountId] = useState<string>('');
-  const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0] || '');
+  const [date, setDate] = useState<string>(getEcuadorTodayString());
 
   useEffect(() => {
     if (open && event) {
       const initialAcc = defaultAccountId || accounts[0]?.id || '';
       setAccountId(initialAcc);
-      setDate(new Date().toISOString().split('T')[0] || '');
+      const { date: eventDate } = splitDateAndTimeToEC(event.date);
+      setDate(eventDate || getEcuadorTodayString());
     }
   }, [open, event, defaultAccountId, accounts]);
 

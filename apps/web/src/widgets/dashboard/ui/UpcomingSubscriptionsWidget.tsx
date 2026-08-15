@@ -1,5 +1,6 @@
 import { Card, Icon } from '@mymoney/ui';
 import { useSubscriptions } from '../../../features/catalogs/api/useCatalogs';
+import { parseSafeDate } from '@shared/utils/date';
 
 export function UpcomingSubscriptionsWidget() {
   const { data: subscriptions = [], isLoading } = useSubscriptions();
@@ -14,7 +15,7 @@ export function UpcomingSubscriptionsWidget() {
     if (!sub.billing_cycle || !targetDateStr) return false;
     
     // Simplistic calculation for Monthly subscriptions for demonstration
-    const startDate = new Date(targetDateStr);
+    const startDate = parseSafeDate(targetDateStr) || new Date(targetDateStr);
     const billingDay = startDate.getDate();
     
     const currentMonthDue = new Date(today.getFullYear(), today.getMonth(), billingDay);

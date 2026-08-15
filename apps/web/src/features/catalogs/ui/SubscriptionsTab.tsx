@@ -12,6 +12,7 @@ import { QueryState } from '../../../shared/ui/QueryState';
 import { SubscriptionDrawer } from './SubscriptionDrawer';
 import { PaySubscriptionDrawer } from './PaySubscriptionDrawer';
 import type { SubscriptionDto } from '../../../shared/api/dto/catalogs.dto';
+import { formatDateEC } from '@shared/utils/date';
 
 const formatCurrency = (value: number, currency: string) => {
   return new Intl.NumberFormat('en-US', {
@@ -101,7 +102,7 @@ export function SubscriptionsTab() {
       key: 'next_billing_date',
       header: 'Próximo Cobro',
       sortable: true,
-      cell: (sub) => new Date(sub.next_billing_date).toLocaleDateString(),
+      cell: (sub) => formatDateEC(sub.next_billing_date),
     },
     {
       key: 'card',

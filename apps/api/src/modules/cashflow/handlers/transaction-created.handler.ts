@@ -38,15 +38,33 @@ export class TransactionCreatedHandler {
       }
     }
 
-    // 2. If transaction has a subscriptionId, sequentially mark the earliest PENDING event as PAID
+    // 2. If transaction has a subscriptionId, mark the PENDING event in the same calendar month as PAID
     if (event.subscriptionId && event.subscriptionId !== 'none') {
       try {
         const txDate = new Date(event.date);
         const startOfMonth = new Date(Date.UTC(txDate.getUTCFullYear(), txDate.getUTCMonth(), 1, 0, 0, 0, 0));
         const endOfMonth = new Date(Date.UTC(txDate.getUTCFullYear(), txDate.getUTCMonth() + 1, 0, 23, 59, 59, 999));
 
-        // First attempt: PENDING event in the same calendar month
-        let eventToMark = await this.prisma.cashflowEvent.findFirst({
+        // Check if this month's subscription payment is already reconciled as PAID
+        const alreadyPaidInMonth = await this.prisma.cashflowEvent.findFirst({
+          where: {
+            user_id: event.userId,
+            reference_id: event.subscriptionId,
+            source_type: 'SUBSCRIPTION',
+            status: 'PAID',
+            date: { gte: startOfMonth, lte: endOfMonth },
+          },
+        });
+
+        if (alreadyPaidInMonth) {
+          this.logger.log(
+            `Subscription ${event.subscriptionId} for month ${txDate.toISOString().slice(0, 7)} is already marked as PAID. Skipping duplicate creation.`
+          );
+          return;
+        }
+
+        // If not already paid, check if a PENDING event exists in the same calendar month
+        const pendingEventInMonth = await this.prisma.cashflowEvent.findFirst({
           where: {
             user_id: event.userId,
             reference_id: event.subscriptionId,
@@ -57,30 +75,17 @@ export class TransactionCreatedHandler {
           orderBy: { date: 'asc' },
         });
 
-        // Second attempt: If already paid for this month, find earliest upcoming/pending month
-        if (!eventToMark) {
-          eventToMark = await this.prisma.cashflowEvent.findFirst({
-            where: {
-              user_id: event.userId,
-              reference_id: event.subscriptionId,
-              source_type: 'SUBSCRIPTION',
-              status: 'PENDING',
-            },
-            orderBy: { date: 'asc' },
-          });
-        }
-
-        if (eventToMark) {
+        if (pendingEventInMonth) {
           await this.prisma.cashflowEvent.update({
-            where: { id: eventToMark.id },
+            where: { id: pendingEventInMonth.id },
             data: {
               status: 'PAID',
               account_id: event.accountId,
             },
           });
-          this.logger.log(`Marked subscription event ${eventToMark.id} (${eventToMark.date.toISOString()}) as PAID`);
+          this.logger.log(`Marked subscription event ${pendingEventInMonth.id} (${pendingEventInMonth.date.toISOString()}) as PAID`);
         } else {
-          // Fallback: Create a new PAID event if no pending projection exists
+          // Fallback: Create a new PAID event only if no event exists in this month
           const sub = await this.prisma.subscription.findUnique({
             where: { id: event.subscriptionId },
           });

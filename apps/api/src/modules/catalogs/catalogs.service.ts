@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 import { CreateProductServiceDto, UpdateSubscriptionDto } from './dto/catalogs.dto';
+import { parseTransactionDate } from '../../common/utils/date.util';
 
 @Injectable()
 export class CatalogsService {
@@ -214,7 +215,7 @@ export class CatalogsService {
         amount: data.amount,
         currency: data.currency || 'USD',
         billing_cycle: data.billing_cycle,
-        next_billing_date: new Date(data.next_billing_date),
+        next_billing_date: parseTransactionDate(data.next_billing_date),
         url: data.url,
         user_id: userId,
       },
@@ -222,7 +223,7 @@ export class CatalogsService {
 
     const months = data.duration_months && data.duration_months > 0 ? data.duration_months : 12;
     const eventsToCreate = [];
-    const dateParts = data.next_billing_date.split('-').map(Number);
+    const dateParts = data.next_billing_date.split('T')[0].split('-').map(Number);
     const yearStr = dateParts[0] || new Date().getFullYear();
     const monthStr = dateParts[1] || (new Date().getMonth() + 1);
     const dayStr = dateParts[2] || new Date().getDate();
@@ -234,7 +235,8 @@ export class CatalogsService {
         y = yearStr + i;
         m = monthStr - 1;
       }
-      const eventDate = new Date(Date.UTC(y, m, dayStr, 12, 0, 0));
+      // 17:00 UTC = 12:00 PM in Ecuador (UTC-5)
+      const eventDate = new Date(Date.UTC(y, m, dayStr, 17, 0, 0));
 
       eventsToCreate.push({
         user_id: userId,
@@ -276,7 +278,7 @@ export class CatalogsService {
     if (data.amount !== undefined) updateData.amount = data.amount;
     if (data.currency !== undefined) updateData.currency = data.currency;
     if (data.billing_cycle !== undefined) updateData.billing_cycle = data.billing_cycle;
-    if (data.next_billing_date !== undefined) updateData.next_billing_date = new Date(data.next_billing_date);
+    if (data.next_billing_date !== undefined) updateData.next_billing_date = parseTransactionDate(data.next_billing_date);
     if (data.url !== undefined) updateData.url = data.url;
 
     const subscription = await this.prisma.subscription.update({
