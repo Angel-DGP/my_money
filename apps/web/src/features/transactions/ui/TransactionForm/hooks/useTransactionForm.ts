@@ -7,6 +7,11 @@ import type { Transaction, CreateTransactionDto, UpdateTransactionDto, CreateTra
 import { useCreateTransaction, useCreateTransfer, useUpdateTransaction, useDeleteTransaction, useTransferPairQuery } from '@entities/transaction';
 import { useEffect } from 'react';
 
+import {
+  splitDateAndTimeToEC,
+  combineDateAndTimeToECISO,
+} from '@shared/utils/date';
+
 export function useTransactionForm(initialData?: Transaction) {
   const navigate = useNavigate();
   const createTransaction = useCreateTransaction();
@@ -16,14 +21,18 @@ export function useTransactionForm(initialData?: Transaction) {
 
   const isEdit = !!initialData;
   const transferPairId = initialData?.transfer_pair_id;
-  const { data: transferPair } = useTransferPairQuery(transferPairId);  const form = useForm<TransactionFormData>({
+  const { data: transferPair } = useTransferPairQuery(transferPairId);
+  const { date: initialDate, time: initialTime } = splitDateAndTimeToEC(initialData?.date);
+
+  const form = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       type: (initialData?.type as 'INCOME' | 'EXPENSE' | 'TRANSFER') || 'EXPENSE',
       amount: initialData ? parseFloat(initialData.amount.value) : ('' as unknown as number),
       description: initialData?.description || '',
       note: !initialData?.is_third_party ? (initialData?.third_party_note || '') : '',
-      date: initialData?.date ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      date: initialDate,
+      time: initialTime,
       category_id: initialData?.category_id || (initialData ? 'none' : ''),
       account_id: initialData?.account_id || '',
       from_account_id: '',
@@ -65,13 +74,15 @@ export function useTransactionForm(initialData?: Transaction) {
 
   const onSubmit = async (data: TransactionFormData) => {
     try {
+      const isoDate = combineDateAndTimeToECISO(data.date, data.time);
+
       if (isEdit) {
         await updateTransaction.mutateAsync({
           id: initialData!.id,
           data: {
             amount: data.amount.toString(),
             description: data.description,
-            date: data.date,
+            date: isoDate,
             category_id: data.category_id === 'none' ? null : (data.category_id || null),
             is_third_party: data.is_third_party || false,
             third_party_owner: data.is_third_party ? (data.third_party_owner || null) : null,
@@ -87,7 +98,7 @@ export function useTransactionForm(initialData?: Transaction) {
           await createTransfer.mutateAsync({
             amount: data.amount.toString(),
             description: data.description,
-            date: data.date,
+            date: isoDate,
             from_account_id: data.from_account_id!,
             to_account_id: data.to_account_id!,
           } as CreateTransferDto);
@@ -96,7 +107,7 @@ export function useTransactionForm(initialData?: Transaction) {
             type: data.type as 'INCOME' | 'EXPENSE',
             amount: data.amount.toString(),
             description: data.description,
-            date: data.date,
+            date: isoDate,
             account_id: data.account_id!,
             ...(data.category_id && data.category_id !== 'none' ? { category_id: data.category_id } : {}),
             is_third_party: data.is_third_party || false,

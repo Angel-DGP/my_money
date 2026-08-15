@@ -12,6 +12,8 @@ import { IncompatibleCategoryException } from '../../domain/exceptions/transacti
 import { BalanceDelta } from '@mymoney/shared';
 
 
+import { parseTransactionDate } from '../../../../common/utils/date.util';
+
 @Injectable()
 export class CreateTransactionUseCase {
   constructor(
@@ -45,7 +47,7 @@ export class CreateTransactionUseCase {
     }
 
     const amount = Money.of(dto.amount, account.currency);
-    const date = new Date(dto.date);
+    const date = parseTransactionDate(dto.date);
 
     const transaction = Transaction.create({
       userId,

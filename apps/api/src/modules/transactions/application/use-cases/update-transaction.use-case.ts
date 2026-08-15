@@ -10,6 +10,8 @@ import { ICategoryRepository, CATEGORY_REPOSITORY } from '../../../categories/do
 
 import { IncompatibleCategoryException, CannotEditTransactionTypeException } from '../../domain/exceptions/transaction.exceptions';
 
+import { parseTransactionDate } from '../../../../common/utils/date.util';
+
 @Injectable()
 export class UpdateTransactionUseCase {
   constructor(
@@ -69,7 +71,7 @@ export class UpdateTransactionUseCase {
     }
 
     if (dto.date) {
-      transaction.updateDate(new Date(dto.date), userId);
+      transaction.updateDate(parseTransactionDate(dto.date), userId);
     }
 
     if (dto.category_id !== undefined) {

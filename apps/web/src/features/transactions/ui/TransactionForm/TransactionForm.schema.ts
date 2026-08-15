@@ -6,6 +6,7 @@ export const transactionSchema = z.object({
   description: z.string().min(3, 'La descripción es requerida'),
   note: z.string().optional(),
   date: z.string(),
+  time: z.string().optional(),
   // For Income/Expense
   account_id: z.string().optional(),
   category_id: z.string().optional(),

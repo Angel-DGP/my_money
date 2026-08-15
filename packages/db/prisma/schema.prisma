@@ -123,7 +123,7 @@ model Transaction {
   currency         String    @db.Char(3)
   description      String?   @db.VarChar(500)
   notes            String?
-  date             DateTime  @db.Date
+  date             DateTime  @db.Timestamptz
   transfer_pair_id String?   @db.Uuid
   is_recurring     Boolean   @default(false)
   payment_method   String?   // CASH, CARD, TRANSFER, APP

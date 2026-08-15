@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, IsNumberString, Matches, IsBoolean, ValidateNested, IsNumber } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, IsNumberString, IsBoolean, ValidateNested, IsNumber, IsDateString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { TransactionType } from '../../domain/transaction-type.enum';
 
@@ -33,8 +33,7 @@ export class CreateTransactionDto {
   @IsNotEmpty()
   amount!: string;
 
-  @IsString()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date must be in YYYY-MM-DD format' })
+  @IsDateString()
   @IsNotEmpty()
   date!: string;
 
@@ -85,8 +84,7 @@ export class UpdateTransactionDto {
   @IsOptional()
   amount?: string;
 
-  @IsString()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/, { message: 'Date must be in YYYY-MM-DD format' })
+  @IsDateString()
   @IsOptional()
   date?: string;
 

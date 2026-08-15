@@ -19,6 +19,13 @@ import { CategorySelect } from '../../categories';
 import { useCards, useProductServices } from '../../catalogs/api/useCatalogs';
 import type { CardDto } from '../../../shared/api/dto/catalogs.dto';
 import {
+  getEcuadorTodayString,
+  getEcuadorCurrentTimeString,
+  splitDateAndTimeToEC,
+  combineDateAndTimeToECISO,
+  formatLongDateTimeEC,
+} from '@shared/utils/date';
+import {
   Drawer,
   Button,
   Input,
@@ -80,7 +87,8 @@ export function TransactionDrawer({
       amount: '' as unknown as number,
       description: '',
       note: '',
-      date: new Date().toISOString().split('T')[0],
+      date: getEcuadorTodayString(),
+      time: getEcuadorCurrentTimeString(),
       category_id: 'none',
       account_id: '',
       from_account_id: '',
@@ -111,12 +119,15 @@ export function TransactionDrawer({
       setShowThirdParty(hasTP);
       setShowAdvanced(!!(transaction.card_id || transaction.subscription_id || transaction.product_id || transaction.payment_method));
 
+      const { date: txDate, time: txTime } = splitDateAndTimeToEC(transaction.date);
+
       reset({
         type: (transaction.type as 'EXPENSE' | 'INCOME' | 'TRANSFER') || 'EXPENSE',
         amount: parseFloat(transaction.amount?.value || '0'),
         description: transaction.description || '',
         note: !transaction.is_third_party ? (transaction.third_party_note || '') : '',
-        date: transaction.date ? new Date(transaction.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        date: txDate,
+        time: txTime,
         category_id: transaction.category_id || 'none',
         account_id: transaction.account_id || '',
         from_account_id: '',
@@ -143,7 +154,8 @@ export function TransactionDrawer({
         amount: '' as unknown as number,
         description: '',
         note: '',
-        date: new Date().toISOString().split('T')[0],
+        date: getEcuadorTodayString(),
+        time: getEcuadorCurrentTimeString(),
         category_id: 'none',
         account_id: defaultAccountId || accounts?.[0]?.id || '',
         from_account_id: defaultAccountId || accounts?.[0]?.id || '',
@@ -192,13 +204,15 @@ export function TransactionDrawer({
         }
       }
 
+      const isoDate = combineDateAndTimeToECISO(data.date, data.time);
+
       if (isEdit && transaction) {
         await updateTransaction.mutateAsync({
           id: transaction.id,
           data: {
             amount: data.amount.toString(),
             description: data.description,
-            date: data.date,
+            date: isoDate,
             category_id: data.category_id === 'none' ? null : (data.category_id || null),
             is_third_party: data.is_third_party || false,
             third_party_owner: data.is_third_party ? (data.third_party_owner || null) : null,
@@ -215,7 +229,7 @@ export function TransactionDrawer({
           await createTransfer.mutateAsync({
             amount: data.amount.toString(),
             description: data.description,
-            date: data.date,
+            date: isoDate,
             from_account_id: data.from_account_id!,
             to_account_id: data.to_account_id!,
           } as CreateTransferDto);
@@ -225,7 +239,7 @@ export function TransactionDrawer({
             type: data.type as 'INCOME' | 'EXPENSE',
             amount: data.amount.toString(),
             description: data.description,
-            date: data.date,
+            date: isoDate,
             account_id: data.account_id!,
             ...(data.category_id && data.category_id !== 'none' ? { category_id: data.category_id } : {}),
             is_third_party: data.is_third_party || false,
@@ -434,7 +448,7 @@ export function TransactionDrawer({
                   </p>
 
                   <p className="text-xs text-text-muted">
-                    {new Date(transaction.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    {formatLongDateTimeEC(transaction.date)}
                   </p>
                 </div>
 
@@ -629,7 +643,7 @@ export function TransactionDrawer({
                   </div>
                 )}
 
-                {/* Fecha y Descripción */}
+                {/* Fecha y Hora */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <div className="h-5 flex items-center">
@@ -647,17 +661,32 @@ export function TransactionDrawer({
 
                   <div className="space-y-1.5">
                     <div className="h-5 flex items-center">
-                      <Label htmlFor="drawer-tx-desc" required>Descripción</Label>
+                      <Label htmlFor="drawer-tx-time" required>Hora</Label>
                     </div>
                     <Input
-                      id="drawer-tx-desc"
-                      placeholder="Ej: Supermercado, Salario quincena..."
+                      id="drawer-tx-time"
+                      type="time"
                       disabled={isPending}
-                      error={errors.description?.message as string}
+                      error={errors.time?.message as string}
                       required
-                      {...register('description')}
+                      {...register('time')}
                     />
                   </div>
+                </div>
+
+                {/* Descripción */}
+                <div className="space-y-1.5">
+                  <div className="h-5 flex items-center">
+                    <Label htmlFor="drawer-tx-desc" required>Descripción</Label>
+                  </div>
+                  <Input
+                    id="drawer-tx-desc"
+                    placeholder="Ej: Supermercado, Salario quincena..."
+                    disabled={isPending}
+                    error={errors.description?.message as string}
+                    required
+                    {...register('description')}
+                  />
                 </div>
 
                 {/* 4. Opciones Avanzadas / Diferidos / Terceros */}

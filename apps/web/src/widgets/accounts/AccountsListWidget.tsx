@@ -7,6 +7,7 @@ import { TransactionDrawer } from '@features/transactions';
 import { Button, Icon, toast, PageContainer, AlertDialog, Badge, Amount } from '@mymoney/ui';
 import { useState, useMemo } from 'react';
 import { QueryState } from '@shared/ui/QueryState';
+import { formatDateTimeEC } from '@shared/utils/date';
 
 export function AccountsListWidget() {
   const navigate = useNavigate();
@@ -215,7 +216,7 @@ export function AccountsListWidget() {
                             </div>
                             <div>
                               <p className="text-sm font-medium text-text-primary line-clamp-1">{tx.description || 'Sin descripción'}</p>
-                              <p className="text-xs text-text-muted">{new Date(tx.date).toLocaleDateString()}</p>
+                              <p className="text-xs text-text-muted">{formatDateTimeEC(tx.date)}</p>
                             </div>
                           </div>
                           <div className={`text-sm font-bold ${

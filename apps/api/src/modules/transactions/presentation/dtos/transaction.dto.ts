@@ -39,7 +39,7 @@ export class TransactionDto {
         value: entity.amount.value.toString(),
         currency: entity.amount.currency,
       },
-      date: entity.date.toISOString().split('T')[0],
+      date: entity.date.toISOString(),
       description: entity.description,
       is_third_party: entity.isThirdParty,
       third_party_owner: entity.thirdPartyOwner,

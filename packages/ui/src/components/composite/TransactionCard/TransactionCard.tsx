@@ -48,13 +48,14 @@ export const TransactionCard = React.forwardRef<HTMLDivElement, TransactionCardP
   ) => {
     const config = useUIConfig();
     
-    // Format the date based on locale
+    // Format the date based on locale and timezone
     const formattedDate = React.useMemo(() => {
       return new Intl.DateTimeFormat(config.locale, {
         dateStyle: 'medium',
         timeStyle: 'short',
+        timeZone: config.timeZone || 'America/Guayaquil',
       }).format(date);
-    }, [date, config.locale]);
+    }, [date, config.locale, config.timeZone]);
 
     // Icon background color based on variant
     const iconBgClass = {

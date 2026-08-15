@@ -10,6 +10,8 @@ import { TransactionDto } from '../../presentation/dtos/transaction.dto';
 import { IAccountRepository, ACCOUNT_REPOSITORY } from '../../../accounts/domain/interfaces/account.repository.interface';
 import { TransactionType } from '../../domain/transaction-type.enum';
 
+import { parseTransactionDate } from '../../../../common/utils/date.util';
+
 @Injectable()
 export class CreateTransferUseCase {
   constructor(
@@ -38,7 +40,7 @@ export class CreateTransferUseCase {
     }
 
     const amount = Money.of(dto.amount, fromAccount.currency);
-    const date = new Date(dto.date);
+    const date = parseTransactionDate(dto.date);
     const transferPairId = randomUUID();
 
     const fromTransaction = Transaction.create({

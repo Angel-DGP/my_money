@@ -1,5 +1,6 @@
 import { Badge, Icon, type IconName, Amount, DataTable, type ColumnDef } from '@mymoney/ui';
 import type { Transaction } from '@entities/transaction';
+import { formatDateEC, formatTimeEC } from '@shared/utils/date';
 
 interface TransactionsTableProps {
   transactions: Transaction[];
@@ -89,10 +90,15 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
     },
     {
       key: 'date',
-      header: 'Fecha',
+      header: 'Fecha y Hora',
       sortable: true,
       className: 'text-sm text-text-secondary',
-      cell: (t) => new Date(t.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
+      cell: (t) => (
+        <div className="flex flex-col">
+          <span className="font-medium text-text-primary text-xs">{formatDateEC(t.date)}</span>
+          <span className="text-[11px] text-text-muted">{formatTimeEC(t.date)}</span>
+        </div>
+      ),
     },
     {
       key: 'amount.value',

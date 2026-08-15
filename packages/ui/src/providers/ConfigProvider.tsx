@@ -3,11 +3,13 @@ import * as React from 'react';
 export interface UIConfig {
   locale: string;
   currency: string;
+  timeZone?: string;
 }
 
 const defaultConfig: UIConfig = {
-  locale: 'en-US',
+  locale: 'es-EC',
   currency: 'USD',
+  timeZone: 'America/Guayaquil',
 };
 
 const UIConfigContext = React.createContext<UIConfig>(defaultConfig);

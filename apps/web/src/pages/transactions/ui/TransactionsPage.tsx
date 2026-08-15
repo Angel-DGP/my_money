@@ -2,6 +2,7 @@ import { useTransactionsQuery, useDeleteTransaction, type Transaction } from '@e
 import { useAccountsQuery } from '@entities/account';
 import { useCategoriesQuery } from '@entities/category';
 import { TransactionsTable, TransactionDrawer } from '@features/transactions';
+import { CategorySelect } from '@features/categories';
 import { Button, Icon, PageContainer, Text, AlertDialog, Select, Badge } from '@mymoney/ui';
 import { useSearchParams } from 'react-router-dom';
 import { useState, useMemo } from 'react';
@@ -145,19 +146,16 @@ export function TransactionsPage() {
             </div>
 
             <div>
-              <Select
+              <CategorySelect
                 id="filter-category"
                 label="Categoría"
-                value={categoryIdParam || 'all'}
-                onChange={(e) => handleCategoryChange(e.target.value)}
-              >
-                <option value="all">Todas las categorías</option>
-                {categories?.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </Select>
+                value={categoryIdParam || 'none'}
+                onChange={(val) => handleCategoryChange(val === 'none' ? 'all' : val)}
+                allowNone
+                noneLabel="Todas las categorías"
+                placeholder="Todas las categorías"
+                filterType={typeParam === 'INCOME' || typeParam === 'EXPENSE' ? typeParam : 'ALL'}
+              />
             </div>
           </div>
 
@@ -177,7 +175,9 @@ export function TransactionsPage() {
                 )}
                 {categoryIdParam && categories && (
                   <Badge variant="neutral" size="sm">
-                    Categoría: {categories.find(c => c.id === categoryIdParam)?.name || 'Seleccionada'}
+                    Categoría: {
+                      categories.flatMap(c => [c, ...(c.subcategories || [])]).find(c => c.id === categoryIdParam)?.name || 'Seleccionada'
+                    }
                   </Badge>
                 )}
               </div>

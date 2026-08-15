@@ -96,7 +96,7 @@ export function TransactionFormFields({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-          <div className="col-span-12 md:col-span-4 space-y-2">
+          <div className="col-span-12 md:col-span-3 space-y-2">
             <NumberInput
               id="amount"
               label="Monto"
@@ -112,7 +112,7 @@ export function TransactionFormFields({
             />
           </div>
 
-          <div className="col-span-12 md:col-span-4 space-y-2">
+          <div className="col-span-12 md:col-span-3 space-y-2">
             <DatePicker
               id="date"
               label="Fecha"
@@ -121,6 +121,18 @@ export function TransactionFormFields({
               error={errors.date?.message as string}
               value={watch("date")}
               onChange={(d) => setValue("date", d, { shouldValidate: true })}
+            />
+          </div>
+
+          <div className="col-span-12 md:col-span-2 space-y-2">
+            <Input
+              id="time"
+              type="time"
+              label="Hora"
+              required
+              disabled={isView}
+              error={errors.time?.message as string}
+              {...register("time")}
             />
           </div>
 
