@@ -154,6 +154,7 @@ export function TransactionsPage() {
                 allowNone
                 noneLabel="Todas las categorías"
                 placeholder="Todas las categorías"
+                showTransferOption={typeParam === 'all' || typeParam === 'TRANSFER' || !typeParam}
                 filterType={typeParam === 'INCOME' || typeParam === 'EXPENSE' ? typeParam : 'ALL'}
               />
             </div>
@@ -173,10 +174,12 @@ export function TransactionsPage() {
                     Tipo: {typeParam === 'INCOME' ? 'Ingreso' : typeParam === 'EXPENSE' ? 'Gasto' : 'Transferencia'}
                   </Badge>
                 )}
-                {categoryIdParam && categories && (
+                {categoryIdParam && (
                   <Badge variant="neutral" size="sm">
                     Categoría: {
-                      categories.flatMap(c => [c, ...(c.subcategories || [])]).find(c => c.id === categoryIdParam)?.name || 'Seleccionada'
+                      categoryIdParam === 'SYSTEM_TRANSFER'
+                        ? 'Transferencia entre cuentas'
+                        : (categories?.flatMap(c => [c, ...(c.subcategories || [])]).find(c => c.id === categoryIdParam)?.name || 'Seleccionada')
                     }
                   </Badge>
                 )}

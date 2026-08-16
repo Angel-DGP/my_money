@@ -17,6 +17,7 @@ export interface CategorySelectProps {
   noneLabel?: string | undefined;
   className?: string | undefined;
   excludeId?: string | undefined;
+  showTransferOption?: boolean | undefined;
 }
 
 interface FlatCategoryOption {
@@ -44,6 +45,7 @@ export function CategorySelect({
   noneLabel = 'Sin categoría',
   className = '',
   excludeId,
+  showTransferOption = false,
 }: CategorySelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,6 +58,17 @@ export function CategorySelect({
   const flatOptions = useMemo(() => {
     if (!Array.isArray(categories)) return [];
     const list: FlatCategoryOption[] = [];
+
+    if (showTransferOption) {
+      list.push({
+        id: 'SYSTEM_TRANSFER',
+        name: 'Transferencia entre cuentas',
+        type: 'EXPENSE',
+        color: '#3b82f6',
+        icon: 'arrow-left-right',
+        isChild: false,
+      });
+    }
 
     categories.forEach((cat) => {
       if (excludeId && cat.id === excludeId) return;
@@ -89,7 +102,7 @@ export function CategorySelect({
     });
 
     return list;
-  }, [categories, filterType, excludeId]);
+  }, [categories, filterType, excludeId, showTransferOption]);
 
   // Selected item
   const selectedItem = useMemo(() => {

@@ -88,26 +88,47 @@ export class PrismaTransactionRepository implements ITransactionRepository {
       deleted_at: null,
     };
 
-    if (filters.category_id) {
-      const targetId = filters.category_id as string;
-      const allCategoryIds = [targetId];
-      let queue = [targetId];
-      while (queue.length > 0) {
-        const children = await this.prisma.category.findMany({
-          where: {
-            parent_id: { in: queue },
-            deleted_at: null,
-          },
-          select: { id: true },
-        });
-        if (children.length === 0) break;
-        const newIds = children.map(c => c.id);
-        allCategoryIds.push(...newIds);
-        queue = newIds;
-      }
-      where.category_id = { in: allCategoryIds };
+    if (filters.account_id) {
+      where.account_id = filters.account_id as string;
     }
-    if (filters.type) where.type = filters.type as string;
+
+    if (filters.category_id) {
+      if (filters.category_id === 'SYSTEM_TRANSFER' || filters.category_id === 'transfer') {
+        where.transfer_pair_id = { not: null };
+      } else {
+        const targetId = filters.category_id as string;
+        const allCategoryIds = [targetId];
+        let queue = [targetId];
+        while (queue.length > 0) {
+          const children = await this.prisma.category.findMany({
+            where: {
+              parent_id: { in: queue },
+              deleted_at: null,
+            },
+            select: { id: true },
+          });
+          if (children.length === 0) break;
+          const newIds = children.map(c => c.id);
+          allCategoryIds.push(...newIds);
+          queue = newIds;
+        }
+        where.category_id = { in: allCategoryIds };
+      }
+    }
+
+    if (filters.type) {
+      if (filters.type === 'TRANSFER') {
+        where.transfer_pair_id = { not: null };
+      } else if (filters.type === 'INCOME') {
+        where.type = 'INCOME';
+        where.transfer_pair_id = null;
+      } else if (filters.type === 'EXPENSE') {
+        where.type = 'EXPENSE';
+        where.transfer_pair_id = null;
+      } else {
+        where.type = filters.type as string;
+      }
+    }
     
     // date ranges
     if (filters.start_date || filters.end_date) {

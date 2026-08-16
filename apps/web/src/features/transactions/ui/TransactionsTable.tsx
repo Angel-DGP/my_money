@@ -21,21 +21,33 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
     {
       key: 'type',
       header: 'Tipo',
-      cell: (t) => (
-        t.type === 'INCOME' ? (
-          <Badge variant="success" className="gap-1 px-2 py-0.5">
-            <Icon name="arrow-down-left" size="xs" /> Ingreso
-          </Badge>
-        ) : t.type === 'EXPENSE' ? (
+      cell: (t) => {
+        if (t.transfer_pair_id) {
+          return t.type === 'INCOME' ? (
+            <Badge variant="neutral" className="gap-1 px-2 py-0.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 font-medium">
+              <Icon name="arrow-left-right" size="xs" /> Transferencia (Entrada)
+            </Badge>
+          ) : (
+            <Badge variant="neutral" className="gap-1 px-2 py-0.5 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 font-medium">
+              <Icon name="arrow-left-right" size="xs" /> Transferencia (Salida)
+            </Badge>
+          );
+        }
+
+        if (t.type === 'INCOME') {
+          return (
+            <Badge variant="success" className="gap-1 px-2 py-0.5">
+              <Icon name="arrow-down-left" size="xs" /> Ingreso
+            </Badge>
+          );
+        }
+
+        return (
           <Badge variant="error" className="gap-1 px-2 py-0.5 bg-error-50 text-error-700 dark:bg-error-500/10 dark:text-error-400">
             <Icon name="arrow-up-right" size="xs" /> Gasto
           </Badge>
-        ) : (
-          <Badge variant="neutral" className="gap-1 px-2 py-0.5">
-            <Icon name="arrow-left-right" size="xs" /> Transferencia
-          </Badge>
-        )
-      ),
+        );
+      },
     },
     {
       key: 'description',
@@ -73,20 +85,32 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
     {
       key: 'category',
       header: 'Categoría',
-      cell: (t) => (
-        t.category ? (
-          <Badge variant="neutral" className="gap-1.5 font-medium">
-            <span
-              className="w-2 h-2 rounded-full shrink-0"
-              style={{ backgroundColor: t.category.color || '#8b5cf6' }}
-            />
-            {t.category.icon && <Icon name={t.category.icon as IconName} size="xs" className="text-text-muted" />}
-            <span>{t.category.name}</span>
-          </Badge>
-        ) : (
-          <span className="text-text-muted text-sm">---</span>
-        )
-      ),
+      cell: (t) => {
+        if (t.category) {
+          return (
+            <Badge variant="neutral" className="gap-1.5 font-medium">
+              <span
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{ backgroundColor: t.category.color || '#8b5cf6' }}
+              />
+              {t.category.icon && <Icon name={t.category.icon as IconName} size="xs" className="text-text-muted" />}
+              <span>{t.category.name}</span>
+            </Badge>
+          );
+        }
+
+        if (t.transfer_pair_id) {
+          return (
+            <Badge variant="neutral" className="gap-1.5 font-medium bg-surface-2 text-text-secondary border border-border-subtle">
+              <span className="w-2 h-2 rounded-full shrink-0 bg-blue-500" />
+              <Icon name="repeat" size="xs" className="text-blue-500" />
+              <span>Transferencia</span>
+            </Badge>
+          );
+        }
+
+        return <span className="text-text-muted text-sm">---</span>;
+      },
     },
     {
       key: 'date',
@@ -109,7 +133,11 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
         <Amount 
           value={parseFloat(t.amount.value)} 
           currency={t.amount.currency}
-          className={t.type === 'INCOME' ? 'text-success-600 dark:text-success-500' : 'text-text-primary'}
+          className={
+            t.type === 'INCOME'
+              ? 'text-success-600 dark:text-success-500 font-medium'
+              : 'text-text-primary font-medium'
+          }
         />
       ),
     },
@@ -157,10 +185,16 @@ export function TransactionsTable({ transactions, onView, onEdit, onDelete }: Tr
       data={transactions}
       columns={columns}
       pageSize={10}
-      searchFields={['description', (t) => t.category?.name || '']}
+      searchFields={['description', (t) => (t.transfer_pair_id ? 'Transferencia' : (t.category?.name || ''))]}
       searchPlaceholder="Buscar por descripción o categoría..."
       filters={FILTERS}
-      filterField={(t, f) => t.type === f}
+      filterField={(t, f) => {
+        if (!f || f === 'all') return true;
+        if (f === 'TRANSFER') return Boolean(t.transfer_pair_id);
+        if (f === 'INCOME') return t.type === 'INCOME' && !t.transfer_pair_id;
+        if (f === 'EXPENSE') return t.type === 'EXPENSE' && !t.transfer_pair_id;
+        return true;
+      }}
       defaultSort={{ column: 'date', direction: 'desc' }}
       onRowClick={onView}
       emptyMessage="No se encontraron transacciones"
