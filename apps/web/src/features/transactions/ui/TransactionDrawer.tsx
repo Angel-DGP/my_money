@@ -317,6 +317,31 @@ export function TransactionDrawer({
     }
   };
 
+  const handleFromAccountChange = (accId: string) => {
+    const currentTo = watch('to_account_id');
+    if (accId && accId === currentTo) {
+      const currentFrom = watch('from_account_id');
+      setValue('to_account_id', currentFrom, { shouldValidate: true });
+    }
+    setValue('from_account_id', accId, { shouldValidate: true });
+  };
+
+  const handleToAccountChange = (accId: string) => {
+    const currentFrom = watch('from_account_id');
+    if (accId && accId === currentFrom) {
+      const currentTo = watch('to_account_id');
+      setValue('from_account_id', currentTo, { shouldValidate: true });
+    }
+    setValue('to_account_id', accId, { shouldValidate: true });
+  };
+
+  const handleSwapAccounts = () => {
+    const from = watch('from_account_id');
+    const to = watch('to_account_id');
+    setValue('from_account_id', to, { shouldValidate: true });
+    setValue('to_account_id', from, { shouldValidate: true });
+  };
+
   const handleQuickCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCatName.trim()) return;
@@ -580,28 +605,44 @@ export function TransactionDrawer({
                 {/* 3. Campos según Tipo */}
                 {selectedType === 'TRANSFER' ? (
                   /* ─── TRANSFERENCIA ─────────────────────────────────────────── */
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <AccountSelect
-                      id="drawer-from-acc"
-                      label="Cuenta Origen"
-                      required
-                      disabled={isPending}
-                      error={errors.from_account_id?.message as string}
-                      value={watch('from_account_id') || ''}
-                      onChange={(val) => setValue('from_account_id', val, { shouldValidate: true })}
-                      excludeId={watch('to_account_id')}
-                    />
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                        Cuentas de Transferencia
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleSwapAccounts}
+                        disabled={isPending}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-500/10 hover:bg-primary-500/20 border border-primary-500/20 rounded-lg transition-all active:scale-95 cursor-pointer"
+                        title="Invertir origen y destino"
+                      >
+                        <Icon name="arrow-left-right" size="xs" />
+                        <span>Invertir cuentas</span>
+                      </button>
+                    </div>
 
-                    <AccountSelect
-                      id="drawer-to-acc"
-                      label="Cuenta Destino"
-                      required
-                      disabled={isPending}
-                      error={errors.to_account_id?.message as string}
-                      value={watch('to_account_id') || ''}
-                      onChange={(val) => setValue('to_account_id', val, { shouldValidate: true })}
-                      excludeId={watch('from_account_id')}
-                    />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <AccountSelect
+                        id="drawer-from-acc"
+                        label="Cuenta Origen"
+                        required
+                        disabled={isPending}
+                        error={errors.from_account_id?.message as string}
+                        value={watch('from_account_id') || ''}
+                        onChange={handleFromAccountChange}
+                      />
+
+                      <AccountSelect
+                        id="drawer-to-acc"
+                        label="Cuenta Destino"
+                        required
+                        disabled={isPending}
+                        error={errors.to_account_id?.message as string}
+                        value={watch('to_account_id') || ''}
+                        onChange={handleToAccountChange}
+                      />
+                    </div>
                   </div>
                 ) : (
                   /* ─── GASTO O INGRESO ───────────────────────────────────────── */
