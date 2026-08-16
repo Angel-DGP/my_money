@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,6 +16,7 @@ import {
 } from '@mymoney/ui';
 import { useCards, useCreateSubscription, useUpdateSubscription } from '../api/useCatalogs';
 import { CategorySelect } from '../../categories';
+import { ExtendSubscriptionModal } from './ExtendSubscriptionModal';
 import type { SubscriptionDto } from '../../../shared/api/dto/catalogs.dto';
 import { getEcuadorTodayString, splitDateAndTimeToEC } from '@shared/utils/date';
 
@@ -48,6 +49,7 @@ export function SubscriptionDrawer({
   const createSubscription = useCreateSubscription();
   const updateSubscription = useUpdateSubscription();
   const isEditing = !!subscription && !isView;
+  const [extendModalOpen, setExtendModalOpen] = useState(false);
 
   const {
     register,
@@ -270,7 +272,7 @@ export function SubscriptionDrawer({
             </div>
           </Drawer.Body>
 
-          <Drawer.Footer>
+          <Drawer.Footer className="flex items-center justify-between">
             <Button
               type="button"
               variant="ghost"
@@ -279,6 +281,17 @@ export function SubscriptionDrawer({
             >
               {isView ? 'Cerrar' : 'Cancelar'}
             </Button>
+            {isView && subscription && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setExtendModalOpen(true)}
+                className="text-amber-500 hover:text-amber-600 border-amber-500/30 hover:bg-amber-500/10"
+              >
+                <Icon name="calendar" size="xs" className="mr-1.5" />
+                Reanudar / Extender Meses
+              </Button>
+            )}
             {!isView && (
               <Button
                 type="submit"
@@ -292,6 +305,13 @@ export function SubscriptionDrawer({
             )}
           </Drawer.Footer>
         </form>
+
+        {/* Extend Subscription Modal */}
+        <ExtendSubscriptionModal
+          open={extendModalOpen}
+          onOpenChange={setExtendModalOpen}
+          subscription={subscription || null}
+        />
       </Drawer.Content>
     </Drawer.Root>
   );

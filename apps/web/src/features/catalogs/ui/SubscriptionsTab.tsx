@@ -11,6 +11,7 @@ import {
 import { QueryState } from '../../../shared/ui/QueryState';
 import { SubscriptionDrawer } from './SubscriptionDrawer';
 import { PaySubscriptionDrawer } from './PaySubscriptionDrawer';
+import { ExtendSubscriptionModal } from './ExtendSubscriptionModal';
 import type { SubscriptionDto } from '../../../shared/api/dto/catalogs.dto';
 import { formatDateEC } from '@shared/utils/date';
 
@@ -28,6 +29,7 @@ export function SubscriptionsTab() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [payDrawerOpen, setPayDrawerOpen] = useState(false);
   const [selectedSub, setSelectedSub] = useState<SubscriptionDto | null>(null);
+  const [extendSub, setExtendSub] = useState<SubscriptionDto | null>(null);
   const [isViewMode, setIsViewMode] = useState(false);
   const [subToDelete, setSubToDelete] = useState<SubscriptionDto | null>(null);
 
@@ -126,6 +128,18 @@ export function SubscriptionsTab() {
         <div className="flex items-center justify-end gap-1">
           <button
             type="button"
+            aria-label="Reanudar / Extender proyección"
+            onClick={(e) => {
+              e.stopPropagation();
+              setExtendSub(sub);
+            }}
+            className="p-1.5 text-text-muted hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors"
+            title="Reanudar / Añadir meses en Flujo de Caja"
+          >
+            <Icon name="calendar" size="sm" />
+          </button>
+          <button
+            type="button"
             aria-label="Pagar Cuota"
             disabled={sub.is_completed}
             onClick={(e) => {
@@ -133,7 +147,7 @@ export function SubscriptionsTab() {
               handleOpenPay(sub);
             }}
             className="p-1.5 text-text-muted hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            title={sub.is_completed ? 'Suscripción pagada en su totalidad' : 'Pagar Próximo Mes'}
+            title={sub.is_completed ? 'Suscripción completada / Sin meses pendientes' : 'Pagar Próximo Mes'}
           >
             <Icon name="credit-card" size="sm" />
           </button>
@@ -233,6 +247,13 @@ export function SubscriptionsTab() {
           open={payDrawerOpen}
           onOpenChange={setPayDrawerOpen}
           subscription={selectedSub}
+        />
+
+        {/* Extend Subscription Modal */}
+        <ExtendSubscriptionModal
+          open={!!extendSub}
+          onOpenChange={(open) => !open && setExtendSub(null)}
+          subscription={extendSub}
         />
 
         {/* Delete Dialog */}

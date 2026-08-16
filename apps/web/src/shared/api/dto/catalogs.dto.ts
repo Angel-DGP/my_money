@@ -40,6 +40,12 @@ export interface SubscriptionDto {
   url?: string | null;
   status: string;
   card?: CardDto | null;
+  category?: {
+    id: string;
+    name: string;
+    color?: string;
+    icon?: string;
+  } | null;
   duration_months?: number;
   pending_months?: number;
   is_completed?: boolean;

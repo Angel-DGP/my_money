@@ -165,3 +165,14 @@ export class UpdateSubscriptionDto {
   @IsNumber()
   duration_months?: number;
 }
+
+export class ExtendSubscriptionDto {
+  @IsDateString()
+  @IsNotEmpty()
+  start_date!: string;
+
+  @IsNumber()
+  @Min(1)
+  @Max(36)
+  months!: number;
+}

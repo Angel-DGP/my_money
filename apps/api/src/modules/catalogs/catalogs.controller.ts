@@ -9,6 +9,7 @@ import {
   CreateSubscriptionDto,
   CreateProductServiceDto,
   UpdateSubscriptionDto,
+  ExtendSubscriptionDto,
 } from './dto/catalogs.dto';
 
 
@@ -91,6 +92,15 @@ export class CatalogsController {
   @Post('subscriptions')
   createSubscription(@Req() req: AuthenticatedRequest, @Body() data: CreateSubscriptionDto) {
     return this.catalogsService.createSubscription(req.user.id, data);
+  }
+
+  @Post('subscriptions/:id/extend')
+  extendSubscription(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() data: ExtendSubscriptionDto,
+  ) {
+    return this.catalogsService.extendSubscription(req.user.id, id, data);
   }
 
   @Put('subscriptions/:id')

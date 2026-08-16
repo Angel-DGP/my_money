@@ -73,6 +73,10 @@ export const CatalogsService = {
     const response = await apiClient.post(`/cashflow/subscriptions/${id}/pay`, payload);
     return response.data;
   },
+  async extendSubscription(id: string, data: { start_date: string; months: number }): Promise<SubscriptionDto> {
+    const response = await apiClient.post<SubscriptionDto>(`/catalogs/subscriptions/${id}/extend`, data);
+    return response.data;
+  },
 
   // Product Services
   async getProductServices(): Promise<ProductServiceDto[]> {

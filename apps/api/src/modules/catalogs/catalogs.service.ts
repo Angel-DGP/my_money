@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
-import { CreateProductServiceDto, UpdateSubscriptionDto } from './dto/catalogs.dto';
+import { CreateProductServiceDto, UpdateSubscriptionDto, ExtendSubscriptionDto } from './dto/catalogs.dto';
 import { parseTransactionDate } from '../../common/utils/date.util';
 
 @Injectable()
@@ -344,6 +344,75 @@ export class CatalogsService {
     }
 
     return subscription;
+  }
+
+  async extendSubscription(userId: string, id: string, data: ExtendSubscriptionDto) {
+    const subscription = await this.prisma.subscription.findFirst({
+      where: { id, user_id: userId },
+    });
+    if (!subscription) {
+      throw new NotFoundException('Suscripción no encontrada');
+    }
+
+    const months = data.months && data.months > 0 ? data.months : 1;
+    const dateParts = data.start_date.split('T')[0].split('-').map(Number);
+    const yearStr = dateParts[0] || new Date().getFullYear();
+    const monthStr = dateParts[1] || (new Date().getMonth() + 1);
+    const dayStr = dateParts[2] || new Date().getDate();
+
+    const eventsToCreate = [];
+
+    for (let i = 0; i < months; i++) {
+      let y = yearStr;
+      let m = (monthStr - 1) + i;
+      if (subscription.billing_cycle === 'YEARLY') {
+        y = yearStr + i;
+        m = monthStr - 1;
+      }
+      // 17:00 UTC = 12:00 PM in Ecuador (UTC-5)
+      const eventDate = new Date(Date.UTC(y, m, dayStr, 17, 0, 0));
+      const startOfMonth = new Date(Date.UTC(y, m, 1, 0, 0, 0, 0));
+      const endOfMonth = new Date(Date.UTC(y, m + 1, 0, 23, 59, 59, 999));
+
+      // Check if an event already exists in this calendar month for this subscription
+      const existing = await this.prisma.cashflowEvent.findFirst({
+        where: {
+          user_id: userId,
+          reference_id: subscription.id,
+          source_type: 'SUBSCRIPTION',
+          date: { gte: startOfMonth, lte: endOfMonth },
+        },
+      });
+
+      if (!existing) {
+        eventsToCreate.push({
+          user_id: userId,
+          amount: subscription.amount,
+          type: 'EXPENSE',
+          date: eventDate,
+          source_type: 'SUBSCRIPTION',
+          reference_id: subscription.id,
+          description: `Suscripción: ${subscription.name}`,
+          status: 'PENDING',
+        });
+      }
+    }
+
+    if (eventsToCreate.length > 0) {
+      await this.prisma.cashflowEvent.createMany({ data: eventsToCreate });
+    }
+
+    // Update next_billing_date and status to ACTIVE
+    const updated = await this.prisma.subscription.update({
+      where: { id },
+      data: {
+        next_billing_date: parseTransactionDate(data.start_date),
+        status: 'ACTIVE',
+      },
+      include: { card: true, category: true },
+    });
+
+    return updated;
   }
 
   async deleteSubscription(userId: string, id: string) {

@@ -9,3 +9,5 @@ export * from './SubscriptionsTab';
 export * from './ProductServicesTab';
 export * from './CategoriesTab';
 export * from './CardBrandsList';
+export * from './ExtendSubscriptionModal';
+
