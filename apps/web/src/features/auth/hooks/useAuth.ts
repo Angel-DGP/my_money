@@ -12,7 +12,7 @@ export function useAuth() {
   const loginMutation = useMutation({
     mutationFn: AuthService.login,
     onSuccess: (data) => {
-      setSession(data.token, data.user);
+      setSession(data.token, data.user, data.refreshToken);
       toast({
         title: 'Bienvenido',
         description: `Has iniciado sesión como ${data.user.name}`,
@@ -31,7 +31,7 @@ export function useAuth() {
   const registerMutation = useMutation({
     mutationFn: AuthService.register,
     onSuccess: (data) => {
-      setSession(data.token, data.user);
+      setSession(data.token, data.user, data.refreshToken);
       toast({
         title: 'Registro exitoso',
         description: `Bienvenido a MyMoney, ${data.user.name}`,

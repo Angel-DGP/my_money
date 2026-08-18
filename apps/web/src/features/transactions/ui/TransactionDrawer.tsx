@@ -175,41 +175,13 @@ export function TransactionDrawer({
 
   const onSubmit = async (data: TransactionFormData) => {
     try {
-      // Validar fondos si la cuenta origen no es crédito
-      if (data.type === 'EXPENSE') {
-        const acc = accounts?.find((a) => a.id === data.account_id);
-        if (acc && acc.type !== 'CREDIT') {
-          const avail = parseFloat(acc.current_balance?.value || '0');
-          if (data.amount > avail) {
-            toast({
-              title: 'Saldo insuficiente',
-              description: `La cuenta ${acc.name} solo dispone de $${avail.toFixed(2)} ${acc.currency}.`,
-              variant: 'error',
-            });
-            return;
-          }
-        }
-      } else if (data.type === 'TRANSFER') {
-        const acc = accounts?.find((a) => a.id === data.from_account_id);
-        if (acc && acc.type !== 'CREDIT') {
-          const avail = parseFloat(acc.current_balance?.value || '0');
-          if (data.amount > avail) {
-            toast({
-              title: 'Saldo insuficiente',
-              description: `La cuenta de origen ${acc.name} solo dispone de $${avail.toFixed(2)} ${acc.currency}.`,
-              variant: 'error',
-            });
-            return;
-          }
-        }
-      }
-
       const isoDate = combineDateAndTimeToECISO(data.date, data.time);
 
       if (isEdit && transaction) {
         await updateTransaction.mutateAsync({
           id: transaction.id,
           data: {
+            account_id: data.account_id,
             amount: data.amount.toString(),
             description: data.description,
             date: isoDate,

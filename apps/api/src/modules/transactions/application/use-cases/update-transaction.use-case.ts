@@ -32,40 +32,65 @@ export class UpdateTransactionUseCase {
       throw new NotFoundException('Transaction not found');
     }
 
-    // Load account only if amount changes
-    let account = null;
-    let balanceChangeEvent = null;
+    // Handle account and amount changes
+    let oldAccount = null;
+    let newAccount = null;
+    let singleAccount = null;
+    let oldBalanceEvent = null;
+    let newBalanceEvent = null;
+    let singleBalanceEvent = null;
 
-    if (dto.amount) {
-      account = await this.accountRepository.findById(transaction.accountId, userId);
-      if (!account) throw new NotFoundException('Account not found');
+    const isAccountChanging = dto.account_id && dto.account_id !== transaction.accountId;
 
-      const newAmount = Money.of(dto.amount, account.currency);
+    if (isAccountChanging) {
+      oldAccount = await this.accountRepository.findById(transaction.accountId, userId);
+      if (!oldAccount) throw new NotFoundException('Current account not found');
+
+      newAccount = await this.accountRepository.findById(dto.account_id!, userId);
+      if (!newAccount) throw new NotFoundException('Target account not found');
+
+      const rawAmount = dto.amount !== undefined ? dto.amount : transaction.amount.value.toString();
+      const newAmount = Money.of(rawAmount, newAccount.currency);
+
+      if (transaction.type === 'INCOME') {
+        const revertDelta = BalanceDelta.decrease(transaction.amount);
+        oldBalanceEvent = oldAccount.applyBalanceDelta(revertDelta, 'TRANSACTION_UPDATED');
+
+        const applyDelta = BalanceDelta.increase(newAmount);
+        newBalanceEvent = newAccount.applyBalanceDelta(applyDelta, 'TRANSACTION_UPDATED');
+      } else if (transaction.type === 'EXPENSE') {
+        const revertDelta = BalanceDelta.increase(transaction.amount);
+        oldBalanceEvent = oldAccount.applyBalanceDelta(revertDelta, 'TRANSACTION_UPDATED');
+
+        const applyDelta = BalanceDelta.decrease(newAmount);
+        newBalanceEvent = newAccount.applyBalanceDelta(applyDelta, 'TRANSACTION_UPDATED');
+      } else {
+        throw new CannotEditTransactionTypeException();
+      }
+
+      transaction.updateAccount(dto.account_id!, userId);
+      transaction.updateAmount(newAmount, userId);
+    } else if (dto.amount) {
+      singleAccount = await this.accountRepository.findById(transaction.accountId, userId);
+      if (!singleAccount) throw new NotFoundException('Account not found');
+
+      const newAmount = Money.of(dto.amount, singleAccount.currency);
       const previousAmount = transaction.amount;
       
       if (!newAmount.value.eq(previousAmount.value)) {
-        // Delta = New - Old. 
-        // But wait! If it's an EXPENSE, an increase in amount means we subtract MORE from the account.
-        // If it's an INCOME, an increase in amount means we add MORE to the account.
-        
         let delta: BalanceDelta;
         
         if (transaction.type === 'INCOME') {
-          // If previous was 100, new is 150. Delta = +50.
-          // If previous was 150, new is 100. Delta = -50.
           const diff = newAmount.subtract(previousAmount);
           delta = diff.value.gte(0) ? BalanceDelta.increase(diff) : BalanceDelta.decrease(Money.of(diff.value.abs(), diff.currency));
         } else if (transaction.type === 'EXPENSE') {
-          // If previous was 100 (account -100), new is 150 (account -150). We need to subtract 50.
-          // If previous was 150 (account -150), new is 100 (account -100). We need to add 50.
           const diff = newAmount.subtract(previousAmount);
           delta = diff.value.gte(0) ? BalanceDelta.decrease(diff) : BalanceDelta.increase(Money.of(diff.value.abs(), diff.currency));
         } else {
-          // It's a transfer, which cannot be edited individually. But transaction.updateAmount validates that.
           throw new CannotEditTransactionTypeException(); 
         }
 
-        balanceChangeEvent = account.applyBalanceDelta(delta, 'TRANSACTION_UPDATED');
+        singleBalanceEvent = singleAccount.applyBalanceDelta(delta, 'TRANSACTION_UPDATED');
         transaction.updateAmount(newAmount, userId);
       }
     }
@@ -113,16 +138,16 @@ export class UpdateTransactionUseCase {
 
     await this.unitOfWork.execute(async () => {
       await this.transactionRepository.save(transaction);
-      if (account) {
-        await this.accountRepository.save(account);
-      }
+      if (oldAccount) await this.accountRepository.save(oldAccount);
+      if (newAccount) await this.accountRepository.save(newAccount);
+      if (singleAccount) await this.accountRepository.save(singleAccount);
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     transaction.getDomainEvents().forEach((event: DomainEvent) => this.eventEmitter.emit(event.constructor.name, event));
-    if (balanceChangeEvent) {
-      this.eventEmitter.emit(balanceChangeEvent.constructor.name, balanceChangeEvent);
-    }
+    if (oldBalanceEvent) this.eventEmitter.emit(oldBalanceEvent.constructor.name, oldBalanceEvent);
+    if (newBalanceEvent) this.eventEmitter.emit(newBalanceEvent.constructor.name, newBalanceEvent);
+    if (singleBalanceEvent) this.eventEmitter.emit(singleBalanceEvent.constructor.name, singleBalanceEvent);
     transaction.clearDomainEvents();
 
     return TransactionDto.fromDomain(transaction);

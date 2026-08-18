@@ -78,6 +78,10 @@ export class CreateTransactionDto {
 export class UpdateTransactionDto {
   @IsUUID()
   @IsOptional()
+  account_id?: string;
+
+  @IsUUID()
+  @IsOptional()
   category_id?: string;
 
   @IsNumberString()

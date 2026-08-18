@@ -1,10 +1,11 @@
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { Button, Input, Label, toast, Icon, ThemeToggle, FormLayout } from '@mymoney/ui';
+import { Button, Input, Label, Icon, ThemeToggle, FormLayout } from '@mymoney/ui';
 import { useAuth } from '@features/auth/hooks/useAuth';
 import { useTheme } from '@app/providers/ThemeProvider';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useState } from 'react';
 import { useServerWarmup } from '../../shared/hooks/useServerWarmup';
 import { ServerWakeupNotice } from '../../shared/ui/ServerWakeupNotice';
 
@@ -21,6 +22,7 @@ export const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, setTheme } = useTheme();
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
 
@@ -37,16 +39,28 @@ export const LoginPage = () => {
   });
 
   const onSubmit = (data: LoginFormValues) => {
+    setServerError(null);
     login(
       { email: data.email, password: data.password },
       {
         onSuccess: () => {
-          toast({ title: 'Bienvenido de vuelta', variant: 'success' });
           navigate(from, { replace: true });
         },
-        onError: () => {
-          toast({ title: 'Credenciales inválidas', variant: 'error' });
-        }
+        onError: (err: unknown) => {
+          const axiosErr = err as {
+            code?: string;
+            response?: { data?: { message?: string | string[] } };
+            message?: string;
+          };
+          const rawMsg = axiosErr?.response?.data?.message;
+          const msg = Array.isArray(rawMsg)
+            ? rawMsg.join(', ')
+            : rawMsg ||
+              (axiosErr?.code === 'ECONNABORTED'
+                ? 'El servidor tardó demasiado en responder. Intenta de nuevo.'
+                : 'Credenciales inválidas. Verifica tu correo y contraseña.');
+          setServerError(msg);
+        },
       }
     );
   };
@@ -77,6 +91,16 @@ export const LoginPage = () => {
           </div>
 
           <FormLayout onSubmit={handleSubmit(onSubmit)}>
+            {serverError && (
+              <div
+                role="alert"
+                className="col-span-12 p-3.5 rounded-xl border border-error-500/30 bg-error-500/10 text-error-600 dark:text-error-400 text-xs flex items-start gap-2.5 animate-in fade-in slide-in-from-top-1 duration-200"
+              >
+                <Icon name="alert-circle" size="xs" className="mt-0.5 shrink-0" />
+                <span className="flex-1 font-medium leading-relaxed">{serverError}</span>
+              </div>
+            )}
+
             <div className="col-span-12 space-y-1.5">
               <Label htmlFor="email">Correo Electrónico</Label>
               <Input

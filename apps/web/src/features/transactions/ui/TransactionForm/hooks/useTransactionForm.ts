@@ -80,6 +80,7 @@ export function useTransactionForm(initialData?: Transaction) {
         await updateTransaction.mutateAsync({
           id: initialData!.id,
           data: {
+            account_id: data.account_id,
             amount: data.amount.toString(),
             description: data.description,
             date: isoDate,

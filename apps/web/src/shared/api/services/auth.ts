@@ -1,4 +1,5 @@
 import { apiClient } from '../client';
+import { useSessionStore } from '@entities/session';
 import type { LoginRequestDto, LoginResponseDto, RegisterRequestDto } from '../dto/auth.dto';
 
 export const AuthService = {
@@ -13,11 +14,13 @@ export const AuthService = {
   },
 
   async logout(): Promise<void> {
-    await apiClient.post('/auth/logout');
+    const refreshToken = useSessionStore.getState().refreshToken;
+    await apiClient.post('/auth/logout', { refreshToken });
   },
 
   async refreshToken(): Promise<LoginResponseDto> {
-    const response = await apiClient.post<LoginResponseDto>('/auth/refresh');
+    const refreshToken = useSessionStore.getState().refreshToken;
+    const response = await apiClient.post<LoginResponseDto>('/auth/refresh', { refreshToken });
     return response.data;
   },
 

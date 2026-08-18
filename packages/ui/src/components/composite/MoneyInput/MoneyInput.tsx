@@ -35,15 +35,6 @@ export const MoneyInput = React.forwardRef<HTMLInputElement, MoneyInputProps>(
     const [internalValue, setInternalValue] = React.useState('');
     const [isFocused, setIsFocused] = React.useState(false);
 
-    // Get localized separators
-    const { decimalSeparator, groupSeparator } = React.useMemo(() => {
-      const parts = new Intl.NumberFormat(locale).formatToParts(1111.1);
-      return {
-        decimalSeparator: parts.find((p) => p.type === 'decimal')?.value || '.',
-        groupSeparator: parts.find((p) => p.type === 'group')?.value || ',',
-      };
-    }, [locale]);
-
     // Format a number to string
     const formatNumber = React.useCallback(
       (val: number | null | undefined): string => {
@@ -61,41 +52,41 @@ export const MoneyInput = React.forwardRef<HTMLInputElement, MoneyInputProps>(
       [locale, format, currency, precision]
     );
 
-    // Parse a string to number
+    // Parse a string to number flexibly (handles both '.' and ',' decimals)
     const parseNumber = React.useCallback(
       (text: string): number | null => {
         if (!text.trim()) return null;
 
-        // Strip everything except digits, decimal separator, and minus sign
-        // But first, escape separators for regex
-        const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const dec = escapeRegex(decimalSeparator);
-        
-        let cleanText = text;
-        // Remove group separators completely
-        cleanText = cleanText.split(groupSeparator).join('');
-        
-        // Remove all chars except numbers, the decimal separator, and minus sign
-        const validCharsRegex = new RegExp(`[^0-9\\-${dec}]`, 'g');
-        cleanText = cleanText.replace(validCharsRegex, '');
-        
-        // Replace localized decimal separator with standard '.'
-        cleanText = cleanText.replace(decimalSeparator, '.');
+        let clean = text.trim();
+        const isNegative = clean.startsWith('-');
 
-        const parsed = parseFloat(cleanText);
-        
+        // Remove everything except digits, dots, and commas
+        clean = clean.replace(/[^0-9.,]/g, '');
+        if (!clean) return null;
+
+        // Determine if dot or comma is the decimal separator:
+        const lastDot = clean.lastIndexOf('.');
+        const lastComma = clean.lastIndexOf(',');
+
+        if (lastDot !== -1 && lastComma !== -1) {
+          if (lastDot > lastComma) {
+            // E.g. "1,234.56" -> remove commas
+            clean = clean.replace(/,/g, '');
+          } else {
+            // E.g. "1.234,56" -> remove dots, replace comma with dot
+            clean = clean.replace(/\./g, '').replace(',', '.');
+          }
+        } else if (lastComma !== -1) {
+          // Only comma exists (e.g. "50,5")
+          clean = clean.replace(',', '.');
+        }
+
+        const parsed = parseFloat(clean);
         if (isNaN(parsed)) return null;
-        
-        // If percent, user types "50", it means 50%. But our internal value is 50. 
-        // Wait, if format is percent, and user types 50%, we parse 50.
-        // Actually, if we want `value` to be the raw number, for percent, is value 0.5 or 50?
-        // Let's assume `value` is 50 for 50%. The formatNumber divides by 100.
-        // Wait, Intl.NumberFormat percent expects 0.5 for 50%.
-        // So if user types 50, parseNumber should return 50 if we don't divide, but formatNumber divides.
-        // To be consistent: value=50 means 50%.
-        return parsed;
+
+        return isNegative ? -parsed : parsed;
       },
-      [decimalSeparator, groupSeparator]
+      []
     );
 
     // Sync external value to internal string when not focused

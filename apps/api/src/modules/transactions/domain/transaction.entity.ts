@@ -177,6 +177,20 @@ export class Transaction {
 
   /**
    * Modifies the amount (TRX-R06)
+  /**
+   * Modifies the account
+   */
+  public updateAccount(newAccountId: string, updatedBy: string): void {
+    this.validateNotTransfer('updateAccount');
+    if (this.props.accountId === newAccountId) return;
+
+    this.props.accountId = newAccountId;
+    this.props.updatedAt = new Date();
+    this.props.updatedBy = updatedBy;
+  }
+
+  /**
+   * Modifies the amount (TRX-R06)
    */
   public updateAmount(newAmount: Money, updatedBy: string): void {
     this.validateNotTransfer('updateAmount');
@@ -184,17 +198,15 @@ export class Transaction {
     if (newAmount.value.lte(0)) {
       throw new InvalidTransactionAmountException();
     }
-    
-    if (this.props.amount.currency !== newAmount.currency) {
-      throw new Error('Cannot change transaction currency'); // Internal error, shouldn't happen from API
-    }
 
-    if (this.props.amount.value.eq(newAmount.value)) {
+    if (this.props.amount.value.eq(newAmount.value) && this.props.amount.currency === newAmount.currency) {
       return;
     }
 
     const previousAmount = this.props.amount;
-    const delta = newAmount.subtract(previousAmount);
+    const delta = newAmount.currency === previousAmount.currency
+      ? newAmount.subtract(previousAmount)
+      : newAmount;
     
     this.props.amount = newAmount;
     this.props.updatedAt = new Date();
@@ -220,11 +232,7 @@ export class Transaction {
   public updateDate(newDate: Date, updatedBy: string): void {
     this.validateNotTransfer('updateDate');
     
-    // Convert both dates to ISO date strings for comparison to avoid time discrepancies
-    const currentDateStr = this.props.date.toISOString().split('T')[0];
-    const newDateStr = newDate.toISOString().split('T')[0];
-
-    if (currentDateStr === newDateStr) {
+    if (this.props.date.getTime() === newDate.getTime()) {
       return;
     }
 

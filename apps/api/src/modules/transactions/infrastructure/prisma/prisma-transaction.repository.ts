@@ -133,8 +133,18 @@ export class PrismaTransactionRepository implements ITransactionRepository {
     // date ranges
     if (filters.start_date || filters.end_date) {
       where.date = {};
-      if (filters.start_date) where.date.gte = new Date(filters.start_date as string);
-      if (filters.end_date) where.date.lte = new Date(filters.end_date as string);
+      if (filters.start_date) {
+        const startStr = String(filters.start_date).trim();
+        where.date.gte = startStr.includes('T')
+          ? new Date(startStr)
+          : new Date(`${startStr}T00:00:00-05:00`);
+      }
+      if (filters.end_date) {
+        const endStr = String(filters.end_date).trim();
+        where.date.lte = endStr.includes('T')
+          ? new Date(endStr)
+          : new Date(`${endStr}T23:59:59.999-05:00`);
+      }
     }
 
     const [raw, count] = await Promise.all([

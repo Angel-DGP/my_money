@@ -12,6 +12,7 @@ interface RetryConfig extends InternalAxiosRequestConfig {
 
 interface RefreshResponse {
   token: string;
+  refreshToken?: string;
   user: { id: string; email: string; name: string };
 }
 
@@ -36,10 +37,11 @@ function processQueue(error: unknown, token: string | null): void {
 // ── Refresh directo: usa axios base, NO apiClient, para evitar bucles ──────
 
 async function doRefresh(): Promise<RefreshResponse> {
+  const storedRefreshToken = useSessionStore.getState().refreshToken;
   const response = await axios.post<RefreshResponse>(
     `${API_CONFIG.baseURL}/auth/refresh`,
-    {},
-    { withCredentials: true } // refresh token viaja en cookie HttpOnly
+    { refreshToken: storedRefreshToken },
+    { withCredentials: true } // refresh token viaja en cookie HttpOnly y body como fallback
   );
   return response.data;
 }
@@ -88,6 +90,16 @@ export const errorInterceptor = async (error: AxiosError): Promise<never> => {
     return Promise.reject(error);
   }
 
+  // Protección 0: No intentar refresh si la petición original es de login, register o reseteo de contraseña
+  if (
+    originalRequest?.url?.includes('/auth/login') ||
+    originalRequest?.url?.includes('/auth/register') ||
+    originalRequest?.url?.includes('/auth/forgot-password') ||
+    originalRequest?.url?.includes('/auth/reset-password')
+  ) {
+    return Promise.reject(error);
+  }
+
   // Protección 1: no reintentar si el request que falló ya era el endpoint de refresh.
   // Evita cualquier bucle si el backend devuelve 401 en /auth/refresh.
   if (originalRequest?.url?.includes('/auth/refresh')) {
@@ -124,7 +136,7 @@ export const errorInterceptor = async (error: AxiosError): Promise<never> => {
   try {
     const refreshed = await doRefresh();
 
-    useSessionStore.getState().setSession(refreshed.token, refreshed.user);
+    useSessionStore.getState().setSession(refreshed.token, refreshed.user, refreshed.refreshToken);
 
     if (originalRequest?.headers) {
       originalRequest.headers.Authorization = `Bearer ${refreshed.token}`;

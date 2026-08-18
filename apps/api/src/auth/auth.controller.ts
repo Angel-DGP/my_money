@@ -24,15 +24,17 @@ export class AuthController {
     const session = await this.authService.login(user, req.headers['user-agent'], req.ip);
     
     // Set HttpOnly cookie with the refresh token
+    const isProd = process.env.NODE_ENV === 'production';
     res.cookie('refresh_token', session.refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     return { 
       token: session.accessToken, 
+      refreshToken: session.refreshToken,
       user: {
         id: session.user.id,
         email: session.user.email,
@@ -56,15 +58,17 @@ export class AuthController {
     );
     
     // Set HttpOnly cookie with the refresh token
+    const isProd = process.env.NODE_ENV === 'production';
     res.cookie('refresh_token', session.refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     return { 
       token: session.accessToken, 
+      refreshToken: session.refreshToken,
       user: session.user
     };
   }
@@ -73,9 +77,10 @@ export class AuthController {
   @HttpCode(200)
   async refresh(
     @Req() req: Request,
+    @Body('refreshToken') bodyRefreshToken: string | undefined,
     @Res({ passthrough: true }) res: Response
   ) {
-    const refreshToken = req.cookies?.['refresh_token'];
+    const refreshToken = req.cookies?.['refresh_token'] || bodyRefreshToken;
     if (!refreshToken) {
       throw new UnauthorizedException('No refresh token found');
     }
@@ -87,15 +92,17 @@ export class AuthController {
         req.ip
       );
       
+      const isProd = process.env.NODE_ENV === 'production';
       res.cookie('refresh_token', session.refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
 
       return { 
-        token: session.accessToken,
+        token: session.accessToken, 
+        refreshToken: session.refreshToken,
         user: {
           id: session.user.id,
           email: session.user.email,
@@ -112,9 +119,10 @@ export class AuthController {
   @HttpCode(200)
   async logout(
     @Req() req: Request,
+    @Body('refreshToken') bodyRefreshToken: string | undefined,
     @Res({ passthrough: true }) res: Response
   ) {
-    const refreshToken = req.cookies?.['refresh_token'];
+    const refreshToken = req.cookies?.['refresh_token'] || bodyRefreshToken;
     if (refreshToken) {
       await this.authService.logout(refreshToken);
       res.clearCookie('refresh_token');

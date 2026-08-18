@@ -11,6 +11,7 @@ export interface RegisterRequestDto {
 
 export interface LoginResponseDto {
   token: string;
+  refreshToken?: string;
   user: {
     id: string;
     email: string;

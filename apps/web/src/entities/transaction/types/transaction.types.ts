@@ -68,6 +68,7 @@ export interface CreateTransferDto {
 }
 
 export interface UpdateTransactionDto {
+  account_id?: string;
   category_id?: string | null;
   amount?: string;
   date?: string;

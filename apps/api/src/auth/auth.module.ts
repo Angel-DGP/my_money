@@ -12,7 +12,7 @@ import { JwtStrategy, JWT_SECRET } from './jwt.strategy';
     SessionsModule,
     JwtModule.register({
       secret: JWT_SECRET,
-      signOptions: { expiresIn: '15m' }, // Access token de corta duración
+      signOptions: { expiresIn: '1h' }, // Access token de 1 hora
     }),
   ],
   controllers: [AuthController],

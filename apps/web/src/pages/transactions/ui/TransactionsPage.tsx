@@ -3,9 +3,65 @@ import { useAccountsQuery } from '@entities/account';
 import { useCategoriesQuery } from '@entities/category';
 import { TransactionsTable, TransactionDrawer } from '@features/transactions';
 import { CategorySelect } from '@features/categories';
-import { Button, Icon, PageContainer, Text, AlertDialog, Select, Badge } from '@mymoney/ui';
+import { Button, Icon, PageContainer, Text, AlertDialog, Select, Badge, DatePicker } from '@mymoney/ui';
 import { useSearchParams } from 'react-router-dom';
 import { useState, useMemo } from 'react';
+import { getEcuadorTodayString, formatDateEC } from '@shared/utils/date';
+
+const DATE_PRESET_LABELS: Record<string, string> = {
+  today: 'Hoy',
+  this_week: 'Esta semana',
+  this_month: 'Este mes',
+  last_month: 'Mes anterior',
+  this_year: 'Este año',
+  custom: 'Personalizado',
+};
+
+function getDatePresetRange(preset: string): { start: string; end: string } | null {
+  const todayStr = getEcuadorTodayString();
+  const parts = todayStr.split('-');
+  const year = parseInt(parts[0] ?? '2026', 10);
+  const month = parseInt(parts[1] ?? '1', 10);
+
+  if (preset === 'today') {
+    return { start: todayStr, end: todayStr };
+  }
+  if (preset === 'this_week') {
+    const d = new Date(`${todayStr}T12:00:00-05:00`);
+    const dayOfWeek = d.getDay();
+    const diffToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const mon = new Date(d);
+    mon.setDate(d.getDate() + diffToMon);
+    const sun = new Date(mon);
+    sun.setDate(mon.getDate() + 6);
+
+    const formatD = (dateObj: Date) => {
+      const yy = dateObj.getFullYear();
+      const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const dd = String(dateObj.getDate()).padStart(2, '0');
+      return `${yy}-${mm}-${dd}`;
+    };
+    return { start: formatD(mon), end: formatD(sun) };
+  }
+  if (preset === 'this_month') {
+    const start = `${year}-${String(month).padStart(2, '0')}-01`;
+    const lastDay = new Date(year, month, 0).getDate();
+    const end = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+    return { start, end };
+  }
+  if (preset === 'last_month') {
+    const prevMonth = month === 1 ? 12 : month - 1;
+    const prevYear = month === 1 ? year - 1 : year;
+    const start = `${prevYear}-${String(prevMonth).padStart(2, '0')}-01`;
+    const lastDay = new Date(prevYear, prevMonth, 0).getDate();
+    const end = `${prevYear}-${String(prevMonth).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+    return { start, end };
+  }
+  if (preset === 'this_year') {
+    return { start: `${year}-01-01`, end: `${year}-12-31` };
+  }
+  return null;
+}
 
 export function TransactionsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,6 +69,9 @@ export function TransactionsPage() {
   const accountIdParam = searchParams.get('accountId') || searchParams.get('account_id') || '';
   const typeParam = searchParams.get('type') || '';
   const categoryIdParam = searchParams.get('categoryId') || searchParams.get('category_id') || '';
+  const startDateParam = searchParams.get('startDate') || searchParams.get('start_date') || '';
+  const endDateParam = searchParams.get('endDate') || searchParams.get('end_date') || '';
+  const datePresetParam = searchParams.get('datePreset') || (startDateParam || endDateParam ? 'custom' : 'all');
 
   const { data: accounts } = useAccountsQuery();
   const { data: categories } = useCategoriesQuery();
@@ -32,7 +91,9 @@ export function TransactionsPage() {
     account_id: accountIdParam || undefined,
     type: typeParam || undefined,
     category_id: categoryIdParam || undefined,
-  }), [accountIdParam, typeParam, categoryIdParam]);
+    start_date: startDateParam || undefined,
+    end_date: endDateParam || undefined,
+  }), [accountIdParam, typeParam, categoryIdParam, startDateParam, endDateParam]);
 
   const { data, isLoading, isError } = useTransactionsQuery(queryParams);
   const deleteTransaction = useDeleteTransaction();
@@ -70,12 +131,62 @@ export function TransactionsPage() {
     setSearchParams(newParams);
   };
 
+  const handleDatePresetChange = (val: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (val === 'all') {
+      newParams.delete('datePreset');
+      newParams.delete('startDate');
+      newParams.delete('start_date');
+      newParams.delete('endDate');
+      newParams.delete('end_date');
+    } else if (val === 'custom') {
+      newParams.set('datePreset', 'custom');
+    } else {
+      const range = getDatePresetRange(val);
+      if (range) {
+        newParams.set('datePreset', val);
+        newParams.set('startDate', range.start);
+        newParams.set('endDate', range.end);
+        newParams.delete('start_date');
+        newParams.delete('end_date');
+      }
+    }
+    setSearchParams(newParams);
+  };
+
+  const handleStartDateChange = (val: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (val) {
+      newParams.set('startDate', val);
+      newParams.set('datePreset', 'custom');
+      newParams.delete('start_date');
+    } else {
+      newParams.delete('startDate');
+      newParams.delete('start_date');
+    }
+    setSearchParams(newParams);
+  };
+
+  const handleEndDateChange = (val: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (val) {
+      newParams.set('endDate', val);
+      newParams.set('datePreset', 'custom');
+      newParams.delete('end_date');
+    } else {
+      newParams.delete('endDate');
+      newParams.delete('end_date');
+    }
+    setSearchParams(newParams);
+  };
+
   const handleClearFilters = () => {
     setSearchParams(new URLSearchParams());
   };
 
   const activeAccount = accounts?.find(a => a.id === accountIdParam);
-  const hasActiveFilters = Boolean(accountIdParam || typeParam || categoryIdParam);
+  const hasActiveDate = Boolean(startDateParam || endDateParam || (datePresetParam && datePresetParam !== 'all'));
+  const hasActiveFilters = Boolean(accountIdParam || typeParam || categoryIdParam || hasActiveDate);
 
   const handleOpenCreate = () => {
     setDrawerState({ open: true, transaction: null, isView: false });
@@ -114,7 +225,7 @@ export function TransactionsPage() {
       <PageContainer.Body variant="transparent">
         {/* ─── BARRA DE FILTROS ──────────────────────────────────────────────── */}
         <div className="bg-surface rounded-2xl border border-border-subtle p-4 mb-6 shadow-sm space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
               <Select
                 id="filter-account"
@@ -158,11 +269,48 @@ export function TransactionsPage() {
                 filterType={typeParam === 'INCOME' || typeParam === 'EXPENSE' ? typeParam : 'ALL'}
               />
             </div>
+
+            <div>
+              <Select
+                id="filter-date-preset"
+                label="Fecha"
+                value={datePresetParam || 'all'}
+                onChange={(e) => handleDatePresetChange(e.target.value)}
+              >
+                <option value="all">Todas las fechas</option>
+                <option value="today">Hoy</option>
+                <option value="this_week">Esta semana</option>
+                <option value="this_month">Este mes</option>
+                <option value="last_month">Mes anterior</option>
+                <option value="this_year">Este año</option>
+                <option value="custom">Personalizado...</option>
+              </Select>
+            </div>
           </div>
+
+          {/* Rango de fechas personalizado */}
+          {datePresetParam === 'custom' && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-border-subtle/50 animate-in fade-in duration-200">
+              <DatePicker
+                id="filter-start-date"
+                label="Desde"
+                value={startDateParam}
+                onChange={handleStartDateChange}
+                placeholder="Selecciona fecha inicio"
+              />
+              <DatePicker
+                id="filter-end-date"
+                label="Hasta"
+                value={endDateParam}
+                onChange={handleEndDateChange}
+                placeholder="Selecciona fecha fin"
+              />
+            </div>
+          )}
 
           {hasActiveFilters && (
             <div className="flex flex-wrap items-center justify-between pt-2 border-t border-border-subtle/50 text-xs">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center flex-wrap gap-2">
                 <span className="text-text-muted">Filtros activos:</span>
                 {activeAccount && (
                   <Badge variant="primary" size="sm">
@@ -181,6 +329,20 @@ export function TransactionsPage() {
                         ? 'Transferencia entre cuentas'
                         : (categories?.flatMap(c => [c, ...(c.subcategories || [])]).find(c => c.id === categoryIdParam)?.name || 'Seleccionada')
                     }
+                  </Badge>
+                )}
+                {hasActiveDate && (
+                  <Badge variant="neutral" size="sm">
+                    Fecha:{' '}
+                    {datePresetParam && datePresetParam !== 'all' && datePresetParam !== 'custom'
+                      ? DATE_PRESET_LABELS[datePresetParam] || datePresetParam
+                      : startDateParam && endDateParam
+                      ? `${formatDateEC(startDateParam)} - ${formatDateEC(endDateParam)}`
+                      : startDateParam
+                      ? `Desde ${formatDateEC(startDateParam)}`
+                      : endDateParam
+                      ? `Hasta ${formatDateEC(endDateParam)}`
+                      : 'Personalizada'}
                   </Badge>
                 )}
               </div>
